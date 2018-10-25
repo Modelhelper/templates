@@ -1,0 +1,55 @@
+{
+    "Key": "ts.ng.index-page",
+    "Name": "angular-index-page",
+    "Description": null,
+    "Language": "ts",
+    "CanExport": true,
+    "Path": "",
+    "ExportFileName": "{{model.Table.Name | KebabCase}}-detail.component.html",
+    "ExportType": "ng.detail-page",
+    "TemplateType": 0,
+    "Groups": [
+        "ng-spa", "ng-ui", "ng-detail"
+    ],
+    "Tags": null,
+    "Body": [
+        "<h1>{{model.Table.Name | UpperCamel | Plural }} Detail</h1>"
+    ],
+    "output": [
+        {
+            "action": "create",
+            "path": "store\\effects", 
+            "fileName": "{{model.Table.Name | KebabCase}}.effect.ts",
+            "language": "ts",
+            "body": [
+
+            ]
+        },
+        {
+            "action": "create",
+            "path": "store\\actions",
+            "fileName": "{{model.Table.Name | KebabCase}}.action.ts",
+            "language": "ts",
+            "body": [
+
+            ]
+        },
+        {
+            "action": "create",
+            "path": "store\\reducers",
+            "fileName": "{{model.Table.Name | KebabCase}}.reducer.ts",
+            "language": "ts",
+            "body": [
+
+            ]
+        },
+        {
+            "action": "message",            
+            "body": []
+        },
+        {
+            "action": "snippet",            
+            "body": []
+        }
+    ]
+}

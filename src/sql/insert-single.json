@@ -1,0 +1,14 @@
+{
+  "Key": "sql.insert.single",
+  "Name": "SQL insert one row",
+  "Description": "",
+  "Language": "sql",
+  "CanExport": false,
+  "ExportFileName": "insert-one-in-{{model.Table.Name}}.sql",
+  "TemplateType": 0,
+  "Tags": ["sql"],
+  "Body": [
+    "{% sqlInsert %}"
+
+  ]
+}

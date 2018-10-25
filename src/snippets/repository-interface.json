@@ -1,0 +1,22 @@
+{
+    "Key": "cf3d46aa-e796-40b4-a5f0-40d767498536",
+    "Name": "Repository Interface ",
+    "Description": "",
+    "Language": "cs",
+    "CanExport": false,
+    "ExportFileName": "",
+    "Tags": ["cs"],
+    "Body": [
+      "{% capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}",
+      "\tpublic interface I{{model.Table.Name | UpperCamel | Plural}}Repository",
+      "\t{",
+      "\t\tTask<{{className}}> Get({% primaryKeyList cs %});",
+      "\t\tTask<IEnumerable<{{className}}>> Get();",
+      "\t\tTask<bool> Create({{className}} item);",
+      "\t\tTask<{{className}}> Update({% primaryKeyList cs %}, {{className}} item);",
+      "\t\tTask<bool> Delete({% primaryKeyList cs %});",
+      "",
+      "\t}",
+      ""      
+    ]
+  }

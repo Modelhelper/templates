@@ -1,0 +1,21 @@
+{
+  "Key": "cs.core.controller-constructor",
+  "Name": null,
+  "Description": null,
+  "Language": "cs",
+  "CanExport": false,
+  "ExportFileName": "Export-{{modelName}}.cs",
+  "TemplateType": 0,
+  "Tags": ["cs", "core", "sql", "ts", "js"],
+  "Body": [
+    "{% capture modelName %}{{ model.Table.Name | Singular | UpperCamel }}{% endcapture -%}",    
+    "private readonly {{model.Namespace.Interfaces}}.I{{ modelName }}Repository _{{ modelName | LowerCamel }}Repository;",
+    "",
+    "public {{ modelName }}Controller({{model.Namespace.Interfaces}}.I{{ modelName }}Repository {{ modelName | LowerCamel }}Repository)",
+    "{",
+    "\t_{{ modelName | LowerCamel }}Repository = {{ modelName | LowerCamel }}Repository;",
+    
+    "}",
+    ""
+  ]
+}

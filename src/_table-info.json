@@ -1,0 +1,10 @@
+{
+  "Key": "table.info",
+  "Name": "Table info",
+  "Description": "",
+  "Language": "txt",
+  "CanExport": false,
+  "ExportFileName": "",
+  "Tags": [],
+  "Body": ["Name: {{ model.Table.Schema }}.{{ model.Table.Name }}, ModelName: {{ model.Table.Name | UpperCamel | Singular }}"]
+}

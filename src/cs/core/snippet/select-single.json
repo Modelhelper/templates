@@ -1,0 +1,26 @@
+{
+  "Key": "cs.dalc.select.single",
+  "Name": null,
+  "Description": null,
+  "Language": "cs",
+  "CanExport": false,
+  "ExportFileName": "",
+  "TemplateType": 0,
+  "Tags": ["cs", "core", "sql", "ts", "js"],
+  "Body": [
+      "{% capture modelName %}{{ model.Table.Name | Singular | UpperCamel | Strip }} {% endcapture %}", 
+    "public async Task<{{ modelName }}> GetItem({% primaryKeyList cs %})",
+    "{",
+    "\tusing (var connection = {% raw %}{% newConnection %}{% endraw %}",
+    "\t{",
+    "\t\tvar sql = @\"",
+    "{% sqlSelectSingle %}",
+    
+    "\"",
+    "\t\tvar item = await connection.QueryFirstOrDefaultAsync<{{ modelName | Strip }}>(sql, new { id });",
+    "\t\treturn item;",
+    "\t}",
+    "}",
+    ""
+  ]
+}

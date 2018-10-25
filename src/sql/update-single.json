@@ -1,0 +1,14 @@
+{
+  "Key": "sql.update.single",
+  "Name": "SQL Update one from row",
+  "Description": "",
+  "Language": "sql",
+  "CanExport": false,
+  "ExportFileName": "update-one-from-{{model.Table.Name}}.sql",
+  "TemplateType": 0,
+  "Tags": ["sql"],
+  "Body": [
+    "{% sqlUpdate %}"
+
+  ]
+}

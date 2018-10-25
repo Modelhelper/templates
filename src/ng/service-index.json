@@ -1,0 +1,17 @@
+{
+    "Key": "ng.service.index",
+    "Name": "ng-service-index-item",
+    "ModelType": "tableArray", 
+    "Description": "",
+    "Language": "ts",
+    "CanExport": false,
+    "ExportFileName": "",
+    "insertableSnippet": true,
+    "insertIdentifier": "//PLACEHOLDER[some-thing-unique]",
+    "Tags": [
+        "ts", "ng", "frontend"
+    ],
+    "Body": [
+        "import ASCII123 {{model.Table.Name | UpperCamel }}Service ASCII124 from \"./{{model.Table.Name | LowerCamel }}.service\";  "        
+    ]
+}

@@ -1,0 +1,13 @@
+{
+  "Key": "sql.delete",
+  "Name": "SQL Delete from table",
+  "Description": "",
+  "Language": "sql",
+  "CanExport": false,
+  "ExportFileName": "delete-from-{{model.Table.Name}}.sql",
+  "TemplateType": 0,
+  "Tags": ["sql"],
+  "Body": [
+    "{% sqlDelete %}"
+  ]
+}

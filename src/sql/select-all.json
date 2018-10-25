@@ -1,0 +1,14 @@
+{
+  "Key": "sql.select.all",
+  "Name": "SQL Select all from table",
+  "Description": "",
+  "Language": "sql",
+  "CanExport": false,
+  "ExportFileName": "select-all-from-{{model.Table.Name}}.sql",
+  "TemplateType": 0,
+  "Tags": ["sql"],
+  "Body": [
+    "{% sqlSelectAll %}"
+
+  ]
+}

@@ -1,0 +1,17 @@
+{
+    "Key": "ts.ng.service.index.array",
+    "Name": "angular-service-index-array",
+    "Description": null,
+    "Language": "ts",
+    "CanExport": false,
+    "ExportFileName": "",
+    "ExportType": "",
+    "TemplateType": 0,
+    "Groups": [
+        "ng-service-index"
+    ],
+    "Tags": null,
+    "Body": [
+        ", {{model.Table.Name | UpperCamel | Singular}}Service"
+    ]
+}

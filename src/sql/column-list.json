@@ -1,0 +1,14 @@
+{
+  "Key": "sql.column.list",
+  "Name": "SQL column list only",
+  "Description": "",
+  "Language": "sql",
+  "CanExport": false,
+  "ExportFileName": "column-list-for-{{model.Table.Name}}.sql",
+  "TemplateType": 0,
+  "Tags": ["sql"],
+  "Body": [
+    "{% columnList %}"
+
+  ]
+}

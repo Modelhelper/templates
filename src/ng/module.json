@@ -1,0 +1,34 @@
+{
+    "Key": "ts.ng.module",
+    "Name": "Angular Module",
+    "Description": null,
+    "Language": "ts",
+    "CanExport": true,
+    "ExportFileName": "{{model.Table.Name | KebabCase}}.module.ts",
+    "ExportType": "ng.modules",
+    "TemplateType": 0,
+    "Groups": [
+        "ng-spa",
+        "ng-ui", "ng-module"
+    ],
+    "Tags": null,
+    "Body": [
+        "import { NgModule } from '@angular/core';",
+        "import { CommonModule } from '@angular/common';",
+        "",        
+        "import { {{model.Table.Name | UpperCamel | Singular }}RoutingModule } from './{{model.Table.Name | KebabCase | Singular }}-routing.module';",
+        "import { {{model.Table.Name | UpperCamel | Singular }}IndexComponent } from './{{model.Table.Name | KebabCase | Singular }}-index/{{model.Table.Name | KebabCase | Singular }}-index.component';",
+        "import { {{model.Table.Name | UpperCamel | Singular }}DetailComponent } from './{{model.Table.Name | KebabCase | Singular }}-detail/{{model.Table.Name | KebabCase | Singular }}-detail.component';",
+        "",
+        "@NgModule({",
+        "  imports: [",
+        "    CommonModule,",
+        "    {{model.Table.Name | UpperCamel | Singular }}RoutingModule",
+        "  ],",
+        "  declarations: [{{model.Table.Name | UpperCamel | Singular }}IndexComponent, {{model.Table.Name | UpperCamel | Singular }}DetailComponent],",
+        "  exports: [{{model.Table.Name | UpperCamel | Singular }}IndexComponent, {{model.Table.Name | UpperCamel | Singular }}DetailComponent]",
+        "})",
+        "export class {{model.Table.Name | UpperCamel | Singular }}Module { }",
+        ""
+    ]
+}

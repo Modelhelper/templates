@@ -1,0 +1,33 @@
+{
+    "Key": "ts.ng.model",
+    "Name": "angular-model",
+    "Description": null,
+    "Language": "cs",
+    "CanExport": true,
+    "ExportFileName": "{{model.Table.Name | KebabCase | Singular}}.view-model.ts",
+    "ExportType": "ng.view-models",
+    "TemplateType": 0,
+    "Groups": [
+        "ng-spa",
+        "ng-shared"
+    ],
+    "Tags": null,
+    "Body": [
+        "export interface {{model.Table.Name | UpperCamel | Singular }}ViewModel {",
+        "{% for item in model.Table.Columns -%}{%- capture dataType %}{{ item.DataType | TypeScript }}{%- endcapture -%}{%- capture evalType -%}string{%- endcapture -%}",
+        "{%- if item.IsIgnored == false -%}",
+        "\t{{ item.PropertyName | LowerCamel }}{%- if item.IsNullable %}?{%- endif -%}: {{ item.DataType | TypeScript }};",
+        "{%- endif -%}",
+        "{%- endfor %}",
+        "{% if model.Table.IncludeParentRelations %}",
+        "{%- for relation in model.Table.ParentRelations-%}",
+        "\t// {{ relation.Name }} ViewModel properties",
+        "{%- for relatedColumn in relation.ViewModelColumns-%}",
+        "\t{{ relatedColumn.PropertyName }}{%- if relatedColumn.IsNullable %}?{%- endif -%}: {{ relatedColumn.DataType | TypeScript }};",
+        "{%- endfor -%}\t",
+        "{%- endfor -%}\t",
+        "{%- endif -%}",
+        "}",
+        ""
+    ]
+}

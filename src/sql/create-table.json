@@ -1,0 +1,32 @@
+{
+    "Key": "sql.create.table",
+    "Name": "Create Table",
+    "Description": null,
+    "Language": "sql",
+    "CanExport": false,
+    "ExportFileName": "",
+    "ExportType": "",
+    "TemplateType": 0,
+    "Groups": [
+        ""
+    ],
+    "Tags": null,
+    "Body": [
+        "if Object_Id('{{ model.Table.Schema }}.{{ model.Table.Name}}') is not null ",
+        "    drop table {{ model.Table.Schema }}.{{ model.Table.Name}};",
+        "",
+        "create table {{ model.Table.Schema }}.{{ model.Table.Name}} ( ",
+        "{%- for c in model.Table.AllColumns -%}{%- capture dataLen %}{% if c.Length < 0 %}max{% else %}{{ c.Length }}{%endif%}{%endcapture-%}",
+        "      {% if forloop.first == false %}, {% endif %}{{ c.Name }} {{ c.DataType }}{%if c.UseLength %}({{dataLen}}){%endif%}{% if c.IsNullable == false %} not{% endif %} null{%if c.IsIdentity %} identity{%endif%}",
+        "    {%-endfor-%}",
+        ");",
+        "",
+        "-- Primary Key {% capture pkList %}{% for pk in model.Table.PrimaryKeys %}{{ pk.Name }}{% if forloop.last == false %}, {% endif %}{% endfor %}{% endcapture %}",
+        "alter table {{ model.Table.Name}} add constraint PK_CLUSTERED_{{ model.Table.Name}} PRIMARY KEY CLUSTERED ({{ pkList }})",
+        "{% if model.IncludeParents %}",
+        "-- Relations for this table",
+        "{%- for relation in model.Table.ParentRelations -%}",
+        "alter table {{ model.Table.Schema }}.{{ model.Table.Name}} add constraint FK_{{ model.Table.Name}}_{{ relation.ChildColumnName }}_{{ relation.Name }}_{{ relation.ParentColumnName }} foreign key ({{ relation.ChildColumnName }}) references {{ relation.Schema}}.{{ relation.Name }}({{ relation.ParentColumnName }});",
+        "{%- endfor -%}{% endif %}"
+    ]
+}

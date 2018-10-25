@@ -1,0 +1,17 @@
+{
+    "Key": "ts.ng.service.index.import",
+    "Name": "angular-service-index-import",
+    "Description": null,
+    "Language": "ts",
+    "CanExport": false,
+    "ExportFileName": "",
+    "ExportType": "",
+    "TemplateType": 0,
+    "Groups": [
+        "ng-service-index"
+    ],
+    "Tags": null,
+    "Body": [
+        "import { {{model.Table.Name | UpperCamel | Singular}}Service } from './{{model.Table.Name | KebabCase | Singular}}.service';"
+    ]
+}

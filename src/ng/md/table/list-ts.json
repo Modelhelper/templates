@@ -1,0 +1,10 @@
+{
+  "Key": "ac0b28d0-9589-4b50-ad73-c301f8108f52",
+  "Name": "ng-table-list",
+  "Description": "",
+  "Language": "ts",
+  "CanExport": false,
+  "ExportFileName": "",
+  "Tags": ["ts"],
+  "Body": ["{{ model.Table.Name | UpperCamel | Singular }}TableComponent"]
+}
