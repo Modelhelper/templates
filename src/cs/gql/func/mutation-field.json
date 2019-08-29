@@ -1,0 +1,24 @@
+{
+  "Key": "ac0b28d0-9589-4b50-ad73-c301f8108f52",
+  "Name": "transient-map",
+  "Description": "",
+  "Language": "cs",
+  "CanExport": false,
+  "ExportFileName": "",
+  "Tags": [
+    "cs"
+  ],
+  "isInsertableSnippet": true,
+  "insertIdentifier": "// MH-MUTATION-FIELD-PLACEHOLDER",
+  "Body": [
+"    ",
+"    Field<ListGraphType<{{ model.Table.Name | UpperCamel | Singular }}Type>>().Name(\"{{ model.Table.Name | LowerCamel | Plural }}\").Resolve(context => {{ model.Table.Name | LowerCamel | Singular }}Repository.Get(null));",
+"    Field<{{ model.Table.Name | UpperCamel | Singular }}Type>().Name(\"{{ model.Table.Name | LowerCamel | Singular }}\")",
+"        .Argument<IntGraphType>(\"id\", \"the id to retrive {{ model.Table.Name | UpperCamel | Singular }} for\") ",
+"        .Resolve(context => {",
+"            var id = context.GetArgument<int>(\"id\");",
+"            return {{ model.Table.Name | LowerCamel | Singular }}Repository.Get(id, null);",
+"        });",
+""
+  ]
+}

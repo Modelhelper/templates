@@ -8,7 +8,7 @@
     "ExportType": "api.interfaces",
     "TemplateType": 0,
     "Groups": [
-        "CoreWebApi"
+        "CoreWebApi", "CoreWebApiFull", "GraphQLCore"
     ],
     "Tags": null,
     "Body": [
@@ -16,7 +16,7 @@
         "using System;",
         "using System.Collections.Generic;",
         "using System.Threading.Tasks;",
-        "{%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif -%}",
+        "{%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif %}",
         "using {{model.Namespaces[\"api.models\"]}};",
         "{%- if model.IncludeParents == true -%}using {{model.Namespaces[\"api.view-models\"]}};{%- endif %}",
         "",
@@ -37,10 +37,7 @@
         "{%- endif  %}",
         "\t}",
         "",
-        "}",
-        "",
-        "",
-        "",
+        "}",        
         "",
         ""
     ]

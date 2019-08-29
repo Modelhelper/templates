@@ -1,0 +1,38 @@
+{
+    "Key": "60bd6c54-4da8-4140-86ed-20e522ce9dbb",
+    "Name": "repositotory-class-full",
+    "Description": null,
+    "Language": "cs",
+    "CanExport": true,
+    "ExportFileName": "{{model.Table.Name | UpperCamel | Singular}}Repository.cs",
+    "ExportType": "api.repositories",
+    "TemplateType": 0,
+    "Groups": [
+        "GraphQLCore"
+    ],
+    "Tags": null,
+    "Body": [
+        "{%- capture queryOption -%}{{ model.QueryOptions.ClassName }} queryOption{% endcapture %}",
+        "{%- capture appUserId -%}{{ model.QueryOptions.UserIdProperty }}{% endcapture %}",
+        "using System;",
+        "using System.Linq;",
+        "using System.Collections.Generic;",
+        "using System.Data.SqlClient;",
+        "using System.Threading.Tasks;",
+        "using Dapper;",
+        "{%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif %}",
+        "using {{model.Namespaces[\"api.models\"]}};",
+        "using {{model.Namespaces[\"api.interfaces\"]}};",
+        "namespace {{model.Namespaces[\"api.repositories\"]}}",
+        "{ ",
+        "{%- capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}",
+        "{%- capture viewModelClassName -%}{%- if model.IncludeParents == true -%}{{ className }}{%- else -%}{{ className }}{%- endif -%}{%- endcapture -%}",
+        "\tpublic partial class {{ className }}Repository : I{{ className }}Repository",
+        "\t{",
+
+        "\t}",    
+        "}",
+        ""
+
+    ]
+}

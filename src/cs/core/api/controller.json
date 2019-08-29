@@ -8,7 +8,7 @@
   "ExportFileName": "{{model.Table.Name | UpperCamel | Plural }}Controller.cs",
   "TemplateType": 0,
   "Groups": [
-    "CoreWebApi"
+    "CoreWebApi", "CoreWebApiFull"
   ],
   "Tags": [
     "cs",

@@ -1,0 +1,36 @@
+{
+    "Key": "cf3d46aa-e796-40b4-a5f0-40d767498536",
+    "Name": "Repository Interface ",
+    "Description": null,
+    "Language": "cs",
+    "CanExport": true,
+    "ExportFileName": "I{{model.Table.Name | UpperCamel | Singular}}PartialRepository.cs",
+    "ExportType": "api.interfaces",
+    "TemplateType": 0,
+    "Groups": [
+        "GraphQLCore"
+    ],
+    "Tags": null,
+    "Body": [
+        "{%- capture queryOption -%}{{ model.QueryOptions.ClassName }} queryOption{% endcapture %}",
+        "using System;",
+        "using System.Linq;",
+        "using System.Collections.Generic;",
+        "using System.Threading.Tasks;",
+        "{%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif %}",
+        "using {{model.Namespaces[\"api.models\"]}};",
+        "",
+        "namespace {{model.Namespaces[\"api.interfaces\"]}}",
+        "{ ",
+        "{% capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}",
+        "\tpublic partial interface I{{model.Table.Name | UpperCamel | Singular}}Repository",
+        "\t{",
+        "\t\tTask<{{model.Table.Name | UpperCamel | Singular}}> UpdateFields(int id, {{model.Table.Name | UpperCamel | Singular}} item, List<string> updateableFields);",
+        "\t\tTask<{{model.Table.Name | UpperCamel | Singular}}> CreateFields({{model.Table.Name | UpperCamel | Singular}} item, List<string> fields);",
+        "\t}",
+        "",
+        "}",
+        "",
+        ""
+    ]
+}
