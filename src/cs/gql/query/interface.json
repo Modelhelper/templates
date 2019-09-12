@@ -4,7 +4,7 @@
     "Description": null,
     "Language": "cs",
     "CanExport": true,
-    "ExportFileName": "I{{model.Table.Name | UpperCamel | Singular}}MutationPartialRepository.cs",
+    "ExportFileName": "I{{model.Table.Name | UpperCamel | Singular}}Repository.cs",
     "ExportType": "api.interfaces",
     "TemplateType": 0,
     "Groups": [
@@ -25,8 +25,10 @@
         "{% capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}",
         "\tpublic partial interface I{{model.Table.Name | UpperCamel | Singular}}Repository",
         "\t{",
-        "\t\tTask<{{model.Table.Name | UpperCamel | Singular}}> PatchUpdate(int id, {{model.Table.Name | UpperCamel | Singular}} item, List<string> fields);",
-        "\t\tTask<{{model.Table.Name | UpperCamel | Singular}}> PatchCreate({{model.Table.Name | UpperCamel | Singular}} item, List<string> fields);",
+
+        "{%- for child in model.Table.ChildRelations -%}{%- if child.GroupIndex == 1 -%}",
+        "\t\tTask<ILookup<{{ child.ParentColumnType  | CSharp }}, {{ child.Name | UpperCamel | Singular }}>> Get{{child.ModelName | UpperCamel | Plural}}(IEnumerable<{{ child.ParentColumnType | CSharp}}> {{ child.ParentColumnName | LowerCamel | Plural}});",
+        "{% endif -%}{%- endfor %}",        
         "\t}",
         "",
         "}",

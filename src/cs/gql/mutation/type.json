@@ -30,7 +30,7 @@
     "\t{",
       "\t\tpublic {{model.Table.Name | UpperCamel | Singular}}MutationType(IDataLoaderContextAccessor accessor, I{{ model.Table.Name | UpperCamel | Singular }}Repository {{ repo }})", 
       "\t\t{", 
-        "\t\t\tName = \"{{model.Table.Name | UpperCamel | Singular}}\";", 
+        "\t\t\tName = \"{{model.Table.Name | UpperCamel | Singular}}MutationType\";", 
         "\t\t\tDescription = \"{{model.Table.Description}}\";", 
         "{%- for property in model.Table.Columns -%}{% capture dataType %}{{ property.DataType | CSharp }}{% endcapture -%}",
         "{%- capture nullable %}{%if property.IsNullable %}, nullable: true{% endif %}{% endcapture -%}", 

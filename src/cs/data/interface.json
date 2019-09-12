@@ -23,7 +23,7 @@
         "namespace {{model.Namespaces[\"api.interfaces\"]}}",
         "{",
         "{% capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}",
-        "\tpublic interface I{{model.Table.Name | UpperCamel | Singular}}Repository",
+        "\tpublic partial interface I{{model.Table.Name | UpperCamel | Singular}}Repository",
         "\t{",
         "\t\tTask<{{className}}> Get({% primaryKeyList cs %}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %});",
         "\t\tTask<IEnumerable<{{className}}{%- if model.IncludeParents == true -%}ViewModel{%- endif -%}>> Get({% if model.UseQueryOptions %}{{ queryOption }}{% endif %});",
