@@ -1,0 +1,84 @@
+{
+    
+    "Description": null,
+    "Language": "cs",
+    "CanExport": true,
+    "ExportFileName": "{{model.Table.Name | UpperCamel | Singular}}QueryPartialRepository.cs",
+    "ExportType": "api.repositories",
+    "TemplateType": 0,
+    "Groups": [
+        "GraphQLCore", "cs-gql-complete"
+    ],
+    "Tags": null,
+    "Body": [
+        "{%- capture queryOption -%}{{ model.QueryOptions.ClassName }} queryOption{% endcapture %}",
+        "{%- capture appUserId -%}{{ model.QueryOptions.UserIdProperty }}{% endcapture %}",
+        "using System;",
+        "using System.Linq;",
+        "using System.Text;",
+        "using System.Collections.Generic;",
+        "using System.Data.SqlClient;",
+        "using System.Threading.Tasks;",
+        "using System.Threading;",
+        "using Dapper;",
+        "{%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif %}",
+        "using {{model.Namespaces[\"api.models\"]}};",
+        "using {{model.Namespaces[\"api.interfaces\"]}};",
+        "namespace {{model.Namespaces[\"api.repositories\"]}}",
+        "{ ",
+        "{%- capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}",
+        "{%- capture classPropertyName %}{{model.Table.Name | LowerCamel | Singular}}{% endcapture %}",
+        "\tpublic partial class {{ className }}Repository : I{{ className }}Repository",
+        "\t{",
+
+ "{%- for child in model.Table.ChildRelations -%}{%- if child.GroupIndex == 1 -%}",
+        "{%- capture childPropertyName %}{{ child.ParentColumnName | LowerCamel | Plural}}{% endcapture -%}",
+        "{%- capture childIdName %}{{ child.ParentColumnName | UpperCamel | Singlular}}{% endcapture -%}",
+        "\t\tpublic async Task<ILookup<{{ child.ParentColumnType  | CSharp }}, {{ child.Name | UpperCamel | Singular }}>> Get{{child.ModelName | UpperCamel | Plural}}(IEnumerable<{{ child.ParentColumnType | CSharp}}> {{ child.ParentColumnName | LowerCamel | Plural}})",
+        "\t\t{",
+        "\t\t\tusing (var connection = _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})",
+        "\t\t\t{",
+        
+        "\t\t\t\tvar sql = @\"",
+	"\t\t\t\t\tselect * from [{{child.Schema}}].[{{ child.Name | UpperCamel | Singular }}] ",
+	"\t\t\t\t\twhere {{ childIdName }} in @{{ childPropertyName }}",			
+        "{%- for a in child.Columns %}{%- if a.IsDeletedMarker %}\t\t\t\t\t\t and {{ a.Name }} = 1 {% endif -%}{% endfor -%} ",
+";\";",
+	"\t\t\tvar items = await connection.QueryAsync<{{ child.Name | UpperCamel | Singular }}>(sql, new { {{childPropertyName}} });",
+	"\t\t\treturn items.ToLookup(x => x.{{ childIdName }}{% if child.ChildColumnNullable %}.Value{% endif %});",
+
+        "\t\t\t}",
+        "\t\t}",
+        "",
+        "",
+        "{% endif -%}{%- endfor %}",                
+
+        "{%- for item in model.Table.ParentRelations -%}{%- if item.GroupIndex == 1 -%}",
+        "{%- capture itemPropertyName %}{{ item.ParentColumnName | LowerCamel | Plural}}{% endcapture -%}",
+        "{%- capture itemIdName %}{{ item.ParentColumnName | UpperCamel | Singlular}}{% endcapture -%}",
+        "\t\tpublic async Task<IDictionary<{{ item.ParentColumnType  | CSharp }}, {{ item.Name | UpperCamel | Singular }}>> Get{{item.ModelName | UpperCamel | Singular}}(IEnumerable<{{ item.ParentColumnType | CSharp}}> {{ item.ParentColumnName | LowerCamel | Plural}}, CancellationToken cancellationToken)",
+        "\t\t{",
+        "\t\t\tusing (var connection = _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})",
+        "\t\t\t{",
+        
+        "\t\t\t\tvar sql = @\"",
+	"\t\t\t\t\tselect * from [{{item.Schema}}].[{{ item.Name | UpperCamel | Singular }}] ",
+	"\t\t\t\t\twhere {{ itemIdName }} in @{{ itemPropertyName }}",			
+        "{%- for a in item.Columns %}{%- if a.IsDeletedMarker %}\t\t\t\t\t\t and {{ a.Name }} = 1 {% endif -%}{% endfor -%} ",
+        ";\";",
+	"\t\t\t\tvar items = await connection.QueryAsync<{{ item.Name | UpperCamel | Singular }}>(sql, new { {{itemPropertyName}} });",
+	"\t\t\t\treturn items.ToDictionary(x => x.{{ itemIdName }}{% if item.ParentColumnNullable %}.Value{% endif %}, x => x);",
+
+
+        "\t\t\t}",
+        "\t\t}",
+        "",
+        "",
+        "{% endif -%}{%- endfor %}",  
+
+        "\t}",
+        "",
+        "}",    
+        ""
+    ]
+}

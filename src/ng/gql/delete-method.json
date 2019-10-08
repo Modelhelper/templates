@@ -1,0 +1,33 @@
+{    
+    "Description": "",
+    "Language": "ts",
+    "CanExport": false,    
+    "Tags": [
+      "ng", "angular", "gql", "graphql"
+    ],
+    "Body": [
+  "//#region delete statements for misc tables{%capture ids %}{%for pk in model.Table.PrimaryKeys %}${{ pk.ContextualName | LowerCamel | Singular }}: {{ pk.DataType | Graphql }}!{%if forloop.last == false %}, {%endif%}{% endfor %}{% endcapture %}",
+  "delete{{ model.Table.Name | Singular }}({%for pk in model.Table.PrimaryKeys %}{{ pk.ContextualName | LowerCamel | Singular }}: {{ pk.DataType | TypeScript }}{%if forloop.last == false %}, {%endif%}{% endfor %}) { ",
+  "\tconst qry = gql`",
+  "\tmutation delete({{ids}}) {",
+  "\t\thistology {",
+    "\t\t\t{{ model.Table.Name | LowerCamel | Plural }} {",
+    "\t\t\t\tdelete({%for pk in model.Table.PrimaryKeys %}{{ pk.ContextualName | LowerCamel | Singular }}: ${{ pk.ContextualName | LowerCamel | Singular }}{% endfor %})",
+    "\t\t\t\t\tid result",
+    "\t\t\t\t}",
+    "\t\t\t}",
+    "\t\t}",
+  "\t}`;",
+  "",
+  "\treturn this.apollo.mutate<any>({",
+      "\t\tmutation: qry,",
+      "\t\tvariables: {",
+        "{%for pk in model.Table.PrimaryKeys %}\t\t\t{{ pk.ContextualName | LowerCamel | Singular }}, ", 
+        "{% endfor -%}",
+        
+"\t\t}",
+    "\t\t});",
+  "}",
+  "//#endregion"
+    ]
+  }

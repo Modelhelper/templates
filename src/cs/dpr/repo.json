@@ -8,7 +8,7 @@
     "ExportType": "api.repositories",
     "TemplateType": 0,
     "Groups": [
-        "CoreWebApi", "CoreWebApiFull"
+        "CoreWebApi", "CoreWebApiFull", "cs-gql-complete"
     ],
     "Tags": null,
     "Body": [
@@ -42,7 +42,7 @@
         "\t{",
         "\t\tvar sql = @\"",
         "{% sqlSelectSingle %}",
-        "{%- if model.Table.UsesDeletedColumn %}AND {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} != 1{% endif %}\";",
+        "{%- if model.Table.UsesDeletedColumn %}AND {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} = 1{% endif %}\";",
         "\t\tvar item = await connection.QueryFirstOrDefaultAsync<{{ className }}>(sql, new { {% primaryKeyList %} });",
         "\t\treturn item;",
         "\t}",
@@ -55,7 +55,7 @@
         "\t{",
         "\t\tvar sql = @\"",
         "{% sqlSelectAll %}",
-        "{%- if model.Table.UsesDeletedColumn %}WHERE {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} != 1{% endif %}\";",
+        "{%- if model.Table.UsesDeletedColumn %}WHERE {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} = 1{% endif %}\";",
         "\t\tvar items = await connection.QueryAsync<{{ viewModelClassName }}>(sql);",
         "\t\treturn items;",
         "\t}",

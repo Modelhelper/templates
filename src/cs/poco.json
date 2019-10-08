@@ -8,7 +8,7 @@
   "ExportType": "api.models",
   "TemplateType": 0,
   "Groups": [
-    "CoreWebApi", "GraphQLCore"
+    "CoreWebApi", "GraphQLCore", "cs-gql-complete"
   ],
   "Tags": null,
   "Body": [

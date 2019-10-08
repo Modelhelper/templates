@@ -8,7 +8,7 @@
     "ExportType": "api.repositories",
     "TemplateType": 0,
     "Groups": [
-        "GraphQLCore"
+        "GraphQLCore", "cs-gql-complete"
     ],
     "Tags": null,
     "Body": [
@@ -55,7 +55,7 @@
         "\t\t\t\tvar result = await connection.ExecuteAsync(sqlBuilder.ToString(), new",
         "\t\t\t\t{",
         "\t\t\t\t\t\t{{ classPropertyName }}Id,{% for column in model.Table.Columns -%}",
-        "\t\t\t\t\t\t{%- if column.IsPrimaryKey == false -%}item.{{ column.Name }},{%- endif %}",
+        "\t\t\t\t\t\t{%- if column.IsPrimaryKey == false -%}item.{{ column.Name | UpperCamel }},{%- endif %}",
         "{% endfor -%}",
         "\t\t\t\t});",
         "\t\t\t\t\tif (result > 0)",
@@ -117,7 +117,7 @@
         "",
         "\t\t\t\t\tvar result = await connection.ExecuteScalarAsync<int> (sql, new",
         "\t\t\t\t\t{ {% for column in model.Table.Columns -%}",
-        "\t\t\t\t\t\t{% if column.IsPrimaryKey == false -%}item.{{ column.Name }},{%- endif %}",       
+        "\t\t\t\t\t\t{% if column.IsPrimaryKey == false -%}item.{{ column.Name | UpperCamel }},{%- endif %}",       
         "{% endfor %}\t\t\t\t\t});",
         "",
         "\t\t\t\t\tif (result > 0)",

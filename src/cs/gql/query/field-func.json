@@ -13,8 +13,8 @@
   "Body": [
 "    ",
 "    // I{{ model.Table.Name | UpperCamel | Singular }}Repository {{ model.Table.Name | LowerCamel | Singular }}Repository, ",
-"    Field<ListGraphType<{{ model.Table.Name | UpperCamel | Singular }}Type>>().Name(\"{{ model.Table.Name | LowerCamel | Plural }}\").Resolve(context => {{ model.Table.Name | LowerCamel | Singular }}Repository.Get(null));",
-"    Field<{{ model.Table.Name | UpperCamel | Singular }}Type>().Name(\"{{ model.Table.Name | LowerCamel | Singular }}\")",
+"    Field<ListGraphType<{{ model.Table.Name | UpperCamel | Singular }}QueryType>>().Name(\"{{ model.Table.Name | LowerCamel | Plural }}\").Resolve(context => {{ model.Table.Name | LowerCamel | Singular }}Repository.Get(null));",
+"    Field<{{ model.Table.Name | UpperCamel | Singular }}QueryType>().Name(\"{{ model.Table.Name | LowerCamel | Singular }}\")",
 "        .Argument<IntGraphType>(\"id\", \"the id to retrive {{ model.Table.Name | UpperCamel | Singular }} for\") ",
 "        .Resolve(context => {",
 "            var id = context.GetArgument<int>(\"id\");",

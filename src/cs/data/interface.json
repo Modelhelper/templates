@@ -8,7 +8,7 @@
     "ExportType": "api.interfaces",
     "TemplateType": 0,
     "Groups": [
-        "CoreWebApi", "CoreWebApiFull", "GraphQLCore"
+        "CoreWebApi", "CoreWebApiFull", "GraphQLCore", "cs-gql-complete"
     ],
     "Tags": null,
     "Body": [

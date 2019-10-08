@@ -4,11 +4,11 @@
     "Description": null,
     "Language": "cs",
     "CanExport": true,
-    "ExportFileName": "I{{model.Table.Name | UpperCamel | Singular}}Repository.cs",
+    "ExportFileName": "I{{model.Table.Name | UpperCamel | Singular}}QueryRepository.cs",
     "ExportType": "api.interfaces",
     "TemplateType": 0,
     "Groups": [
-        "GraphQLCore"
+        "GraphQLCore", "cs-gql-complete"
     ],
     "Tags": null,
     "Body": [
@@ -17,6 +17,7 @@
         "using System.Linq;",
         "using System.Collections.Generic;",
         "using System.Threading.Tasks;",
+        "using System.Threading;",
         "{%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif %}",
         "using {{model.Namespaces[\"api.models\"]}};",
         "",
@@ -29,8 +30,14 @@
         "{%- for child in model.Table.ChildRelations -%}{%- if child.GroupIndex == 1 -%}",
         "\t\tTask<ILookup<{{ child.ParentColumnType  | CSharp }}, {{ child.Name | UpperCamel | Singular }}>> Get{{child.ModelName | UpperCamel | Plural}}(IEnumerable<{{ child.ParentColumnType | CSharp}}> {{ child.ParentColumnName | LowerCamel | Plural}});",
         "{% endif -%}{%- endfor %}",        
-        "\t}",
+        
         "",
+
+        "{%- for item in model.Table.ParentRelations -%}{%- if item.GroupIndex == 1 -%}",
+        "\t\tTask<IDictionary<{{ item.ParentColumnType  | CSharp }}, {{ item.Name | UpperCamel | Singular }}>> Get{{item.ModelName | UpperCamel | Singular}}(IEnumerable<{{ item.ParentColumnType | CSharp}}> {{ item.ParentColumnName | LowerCamel | Singular}}, CancellationToken cancellationToken);",
+        "{% endif -%}{%- endfor %}",        
+        "\t}",
+        
         "}",
         "",
         ""

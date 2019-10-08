@@ -27,7 +27,7 @@
         "{ ",
         "{%- capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}",
         "{%- capture viewModelClassName -%}{%- if model.IncludeParents == true -%}{{ className }}{%- else -%}{{ className }}{%- endif -%}{%- endcapture -%}",
-        "\tpublic partial class {{ className }}Repository : I{{ className }}Repository",
+        "\tpublic partial class {{ className }}Repository : I{{ className }}GqlQueryRepository",
         "\t{",
 
         "\t}",    

@@ -8,7 +8,7 @@
     "ExportType": "gql.mutation.groups",
     "TemplateType": 0,
     "Groups": [
-        "GraphQLCore"
+        "GraphQLCore","cs-gql-complete"
     ],
     "Tags": [
         "GraphQL",
@@ -46,7 +46,7 @@
         "// copy to parent mutation group",
         "// Field<{{ className }}MutationGroup>(\"{{ model.Table.Name | LowerCamel | Plural }}\", resolve: context => new { });",
         "",
-        "\t\tprivate const string itemName = \"{{model.Table.Name | LowerCamel | Singular}}\";",
+        "\t\tprivate const string itemName = \"item\";",
         "\t\tprivate readonly I{{ className }}Repository _{{repo}};",
         "",
         "\t\tpublic {{className}}MutationGroup(IDataLoaderContextAccessor accessor, I{{ className }}Repository {{ repo }})",
@@ -55,9 +55,9 @@
         "\t\t\t_{{repo}} = {{ repo }};",
         "\t\t\tName = \"{{className}}Mutation\";",
         "\t\t\tDescription = \"update, create and delete data for the {{className}} entity  \";",
-        "\t\t\tField<{{ className }}Type>(\"create\",",
+        "\t\t\tField<{{ className }}QueryType>(\"create\",",
         "\t\t\t\targuments: new QueryArguments(",
-        "\t\t\t\t\tnew QueryArgument<NonNullGraphType<{{ className }}MutationType>> { Name = itemName, Description = \"{{ className }} entity to update\" }",
+        "\t\t\t\t\tnew QueryArgument<NonNullGraphType<{{ className }}InputType>> { Name = itemName, Description = \"{{ className }} entity to update\" }",
         "\t\t\t\t),",
         "\t\t\t\tresolve: context =>",
         "\t\t\t\t{",
@@ -71,10 +71,10 @@
         "\t\t\t\t}",
         "\t\t\t);",
         "",
-        "\t\t\tField<{{ className }}Type>(\"update\",",
+        "\t\t\tField<{{ className }}QueryType>(\"update\",",
         "\t\t\t\targuments: new QueryArguments(",
         "\t\t\t\t\tnew QueryArgument<NonNullGraphType<IntGraphType>> { Name = \"id\", Description = \"id of the {{ className }}\" },",
-        "\t\t\t\t\tnew QueryArgument<NonNullGraphType<{{ className }}MutationType>> { Name = itemName, Description = \"{{ className }} entity to update\" }",
+        "\t\t\t\t\tnew QueryArgument<NonNullGraphType<{{ className }}InputType>> { Name = itemName, Description = \"{{ className }} entity to update\" }",
         "\t\t\t\t),",
         "\t\t\t\tresolve: context =>",
         "\t\t\t\t{",
