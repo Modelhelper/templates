@@ -1,0 +1,72 @@
+ExportKey: ng.table-component
+Version: 3
+CanExport: true
+ExportFileName: '{{model.Table.Name | KebabCase}}-table.component.html'
+Groups: [ng-spa, ng-ui, ng-table]
+Tags: []
+Body: |+
+  {%- capture kebabName %}{{ model.Table.Name | KebabCase | Singular }}{% endcapture -%}
+  {%- capture className %}{{ model.Table.Name | UpperCamel | Singular }}{% endcapture -%}
+  {%- capture propertyName %}{{ model.Table.Name | LowerCamel | Singular  }}{% endcapture -%}
+  <mat-table #table [dataSource]="dataSource" matSort>
+
+  {% for prop in model.Table.Columns -%}
+  {% if prop.IsIgnored == true %}<!-- {% endif %}
+  {%- capture dataType -%}{{ prop.DataType | CSharp }}{%- endcapture -%}
+  	<ng-container matColumnDef="{{ prop.Name | LowerCamel | Singular }}">
+  		<mat-header-cell *matHeaderCellDef mat-sort-header> {{ prop.Name | LowerCamel | Singular }} </mat-header-cell>
+  {%- case dataType -%}{% when 'DateTime' %}
+  		<mat-cell *matCellDef="let element"> ASCII123ASCII123element.{{ prop.Name | LowerCamel | Singular }} | date: 'dd.MM.yyyy' ASCII124ASCII124 </mat-cell>
+  {%- when 'bool' -%}
+  		<mat-cell *matCellDef="let element"> <mat-checkbox [checked]="element.{{ prop.Name | LowerCamel | Singular }}"></mat-checkbox> </mat-cell>
+  {%- else -%}
+  		<mat-cell *matCellDef="let element"> ASCII123ASCII123element.{{ prop.Name | LowerCamel | Singular }}ASCII124ASCII124 </mat-cell>
+  {%- endcase %}
+  	</ng-container>
+  {% if prop.IsIgnored == true %}--> {% endif %}
+  {%- endfor -%}
+  {% if model.Table.IncludeParentRelations %}
+  {%- for relation in model.Table.ParentRelations-%}
+  		<!-- {{ relation.Name }} ViewModel properties -->
+  {%- for relatedColumn in relation.ViewModelColumns-%}
+  {%- capture dataType -%}{{ relatedColumn.DataType | CSharp }}{%- endcapture -%}
+  {%- capture relatedColName -%}{{ relatedColumn.PropertyName  | LowerCamel | Singular }}{%- endcapture -%}
+  	<ng-container matColumnDef="{{ relatedColName }}">
+  		<mat-header-cell *matHeaderCellDef mat-sort-header> {{ relatedColName }} </mat-header-cell>
+  {%- case dataType -%}{% when 'DateTime' %}
+  		<mat-cell *matCellDef="let element"> ASCII123ASCII123element.{{ relatedColName | LowerCamel | Singular }} | date: 'dd.MM.yyyy' ASCII124ASCII124 </mat-cell>
+  {%- when 'bool' -%}
+  		<mat-cell *matCellDef="let element"> <mat-checkbox [checked]="element.{{ relatedColName | LowerCamel | Singular  }}"></mat-checkbox> </mat-cell>
+  {%- else -%}
+  		<mat-cell *matCellDef="let element"> ASCII123ASCII123element.{{ relatedColName | LowerCamel | Singular  }}ASCII124ASCII124 </mat-cell>
+  {%- endcase %}
+  	</ng-container>
+  {%- endfor -%}	
+  {%- endfor -%}	
+  {%- endif -%}
+
+  	<ng-container matColumnDef="buttons" >
+  		<mat-header-cell *matHeaderCellDef></mat-header-cell>
+  		<mat-cell *matCellDef="let item">
+  			<div fxFlex="row" fxLayoutAlign="end center">
+  				<button *ngIf="enableEditButton" mat-icon-button aria-label="edit" (click)="handleEdit(item)">
+  					<mat-icon>edit</mat-icon>
+  				</button>
+  				<button *ngIf="enableDeleteButton" mat-icon-button aria-label="remove" (click)="handleDelete(item)">
+  					<mat-icon>delete</mat-icon>
+  				</button>
+  			</div>
+  		</mat-cell>
+  	</ng-container>
+  	<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  	<mat-row *matRowDef="let row; columns: displayedColumns;" (click)="handleRowClick(row)"></mat-row>
+  </mat-table>
+
+  <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]">
+  </mat-paginator>
+
+
+
+
+
+

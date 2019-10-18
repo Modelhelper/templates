@@ -1,0 +1,24 @@
+ExportKey: ng.modules
+Version: 3
+CanExport: true
+ExportFileName: '{{model.Table.Name | KebabCase}}-routing.module.ts'
+Groups: [ng-spa, ng-ui]
+Tags: []
+Body: |+
+  import { NgModule } from '@angular/core';
+  import { Routes, RouterModule } from '@angular/router';
+  import { {{model.Table.Name | UpperCamel | Singular }}IndexComponent } from './{{model.Table.Name | KebabCase | Singular }}-index/{{model.Table.Name | KebabCase | Singular }}-index.component';
+  import { {{model.Table.Name | UpperCamel | Singular }}DetailComponent } from './{{model.Table.Name | KebabCase | Singular }}-detail/{{model.Table.Name | KebabCase | Singular }}-detail.component';
+
+  const routes: Routes = [
+  { path: '', component: {{model.Table.Name | UpperCamel | Singular }}IndexComponent },
+  { path: 'create', component: {{model.Table.Name | UpperCamel | Singular }}DetailComponent},
+  { path: ':childId', component: {{model.Table.Name | UpperCamel | Singular }}DetailComponent },
+
+  ];
+  @NgModule({
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule]
+  })
+  export class {{model.Table.Name | UpperCamel | Singular }}RoutingModule { }
+

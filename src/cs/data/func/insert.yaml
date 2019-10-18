@@ -1,0 +1,60 @@
+Version: 3
+Groups: []
+Tags: []
+Body: |+
+  {%- capture queryOption -%}{{ model.QueryOptions.ClassName }} queryOption{% endcapture %}
+  {%- capture appUserId -%}{{ model.QueryOptions.UserIdProperty }}{% endcapture %}
+  {%- capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}
+  {%- capture viewModelClassName -%}{%- if model.IncludeParents == true -%}{{ className }}ViewModel{%- else -%}{{ className }}{%- endif -%}{%- endcapture -%}
+  public async Task<{{ className }}> Create({{ className }} item{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})
+  {
+  	if (item == null)
+  	{
+  		throw new ArgumentNullException();
+  	}
+  	{% if model.Table.UsesGuidAsPrimaryKey %}{% for pk in model.Table.PrimaryKeys %}if (item.{{pk.Name}} == Guid.Empty)
+  	{
+  		item.{{pk.Name}} = Guid.NewGuid();
+  	}{% endfor %}{% endif %}
+
+  	using (var connection =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})
+  	{
+  		var sql = @"
+  {% sqlInsert %};
+  {% if model.Table.UsesIdentityColumn %}	declare @itemId int = SCOPE_IDENTITY();
+  	select @itemId;{% endif %}
+  ";
+  		try
+  		{
+  {% if model.Table.UsesIdentityColumn %}
+  			var sqlCreateId = await connection.ExecuteScalarAsync<int>(sql, new { {% propertyList %}{% if model.UseQueryOptions %}, ApplicationUserId = queryOption.{{appUserId}}{% endif %} });
+  			if (sqlCreateId > 0)
+  			{
+  				var entity = await this.Get(sqlCreateId{% if model.UseQueryOptions %}, queryOption{% endif %});
+  				return entity;
+  			}
+  			else
+  			{
+  				return null;
+  			}
+  {% else %}
+  			var sqlCreateResult = await connection.ExecuteAsync(sql, new { {% propertyList %}{% if model.UseQueryOptions %}, ApplicationUserId = queryOption.{{appUserId}}{% endif %} });
+  			if (sqlCreateResult > 0)
+  			{
+  {% capture itemKeys %}{% for pk in model.Table.PrimaryKeys %}{% if forloop.first == false %}, {% endif %}item.{{ pk.PropertyName }}{% endfor %}{% endcapture %}
+  				var entity = await this.Get({{itemKeys}}{% if model.UseQueryOptions %}, queryOption{% endif %});
+  				return entity;
+  			}
+  			else
+  			{
+  				return null;
+  			}
+  {% endif %}
+  		}
+  		catch(Exception exception)
+  		{
+  			System.Diagnostics.Debug.Print(exception.Message);
+  			throw;
+  		}
+  	}
+  }

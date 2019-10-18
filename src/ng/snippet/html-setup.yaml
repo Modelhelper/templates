@@ -1,0 +1,5 @@
+Version: 3
+Groups: [ng-service-index]
+Tags: []
+Body: |+
+  , {{model.Table.Name | UpperCamel | Singular}}Service

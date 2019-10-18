@@ -1,0 +1,13 @@
+Version: 3
+ExportFileName: Export-{{modelName}}.cs
+Groups: []
+Tags: [cs, core, sql, ts, js]
+Body: |+
+  {% capture modelName %}{{ model.Table.Name | Singular | UpperCamel }}{% endcapture -%}
+  private readonly {{model.Namespace.Interfaces}}.I{{ modelName }}Repository _{{ modelName | LowerCamel }}Repository;
+
+  public {{ modelName }}Controller({{model.Namespace.Interfaces}}.I{{ modelName }}Repository {{ modelName | LowerCamel }}Repository)
+  {
+  	_{{ modelName | LowerCamel }}Repository = {{ modelName | LowerCamel }}Repository;
+  }
+

@@ -1,0 +1,7 @@
+ExportKey: ng.index-page
+Version: 3
+CanExport: true
+ExportFileName: '{{model.Table.Name | KebabCase}}-index.component.html'
+Groups: [ng-spa, ng-ui, ng-index]
+Tags: []
+Body: "<div class=\"page-container\">\r\n    <div class=\"page-title\">\r\n        <h2>{{ model.Table.Name | UpperCamel | Plural }}</h2>\r\n    </div>\r\n    <div class=\"page-action\">\r\n\r\n        <button mat-raised-button [routerLink]=\"['create']\">Create</button>        \r\n\r\n    </div>\r\n\r\n    <div class=\"page-detail\">\r\n        <div class=\"table-filter\">\r\n            <mat-form-field style=\"width: 100%; \">\r\n                <input matInput [(ngModel)]=\"filter\" placeholder=\"Filter\">\r\n            </mat-form-field>\r\n        </div>\r\n        <app-{{ model.Table.Name | KebabCase | Singular }}-table \r\n        [data]=\"{{ model.Table.Name | LowerCamel | Plural }}\" \r\n        [filter]=\"filter\"        \r\n        (onClick)=\"onClick($event)\"\r\n        (onRowClick)=\"onClick($event)\"\r\n        (onDelete)=\"onDelete($event)\" \r\n        \r\n        >\r\n\r\n        </app-{{ model.Table.Name | KebabCase | Singular }}-table>\r\n\r\n    </div>\r\n\r\n</div>\r\n"

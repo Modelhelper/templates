@@ -1,0 +1,54 @@
+ExportKey: ng.services
+Version: 3
+CanExport: true
+ExportFileName: '{{model.Table.Name | KebabCase | Singular}}.service.ts'
+Groups: [ng-spa, ng-shared]
+Tags: []
+Body: |+
+  import { Injectable } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+  import { Observable } from 'rxjs/Observable';
+  import { environment } from '../../../environments/environment';{% capture modelName %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}
+
+  // Application specific imports
+  import { {{model.Table.Name | UpperCamel | Singular}} } from '../models/{{model.Table.Name | KebabCase | Singular}}.model';
+  {% if model.IncludeRelations == true %}import { {{model.Table.Name | UpperCamel | Singular}}ViewModel } from '../view-models/{{model.Table.Name | KebabCase | Singular}}.view-model';{% endif %}
+  {%- if (model.IncludeRelations == true) %}{%- for child in model.Table.ChildRelations %}{% if child.GroupIndex == 1 -%}{%- capture childName -%}{{child.Name | UpperCamel | Singular}}{%- endcapture -%}
+  {%- if modelName != childName -%}import { {{child.Name | UpperCamel | Singular}}ViewModel } from '../view-models/{{child.Name | KebabCase | Singular}}.view-model';{%- endif %}
+  {%- endif -%}{%- endfor -%}
+  {% endif  %}
+  @Injectable({
+  	providedIn: 'root'
+  })
+  export class {{model.Table.Name | UpperCamel | Singular}}Service {
+  {% capture resourceList %}{% for pk in model.Table.PrimaryKeys %}/$ASCII123{{pk.Name | LowerCamel}}ASCII124{% endfor %}{% endcapture %}
+  	constructor(private http: HttpClient) { }
+
+  	get{{model.Table.Name | UpperCamel | Plural }}(): Observable<{{model.Table.Name | UpperCamel | Singular}}ViewModel[]> {
+  		return this.http.get<{{model.Table.Name | UpperCamel | Singular}}ViewModel[]>(`${environment.apiUrl}/api/{{model.Table.Name | LowerCamel | Plural}}`);
+  	}
+
+  	get{{model.Table.Name | UpperCamel | Singular }}({% primaryKeyList TypeScript %}): Observable<{{model.Table.Name | UpperCamel | Singular}}> {
+  		return this.http.get<{{model.Table.Name | UpperCamel | Singular}}>(`${environment.apiUrl}/api/{{model.Table.Name | LowerCamel | Plural}}{{ resourceList}}`);
+  	}
+
+  	create({{model.Table.Name | LowerCamel | Singular}}: {{model.Table.Name | UpperCamel | Singular}}): Observable<{{model.Table.Name | UpperCamel | Singular}}> {
+  		return this.http.post<{{model.Table.Name | UpperCamel | Singular}}>(`${environment.apiUrl}/api/{{model.Table.Name | LowerCamel | Plural}}`, {{model.Table.Name | LowerCamel | Singular}});
+  	}
+
+  	update({% primaryKeyList TypeScript %}, {{model.Table.Name | LowerCamel | Singular}}: {{model.Table.Name | UpperCamel | Singular}}): Observable<{{model.Table.Name | UpperCamel | Singular}}> {
+  		return this.http.put<{{model.Table.Name | UpperCamel | Singular}}>(`${environment.apiUrl}/api/{{model.Table.Name | LowerCamel | Plural}}{{ resourceList}}`, {{model.Table.Name | LowerCamel | Singular}});
+  	}
+
+  	delete({% primaryKeyList TypeScript %}): Observable<any> {
+  		return this.http.delete(`${environment.apiUrl}/api/{{model.Table.Name | LowerCamel | Plural}}{{ resourceList}}`);
+  	}
+  {% if model.IncludeRelations == true %}{%- for child in model.Table.ChildRelations %}{% if child.GroupIndex == 1 %}
+  	get{{child.Name | UpperCamel | Plural }}({% primaryKeyList TypeScript %}): Observable<{{child.Name | UpperCamel | Singular}}ViewModel[]> {
+  		return this.http.get<{{child.Name | UpperCamel | Singular}}ViewModel[]>(`${environment.apiUrl}/api/{{model.Table.Name | LowerCamel | Plural}}{{resourceList}}/{{child.ModelName | LowerCamel | Plural}}`);
+  	}
+  {%- endif %}{% endfor %}
+  {% endif  %}
+  }
+
+

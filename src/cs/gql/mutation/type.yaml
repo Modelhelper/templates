@@ -1,0 +1,30 @@
+ExportKey: gql.mutation.types
+Version: 3
+Description: Creates a <Entity>Type file based on ObjectGraphType for GraphQL
+CanExport: true
+ExportFileName: '{{model.Table.Name | UpperCamel | Singular}}InputType.cs'
+Groups: [GraphQLCore, cs-gql-complete]
+Tags: [GraphQL, Api, Core]
+Body: |+
+  using System;
+  using System.Collections.Generic;
+  using GraphQL.Types;
+  using {{model.Namespaces["api.interfaces"]}};
+  using {{model.Namespaces["api.models"]}};
+  namespace {{model.Namespaces["gql.mutation.types"]}}
+  {
+  	public class {{model.Table.Name | UpperCamel | Singular}}InputType : InputObjectGraphType<{{model.Table.Name | UpperCamel | Singular}}>
+  	{
+  		public {{model.Table.Name | UpperCamel | Singular}}InputType()
+  		{
+  			Name = "{{model.Table.Name | UpperCamel | Singular}}Input";
+  			Description = "{{model.Table.Description}}";
+  {%- for property in model.Table.Columns -%}{% capture dataType %}{{ property.DataType | CSharp }}{% endcapture -%}
+  {%- capture nullable %}{%if property.IsNullable %}, nullable: true{% endif %}{% endcapture -%}
+  {%- capture description %}{%if property.Description.Length > 0 %}.Description("{{property.Description}}"){% endif %}{% endcapture -%}
+  			{% if property.IsIdentity %}// {% endif %}Field(t => t.{{ property.PropertyName }}{{ nullable }}){{description}};
+  {%- endfor -%}
+  		}
+
+  	}
+  }

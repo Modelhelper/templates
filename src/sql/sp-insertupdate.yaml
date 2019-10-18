@@ -1,0 +1,6 @@
+Version: 3
+Description: ''
+ExportFileName: sp-insertupdate-to-{{model.Table.Name}}.sql
+Groups: []
+Tags: [sql]
+Body: "USE [<name>]\r\nGO\r\n\r\nSET ANSI_NULLS ON\r\nGO\r\n\r\nSET QUOTED_IDENTIFIER ON\r\nGO\r\n\r\n\r\nCREATE PROCEDURE [dbo].[{{ model.Table.Name }}_SP_InsertUpdate]\r\n\r\n{%- for column in model.Table.Columns -%}@{{column.Name }} {{column.DataType | sql}} {% if column.UseLength %}({% if column.Length == -1 %}max{% else %}{{column.Length}}{% endif %}){% endif %}{% if forloop.last == false %}, {% endif %}\r\n{%- endfor -%}\r\n\r\nAS\r\nBEGIN\r\n\r\nDeclare @Count as int;{% capture pkList %}{% for pk in model.Table.PrimaryKeys %}{% if forloop.first == false %} AND {% endif %}{{ pk.Name }} = @{{ pk.Name }}{% endfor %}{% endcapture %} \r\nSelect @Count = count(*) from {{model.Table.Name}} where {{ pkList }}\r\n\r\nIF @Count = 0  \r\n\r\n/* Ved opprettelse av nye elementer */\r\n\r\n{% sqlInsert %}\r\n\r\n ELSE\r\n \r\n /* Oppdatering av eksisterende */\r\n \r\n{% sqlUpdate %}\r\n END\r\n GO\r\n \r\n"

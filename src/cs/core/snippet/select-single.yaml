@@ -1,0 +1,17 @@
+Version: 3
+Groups: []
+Tags: [cs, core, sql, ts, js]
+Body: |+
+  {% capture modelName %}{{ model.Table.Name | Singular | UpperCamel | Strip }} {% endcapture %}
+  public async Task<{{ modelName }}> GetItem({% primaryKeyList cs %})
+  {
+  	using (var connection = {% raw %}{% newConnection %}{% endraw %}
+  	{
+  		var sql = @"
+  {% sqlSelectSingle %}
+  "
+  		var item = await connection.QueryFirstOrDefaultAsync<{{ modelName | Strip }}>(sql, new { id });
+  		return item;
+  	}
+  }
+

@@ -1,0 +1,7 @@
+ExportKey: api.interfaces
+Version: 3
+CanExport: true
+ExportFileName: I{{model.Table.Name | UpperCamel | Singular}}PartialRepository.cs
+Groups: [GraphQLCore]
+Tags: []
+Body: "{%- capture queryOption -%}{{ model.QueryOptions.ClassName }} queryOption{% endcapture %}\r\nusing System;\r\nusing System.Linq;\r\nusing System.Collections.Generic;\r\nusing System.Threading.Tasks;\r\n{%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif %}\r\nusing {{model.Namespaces[\"api.models\"]}};\r\n\r\nnamespace {{model.Namespaces[\"api.interfaces\"]}}\r\n{ \r\n{% capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}\r\n	public partial interface I{{model.Table.Name | UpperCamel | Singular}}Repository\r\n	{\r\n		Task<{{model.Table.Name | UpperCamel | Singular}}> UpdateFields(int id, {{model.Table.Name | UpperCamel | Singular}} item, List<string> updateableFields);\r\n		Task<{{model.Table.Name | UpperCamel | Singular}}> CreateFields({{model.Table.Name | UpperCamel | Singular}} item, List<string> fields);\r\n	}\r\n\r\n}\r\n\r\n\r\n"

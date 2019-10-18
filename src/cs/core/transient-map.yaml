@@ -1,0 +1,6 @@
+Version: 3
+Description: ''
+Groups: []
+Tags: [cs]
+Body: |+
+  services.AddTransient<{{model.Namespaces["api.interfaces"]}}.I{{model.Table.Name | UpperCamel | Singular}}Repository, {{model.Namespaces["api.repositories"]}}.{{model.Table.Name | UpperCamel | Singular}}Repository>();

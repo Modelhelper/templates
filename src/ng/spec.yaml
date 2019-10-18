@@ -1,0 +1,23 @@
+ExportKey: ng.spec
+Version: 3
+CanExport: true
+ExportFileName: '{{model.Table.Name | KebabCase | Singular}}.spec.ts'
+Groups: [ng-component, ng-test]
+Tags: []
+Body: |+
+  export interface {{model.Table.Name | UpperCamel | Singular }}ViewModel {
+  {% for item in model.Table.Columns -%}{%- capture dataType %}{{ item.DataType | TypeScript }}{%- endcapture -%}{%- capture evalType -%}string{%- endcapture -%}
+  {%- if item.IsIgnored == false -%}
+  	{{ item.PropertyName | LowerCamel }}{%- if item.IsNullable %}?{%- endif -%}: {{ item.DataType | TypeScript }};
+  {%- endif -%}
+  {%- endfor %}
+  {% if model.Table.IncludeParentRelations %}
+  {%- for relation in model.Table.ParentRelations-%}
+  	// {{ relation.Name }} ViewModel properties
+  {%- for relatedColumn in relation.ViewModelColumns-%}
+  	{{ relatedColumn.PropertyName }}{%- if relatedColumn.IsNullable %}?{%- endif -%}: {{ relatedColumn.DataType | TypeScript }};
+  {%- endfor -%}	
+  {%- endfor -%}	
+  {%- endif -%}
+  }
+

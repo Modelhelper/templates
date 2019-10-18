@@ -1,0 +1,8 @@
+ExportKey: gql.types
+Version: 3
+Description: 'Creates a simple <Entity>Type file based on ObjectGraphType for GraphQL. '
+CanExport: true
+ExportFileName: '{{model.Table.Name | UpperCamel | Singular}}QueryType.cs'
+Groups: [GraphQLCore]
+Tags: [GraphQL, Api, Core]
+Body: "using System;\r\nusing System.Threading;\r\nusing System.Threading.Tasks;\r\nusing System.Collections.Generic;\r\nusing GraphQL.Types;\r\nusing GraphQL.DataLoader;\r\nusing {{model.Namespaces[\"api.interfaces\"]}};\r\nusing {{model.Namespaces[\"api.models\"]}};\r\n{% capture repo %}{{ model.Table.Name | LowerCamel | Singular }}Repository{% endcapture %}\r\nnamespace {{model.Namespaces[\"gql.types\"]}}\r\n{ \r\n	public class {{model.Table.Name | UpperCamel | Singular}}QueryType : ObjectGraphType<{{model.Table.Name | UpperCamel | Singular}}>\r\n	{\r\n\r\n		public {{model.Table.Name | UpperCamel | Singular}}QueryType()\r\n		{\r\n			Name = \"{{model.Table.Name | UpperCamel | Singular}}\";\r\n			Description = \"{{model.Table.Description}}\";\r\n{%- for property in model.Table.Columns -%}{% capture dataType %}{{ property.DataType | CSharp }}{% endcapture -%}\r\n{%- capture nullable %}{%if property.IsNullable %}, nullable: true{% endif %}{% endcapture -%}\r\n{%- capture description %}{%if property.Description.Length > 0 %}.Description(\"{{property.Description}}\"){% endif %}{% endcapture -%}\r\n{%- capture name %}{%if property.IsIdentity > 0 %}.Name(\"id\"){% endif %}{% endcapture -%}\r\n			{% if property.IsIgnored %}// {% endif %}Field(t => t.{{ property.PropertyName }}{{ nullable }}){{name}}{{description}};\r\n{%- endfor -%}\r\n		}\r\n	}\r\n}\r\n"

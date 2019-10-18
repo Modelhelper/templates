@@ -1,0 +1,7 @@
+Version: 3
+Description: ''
+ExportFileName: select-one-from-{{model.Table.Name}}.sql
+Groups: []
+Tags: [sql]
+Body: |+
+  {% sqlSelectSingle %}

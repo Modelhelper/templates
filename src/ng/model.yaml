@@ -1,0 +1,14 @@
+ExportKey: ng.models
+Version: 3
+CanExport: true
+ExportFileName: '{{model.Table.Name | KebabCase | Singular}}.model.ts'
+Groups: [ng-spa, ng-shared]
+Tags: ['{% if dataType != evalType -%}']
+Body: |+
+  export interface {{model.Table.Name | UpperCamel | Singular }} {
+  {% for item in model.Table.Columns -%}{%- capture dataType %}{{ item.DataType | TypeScript }}{%- endcapture -%}{%- capture evalType -%}string{%- endcapture -%}
+  {%- if item.IsIgnored == false -%}
+  	{{ item.PropertyName | LowerCamel }}{%- if item.IsNullable %}?{%- endif -%}: {{ item.DataType | TypeScript }};
+  {%- endif -%}
+  {%- endfor %}
+  }

@@ -1,0 +1,7 @@
+Version: 3
+Description: ''
+ExportFileName: column-list-for-{{model.Table.Name}}.sql
+Groups: []
+Tags: [sql]
+Body: |+
+  {% columnList %}

@@ -1,0 +1,6 @@
+Version: 3
+Description: ''
+Groups: []
+Tags: [ts]
+Body: |+
+  {{ model.Table.Name | UpperCamel | Singular }}TableComponent

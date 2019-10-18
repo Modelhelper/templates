@@ -1,0 +1,120 @@
+ExportKey: api.controllers
+Version: 3
+CanExport: true
+ExportFileName: '{{model.Table.Name | UpperCamel | Plural }}Controller.cs'
+Groups: [CoreWebApi, CoreWebApiFull]
+Tags: [cs, core, api]
+Body: |+
+  {%- capture queryOptionMethod -%}{% if model.QueryOptions.UseClaimsPrincipalExtension %}User.{{model.QueryOptions.ClaimsPrincipalExtensionMethod}}{% else %}new {{ model.QueryOptions.ClassName }}{%endif%}{%endcapture%}
+  {%- capture queryOption -%}var queryOption = {{ queryOptionMethod }}();{% endcapture %}
+  using System;
+  using System.Threading.Tasks;
+  using {{model.Namespaces["api.models"]}};
+  using {{model.Namespaces["api.interfaces"]}};
+  using Microsoft.AspNetCore.Authorization;
+  using Microsoft.AspNetCore.Mvc;
+  {% if model.UseQueryOptions %}using {{model.QueryOptions.Namespace}};{%endif%}
+  {% if model.QueryOptions.UseClaimsPrincipalExtension %}using {{model.QueryOptions.ClaimsPrincipalExtensionNamespace}};{%endif%}
+
+  namespace {{model.Namespaces["api.controllers"]}}
+  {
+  {% capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}
+      [Route("api/{{model.Table.Name | LowerCamel | Plural}}")]
+      public class {{model.Table.Name | UpperCamel | Plural}}Controller : Controller
+      {
+          private readonly I{{className}}Repository _{{className | LowerCamel}}Repository;
+
+          public {{model.Table.Name | UpperCamel | Plural}}Controller(I{{className}}Repository {{className | LowerCamel}}Repository)
+          {
+              _{{className | LowerCamel}}Repository = {{className | LowerCamel}}Repository;
+          }
+
+          [HttpGet, Route("{% primaryKeyList apiParam %}")]
+          public async Task<IActionResult> Get{{className | LowerCamel}}ById({% primaryKeyList cs %})
+          {
+              {% if model.UseQueryOptions %}{{ queryOption }}{% endif %}
+              var item = await _{{className | LowerCamel}}Repository.Get({% primaryKeyList %}{%- if model.UseQueryOptions -%}, queryOption{%- endif -%});
+              return Ok(item);
+          }
+
+          [HttpGet, Route("")]
+          public async Task<IActionResult> Get{{model.Table.Name | UpperCamel | Plural}}()
+          {
+              {% if model.UseQueryOptions %}{{ queryOption }}{% endif %}
+              var items = await _{{className | LowerCamel}}Repository.Get({%- if model.UseQueryOptions -%}queryOption{%- endif -%});
+              return Ok(items);
+          }
+
+          [HttpPost, Route("")]
+          public async Task<IActionResult> Post([FromBody]{{className}} {{className | LowerCamel}})
+          {
+              if ({{className | LowerCamel}} == null)
+              {
+                  return BadRequest("the {{className | LowerCamel}} is null");
+              }
+              {% if model.UseQueryOptions %}{{ queryOption }}{% endif %}
+  {%- capture itemsById -%}{% for property in model.Table.PrimaryKeys -%}{% if forloop.first == false %}, {% endif %}{{className | LowerCamel}}.{{ property.Name | UpperCamel }}{% endfor -%}{%- endcapture -%}
+              var result = await _{{className | LowerCamel}}Repository.Create({{className | LowerCamel}}{%- if model.UseQueryOptions -%}, queryOption{%- endif -%});
+              if (result != null)
+              {
+                  return Ok(result);
+              }
+
+              return BadRequest("Could not create entity");
+          }
+
+
+          [HttpPut, Route("{%- primaryKeyList apiParam -%}")]
+          public async Task<IActionResult> Put({% primaryKeyList cs %}, [FromBody]{{className}} {{className | LowerCamel}})
+          {
+              if ({{className | LowerCamel}} == null)
+              {
+                  return BadRequest("the {{className | LowerCamel}} is null");
+              }
+
+              {% if model.UseQueryOptions %}{{ queryOption }}{% endif %}
+              var result = await _{{className | LowerCamel}}Repository.Update({%- primaryKeyList -%}, {{className | LowerCamel}}{%- if model.UseQueryOptions -%}, queryOption{%- endif -%});
+              return Ok(result);
+
+              //return BadRequest("Could not update entity");
+          }
+
+
+          [HttpDelete, Route("{%- primaryKeyList apiParam -%}")]
+          public async Task<IActionResult> Delete({% primaryKeyList cs %})
+          {
+              {% if model.UseQueryOptions %}{{ queryOption }}{% endif %}
+              var result = await _{{className | LowerCamel}}Repository.Delete({%- primaryKeyList -%}{%- if model.UseQueryOptions -%}, queryOption{%- endif -%});
+              return Ok(result);
+          }
+
+
+      }
+  {% if (model.IncludeChildren) %}
+  {% for child in model.Table.ChildRelations %}{% if child.GroupIndex == 1 %}
+  {% capture childRepoName %}{{child.Name | UpperCamel | Singular}}{% endcapture %}
+  {% capture childClassName %}{{model.Table.Name | UpperCamel  | Singular}}{{child.Name | UpperCamel | Plural}}{% endcapture %}
+  {% capture childMethodName %}{{model.Table.Name | UpperCamel | Singular }}{{child.Name | UpperCamel | Plural}}{% endcapture %}
+      [Route("api/{{model.Table.Name | LowerCamel | Plural}}/ASCII123{{model.Table.Name | LowerCamel | Singular}}IdASCII124/{{child.ModelName | LowerCamel | Plural}}")]
+      public class {{childClassName}}Controller : Controller
+      {
+
+          private readonly I{{childRepoName}}Repository _{{childRepoName | LowerCamel}}Repository;
+
+          public {{childClassName}}Controller(I{{childRepoName}}Repository {{childRepoName | LowerCamel}}Repository)
+          {
+              _{{childRepoName | LowerCamel}}Repository = {{childRepoName | LowerCamel}}Repository;
+          }
+
+          [HttpGet, Route("")]
+          public async Task<IActionResult> Get{{childClassName}}({{ child.ParentColumnType | CSharp}} {{model.Table.Name | LowerCamel | Singular }}Id)
+          {
+              {% if model.UseQueryOptions %}{{ queryOption }}{% endif %}
+              var items = await _{{childRepoName | LowerCamel}}Repository.Get{{model.Table.Name | UpperCamel | Singular }}{{child.Name | UpperCamel | Plural}}({{model.Table.Name | LowerCamel | Singular }}Id{%- if model.UseQueryOptions -%}, queryOption{%- endif -%});
+              return Ok(items);
+          }
+
+      }
+  {%- endif %}{% endfor %}
+  {% endif  %}
+  }

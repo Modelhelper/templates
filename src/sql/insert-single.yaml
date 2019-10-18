@@ -1,0 +1,7 @@
+Version: 3
+Description: ''
+ExportFileName: insert-one-in-{{model.Table.Name}}.sql
+Groups: []
+Tags: [sql]
+Body: |+
+  {% sqlInsert %}

@@ -1,0 +1,6 @@
+Version: 3
+Description: ''
+Groups: []
+Tags: []
+Body: |+
+  Name: {{ model.Table.Schema }}.{{ model.Table.Name }}, ModelName: {{ model.Table.Name | UpperCamel | Singular }}

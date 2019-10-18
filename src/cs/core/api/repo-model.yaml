@@ -1,0 +1,22 @@
+ExportKey: api.models
+Version: 3
+CanExport: true
+ExportFileName: '{{model.Table.Name | UpperCamel | Singular}}.cs'
+Groups: []
+Tags: []
+Body: |+
+  using System;
+  using System.Collections.Generic;
+  namespace {{model.Namespaces["api.models"]}}
+  {
+  	public class {{model.Table.Name | UpperCamel | Singular}}
+  	{
+  {%- for property in model.Table.Columns -%}{% capture dataType %}{{ property.DataType | CSharp }}{% endcapture -%}
+  		{% if property.IsIgnored %}// {% endif %}public {{ dataType }}{% if property.IsNullable and dataType != 'string' %}?{% endif %} {{ property.PropertyName }} { get; set; }
+  {%- endfor -%}
+  	}
+  }
+
+
+
+

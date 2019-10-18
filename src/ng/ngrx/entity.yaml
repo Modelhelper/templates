@@ -1,0 +1,8 @@
+ExportKey: ng.detail-page
+Version: 3
+CanExport: true
+ExportFileName: '{{model.Table.Name | KebabCase}}-detail.component.html'
+Groups: [ng-spa, ng-ui, ng-detail]
+Tags: []
+Body: |+
+  <h1>{{model.Table.Name | UpperCamel | Plural }} Detail</h1>

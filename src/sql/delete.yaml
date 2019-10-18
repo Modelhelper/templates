@@ -1,0 +1,7 @@
+Version: 3
+Description: ''
+ExportFileName: delete-from-{{model.Table.Name}}.sql
+Groups: []
+Tags: [sql]
+Body: |+
+  {% sqlDelete %}

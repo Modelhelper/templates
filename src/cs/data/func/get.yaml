@@ -1,0 +1,20 @@
+Version: 3
+Groups: []
+Tags: []
+Body: |+
+  {%- capture queryOption -%}{{ model.QueryOptions.ClassName }} queryOption{% endcapture %}
+  {%- capture appUserId -%}{{ model.QueryOptions.UserIdProperty }}{% endcapture %}
+  {%- capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}
+  {%- capture viewModelClassName -%}{%- if model.IncludeParents == true -%}{{ className }}ViewModel{%- else -%}{{ className }}{%- endif -%}{%- endcapture -%}
+  public async Task<{{ className }}> Get({% primaryKeyList cs %}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})
+  {
+  	using (var connection =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})
+  	{
+  		var sql = @"
+  {% sqlSelectSingle %}
+  {%- if model.Table.UsesDeletedColumn %}AND {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} != 1{% endif %}";
+  		var item = await connection.QueryFirstOrDefaultAsync<{{ className }}>(sql, new { {% primaryKeyList %} });
+  		return item;
+  	}
+  }
+

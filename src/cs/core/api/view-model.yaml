@@ -1,0 +1,32 @@
+ExportKey: api.view-models
+Version: 3
+CanExport: true
+ExportFileName: '{{model.Table.Name | UpperCamel | Singular}}ViewModel.cs'
+Groups: [CoreWebApiFull]
+Tags: []
+Body: |+
+  using System;
+  using System.Collections.Generic;
+  namespace {{model.Namespaces["api.view-models"]}}
+  {
+  	public class {{model.Table.Name | UpperCamel | Singular}}ViewModel
+  	{
+  {%- for property in model.Table.Columns -%}{%- capture dataType %}{{ property.DataType | CSharp }}{% endcapture -%}
+  		{% if property.IsIgnored %}// {% endif %}public {{ dataType }}{% if property.IsNullable and dataType != 'string' %}?{% endif %} {{ property.PropertyName }} { get; set; }
+  {%- endfor -%}
+  {% if model.IncludeParents == true %}
+  {%- for relation in model.Table.ParentRelations-%}
+  		// {{ relation.Name }} ViewModel properties
+  {%- for relatedColumn in relation.ViewModelColumns-%}
+  		public {{ relatedColumn.DataType | CSharp }} {{ relatedColumn.PropertyName | UpperCamel }} { get; set; }
+  {%- endfor -%}	
+  {%- endfor -%}	
+  {%- endif -%}
+  	}
+  }
+
+
+
+
+
+

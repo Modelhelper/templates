@@ -1,0 +1,5 @@
+Version: 3
+Groups: [ng-service-index]
+Tags: []
+Body: |+
+  import { {{model.Table.Name | UpperCamel | Singular}}Service } from './{{model.Table.Name | KebabCase | Singular}}.service';

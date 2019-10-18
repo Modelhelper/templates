@@ -1,0 +1,16 @@
+Version: 3
+Description: ''
+Groups: []
+Tags: [cs]
+Body: |+
+  {% capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}
+  	public interface I{{model.Table.Name | UpperCamel | Plural}}Repository
+  	{
+  		Task<{{className}}> Get({% primaryKeyList cs %});
+  		Task<IEnumerable<{{className}}>> Get();
+  		Task<bool> Create({{className}} item);
+  		Task<{{className}}> Update({% primaryKeyList cs %}, {{className}} item);
+  		Task<bool> Delete({% primaryKeyList cs %});
+
+  	}
+

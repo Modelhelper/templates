@@ -1,0 +1,5 @@
+Version: 3
+Description: ''
+Groups: []
+Tags: [ng, angular, gql, graphql]
+Body: "//#region delete statements for misc tables{%capture ids %}{%for pk in model.Table.PrimaryKeys %}${{ pk.ContextualName | LowerCamel | Singular }}: {{ pk.DataType | Graphql }}!{%if forloop.last == false %}, {%endif%}{% endfor %}{% endcapture %}\r\ndelete{{ model.Table.Name | Singular }}({%for pk in model.Table.PrimaryKeys %}{{ pk.ContextualName | LowerCamel | Singular }}: {{ pk.DataType | TypeScript }}{%if forloop.last == false %}, {%endif%}{% endfor %}) { \r\n	const qry = gql`\r\n	mutation delete({{ids}}) {\r\n		histology {\r\n			{{ model.Table.Name | LowerCamel | Plural }} {\r\n				delete({%for pk in model.Table.PrimaryKeys %}{{ pk.ContextualName | LowerCamel | Singular }}: ${{ pk.ContextualName | LowerCamel | Singular }}{% endfor %})\r\n					id result\r\n				}\r\n			}\r\n		}\r\n	}`;\r\n\r\n	return this.apollo.mutate<any>({\r\n		mutation: qry,\r\n		variables: {\r\n{%for pk in model.Table.PrimaryKeys %}			{{ pk.ContextualName | LowerCamel | Singular }}, \r\n{% endfor -%}\r\n		}\r\n		});\r\n}\r\n//#endregion\r\n"

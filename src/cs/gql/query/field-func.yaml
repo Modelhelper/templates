@@ -1,0 +1,5 @@
+Version: 3
+Description: ''
+Groups: []
+Tags: [cs]
+Body: "    \r\n    // I{{ model.Table.Name | UpperCamel | Singular }}Repository {{ model.Table.Name | LowerCamel | Singular }}Repository, \r\n    Field<ListGraphType<{{ model.Table.Name | UpperCamel | Singular }}QueryType>>().Name(\"{{ model.Table.Name | LowerCamel | Plural }}\").Resolve(context => {{ model.Table.Name | LowerCamel | Singular }}Repository.Get(null));\r\n    Field<{{ model.Table.Name | UpperCamel | Singular }}QueryType>().Name(\"{{ model.Table.Name | LowerCamel | Singular }}\")\r\n        .Argument<IntGraphType>(\"id\", \"the id to retrive {{ model.Table.Name | UpperCamel | Singular }} for\") \r\n        .Resolve(context => {\r\n            var id = context.GetArgument<int>(\"id\");\r\n            return {{ model.Table.Name | LowerCamel | Singular }}Repository.Get(id, null);\r\n        });\r\n\r\n"

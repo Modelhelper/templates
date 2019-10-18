@@ -1,0 +1,5 @@
+Version: 3
+Description: ''
+Groups: []
+Tags: [ts, ng, frontend]
+Body: "import ASCII123 {{model.Table.Name | UpperCamel }}Service ASCII124 from \"./{{model.Table.Name | LowerCamel }}.service\";  \r\n"

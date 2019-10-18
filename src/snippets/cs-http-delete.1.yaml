@@ -1,0 +1,15 @@
+ExportKey: api.repositories
+Version: 3
+Description: ''
+ExportFileName: '{{model.Table.Name | UpperCamel | Singular}}Repository.cs'
+Groups: []
+Tags: [cs]
+Body: |+
+  {% capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}
+          [HttpDelete, Route("{%- primaryKeyList apiParam -%}")]
+          public async Task<IActionResult> Delete({% primaryKeyList cs %})
+          {
+              var result = await _{{className | LowerCamel}}Repository.Delete({%- primaryKeyList -%});
+              return Ok(result);
+          }
+

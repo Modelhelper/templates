@@ -1,0 +1,35 @@
+ExportKey: api.interfaces
+Version: 3
+CanExport: true
+ExportFileName: I{{model.Table.Name | UpperCamel | Singular}}Repository.cs
+Groups: [CoreWebApi, CoreWebApiFull, GraphQLCore, cs-gql-complete]
+Tags: []
+Body: |+
+  {%- capture queryOption -%}{{ model.QueryOptions.ClassName }} queryOption{% endcapture %}
+  using System;
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+  {%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif %}
+  using {{model.Namespaces["api.models"]}};
+  {%- if model.IncludeParents == true -%}using {{model.Namespaces["api.view-models"]}};{%- endif %}
+
+  namespace {{model.Namespaces["api.interfaces"]}}
+  {
+  {% capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}
+  	public partial interface I{{model.Table.Name | UpperCamel | Singular}}Repository
+  	{
+  		Task<{{className}}> Get({% primaryKeyList cs %}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %});
+  		Task<IEnumerable<{{className}}{%- if model.IncludeParents == true -%}ViewModel{%- endif -%}>> Get({% if model.UseQueryOptions %}{{ queryOption }}{% endif %});
+  		Task<{{className}}> Create({{className}} item{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %});
+  		Task<{{className}}> Update({% primaryKeyList cs %}, {{className}} item{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %});
+  		Task<bool> Delete({% primaryKeyList cs %}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %});
+  {% if model.IncludeParents == true %}
+  {%- for parent in model.Table.ParentRelations -%}{%- if parent.GroupIndex == 1 -%}
+  		Task<IEnumerable<{{className}}ViewModel>> Get{{parent.Name | UpperCamel | Singular}}{{model.Table.Name | UpperCamel | Plural}}({{ parent.ChildColumnType | CSharp}} {{ parent.ChildColumnName | LowerCamel}}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %});
+  {% endif -%}{%- endfor %}
+  {%- endif  %}
+  	}
+
+  }
+
+

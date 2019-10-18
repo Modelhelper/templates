@@ -1,0 +1,38 @@
+Version: 3
+Groups: ['']
+Tags: []
+Body: |+
+  	// #region handle delete {{ model.Table.Name | UpperCamel }}item
+  	// _{{ model.Table.Name | LowerCamel | Singular}}Service: {{ model.Table.Name | UpperCamel | Singular}}Service
+  	// {{ model.Table.Name | LowerCamel | Plural}}: {{ model.Table.Name | UpperCamel | Plural}}ViewModel[] = [];
+  	get{{ model.Table.Name | UpperCamel | Plural}}(itemId: number) {
+  		this._applicationService.get{{ model.Table.Name | UpperCamel | Plural}}(itemId).subscribe(
+  			result => this.{{ model.Table.Name | LowerCamel | Plural}}= result
+  		);
+  	}
+
+  	confirmDelete{{ model.Table.Name | UpperCamel }}ItemHandler(item: {{ model.Table.Name | UpperCamel | Singular }}ViewModel) {
+  		const title = `Delete current item'?'`;
+  		const message = 'This action is permanent and the application cannot be retrived again ';
+  		this._commonDialogService.confirmDelete(title, message).subscribe(
+  			dialogResult => this.onDelete{{ model.Table.Name | UpperCamel | Singular}}ItemConfirmed(dialogResult, item.id)
+  		);
+  	}
+
+  	onDelete{{ model.Table.Name | UpperCamel | Singular}}ItemConfirmed(dialogResult: ConfirmationResult, itemId: number) {
+  		if (dialogResult.confirmed) {
+  			this._{{ model.Table.Name | LowerCamel | Singular}}Service.delete(itemId).subscribe(
+  				result => this.on{{ model.Table.Name | UpperCamel | Singular}}ItemDeleted(result),
+  				error => this.onError(error.error)
+  			);
+  		}
+  	}
+
+  	on{{ model.Table.Name | UpperCamel | Singular}}ItemDeleted(result: DeletedResult) {		
+  		const message = result.deleted ? "the item was deleted" : "could not delete item";
+  		this.get{{ model.Table.Name | UpperCamel | Plural}}(this.applicationId);
+  		this._toaster.toast(message);
+  	}
+
+  	// #endregion
+

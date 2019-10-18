@@ -1,0 +1,86 @@
+ExportKey: gql.mutation.groups
+Version: 3
+Description: Creates a <EGroup>Type file based on ObjectGraphType for GraphQL
+CanExport: true
+ExportFileName: '{{model.Table.Name | UpperCamel | Singular}}MutationGroup.cs'
+Groups: [GraphQLCore, cs-gql-complete]
+Tags: [GraphQL, Api, Core]
+Body: |+
+  using System;
+  using System.Linq;
+  using System.Threading;
+  using System.Threading.Tasks;
+  using System.Collections.Generic;
+  using GraphQL.Types;
+  using GraphQL.DataLoader;
+  using {{model.Namespaces["api.interfaces"]}};
+  using {{model.Namespaces["api.models"]}};
+  using {{model.Namespaces["gql.mutation.types"]}};
+  using {{model.Namespaces["gql.types"]}};
+  {% capture repo %}{{ model.Table.Name | LowerCamel | Singular }}Repository{% endcapture %}
+  namespace {{model.Namespaces["gql.mutation.groups"]}}
+  {  {% capture className %}{{ model.Table.Name | UpperCamel | Singular }}{% endcapture %}
+  	public class {{className}}MutationGroup : ObjectGraphType
+  	{
+  // copy to parent mutation group
+  // Field<{{ className }}MutationGroup>("{{ model.Table.Name | LowerCamel | Plural }}", resolve: context => new { });
+
+  		private const string itemName = "item";
+  		private readonly I{{ className }}Repository _{{repo}};
+
+  		public {{className}}MutationGroup(IDataLoaderContextAccessor accessor, I{{ className }}Repository {{ repo }})
+  		{
+
+  			_{{repo}} = {{ repo }};
+  			Name = "{{className}}Mutation";
+  			Description = "update, create and delete data for the {{className}} entity  ";
+  			Field<{{ className }}QueryType>("create",
+  				arguments: new QueryArguments(
+  					new QueryArgument<NonNullGraphType<{{ className }}InputType>> { Name = itemName, Description = "{{ className }} entity to update" }
+  				),
+  				resolve: context =>
+  				{
+
+  					var item = context.GetArgument<{{className}}>(itemName);
+  					var itemArgument = context.Arguments.FirstOrDefault(i => i.Key == itemName);
+  					var argumentValues = itemArgument.Value as Dictionary<string, object>;
+  					var fields = argumentValues != null ? argumentValues.Select(t => t.Key).ToList() : new List<string>(); ;
+
+  					return {{ repo }}.PatchCreate(item, fields);
+  				}
+  			);
+
+  			Field<{{ className }}QueryType>("update",
+  				arguments: new QueryArguments(
+  					new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "id", Description = "id of the {{ className }}" },
+  					new QueryArgument<NonNullGraphType<{{ className }}InputType>> { Name = itemName, Description = "{{ className }} entity to update" }
+  				),
+  				resolve: context =>
+  				{
+
+  					var id = context.GetArgument<int>("id");
+  					var item = context.GetArgument<{{className}}>(itemName);
+  					var itemArgument = context.Arguments.FirstOrDefault(i => i.Key == itemName);
+  					var argumentValues = itemArgument.Value as Dictionary<string, object>;
+  					var fields = argumentValues != null ? argumentValues.Select(t => t.Key).ToList() : new List<string>(); ;
+
+  					return {{ repo }}.PatchUpdate(id, item, fields);
+  				}
+  			);
+
+  			Field<ItemDeletedResultType>("delete",
+  				arguments: new QueryArguments(
+  					new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "id", Description = "id of the {{ className }}" }
+  				),
+  				resolve: context =>
+  				{
+
+  					var id = context.GetArgument<int>("id");
+
+  					var result = {{ repo }}.Delete(id, null);
+  					return new ItemDeletedResultViewModel {Id = id};
+  				}
+  			);
+  		}
+  	}
+  }

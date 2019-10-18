@@ -1,0 +1,77 @@
+Version: 3
+Description: Gives an intro to model helper
+CanExport: true
+ExportFileName: ModelData-{{modelName}}.md
+Groups: []
+Tags: [cs, core, sql, ts, js]
+Body: |+
+  ## Project
+  {% raw %} {{model.Project.Name}} => {% endraw %}{{model.Project.Name }}
+  {% raw %} {{model.Project.Customer}} => {% endraw %}{{model.Project.Customer }}
+  {% raw %} {{model.Project.Description}} => {% endraw %}{{model.Project.Description }}
+
+  ## Api
+  {% raw %} {{model.Api.UseLogger}} => {% endraw %}{{model.Api.UseLogger }}
+  {% raw %} {{model.Api.UseTelemetry}} => {% endraw %}{{model.Api.UseTelemetry }}
+
+  ## Namespace
+  {% raw %} {{model.Namespaces["api.models"]}} => {% endraw %}{{model.Namespaces["api.models"] }}
+  {% raw %} {{model.Namespaces["api.interfaces"]}} => {% endraw %}{{model.Namespaces["api.interfaces"] }}
+  {% raw %} {{model.Namespaces["api.repositories"]}} => {% endraw %}{{model.Namespaces["api.repositories"] }}
+  {% raw %} {{model.Namespaces["api.controllers"]}} => {% endraw %}{{model.Namespaces["api.controllers"] }}
+
+  ## Database
+  {% raw %} {{model.Database.ConnectionInterface}} => {% endraw %}{{model.Database.ConnectionInterface }}
+  {% raw %} {{model.Database.ConnectionMethod}} => {% endraw %}{{model.Database.ConnectionMethod }}
+  {% raw %} {{model.Database.ConnectionVariable}} => {% endraw %}{{model.Database.ConnectionVariable }}
+  {% raw %} {{model.Database.UseQueryOptions}} => {% endraw %}{{model.Database.UseQueryOptions }}
+  {% raw %} {{model.Database.QueryOptionsClassName}} => {% endraw %}{{model.Database.QueryOptionsClassName }}
+
+  ## Table
+  {% raw %} {{model.Table.Name}} => {% endraw %}{{model.Table.Name }}
+  {% raw %} {{model.Table.ModelName}} => {% endraw %}{{model.Table.ModelName }}
+  {% raw %} {{model.Table.Schema}} => {% endraw %}{{model.Table.Schema }}
+  {% raw %} {{model.Table.Alias}} => {% endraw %}{{model.Table.Alias }}
+
+  ### Special Commands
+  {% raw %} {% columnList %} => {% endraw %}{% columnList %}
+  {% raw %} {% propertyList %} => {% endraw %}{% propertyList %}
+
+  {% raw %} {% primaryKeyList cs | csharp%} => {% endraw %}{% primaryKeyList cs %}
+  {% raw %} {% primaryKeyList ts| typescript %} => {% endraw %}{% primaryKeyList ts %}
+  {% raw %} {% primaryKeyList sql %} => {% endraw %}{% primaryKeyList sql %}
+  {% raw %} {% primaryKeyList apiParam %} => {% endraw %}{% primaryKeyList apiParam %}
+  {% raw %} {% primaryKeyList %} => {% endraw %}{% primaryKeyList %}
+
+  {% raw %} {% sqlInsert %} => {% endraw %}{% sqlInsert %}
+
+  {% raw %} {% sqlUpdate %} => {% endraw %}{% sqlUpdate %}
+
+  {% raw %} {% sqlSelectAll %} => {% endraw %}{% sqlSelectAll %}
+
+  {% raw %} {% sqlSelectSingle %} => {% endraw %}{% sqlSelectSingle %}
+
+  ### User options
+
+  Det er to lister for options - begge har de samme verdiene men det er ulik måte å lese de på
+  Options er basert på Dictionary<string, object> og OptionsList er List<KeyValuePair>
+
+  {% for option in model.OptionValues %}
+  {% raw %} {{ model.OptionKeys[forloop.index0] }} {{ model.OptionValues[forloop.index0] }} eller {{ option }} => {% endraw %}Key: {{ model.OptionKeys[forloop.index0] }} Verdi: {{ model.OptionValues[forloop.index0] }} eller kun option:{{ option }}
+  {% endfor %}
+  {{ model.Options["Key1"] }}
+  ### Columns
+  {% for column in model.Table.columns %}
+  {% raw %} {{ column.Name}} => {% endraw %}{{column.Name }}
+  {% endfor %}
+
+  ### Child Relations
+  {% for relation in model.Table.ChildRelations %}
+  {% raw %} {{model.Table.Alias}} => {% endraw %}{{model.Table.Alias }}
+  {% endfor %}
+
+  ### Parent Relations
+  {% for relation in model.Table.ChildRelations %}
+  {% raw %} {{model.Table.Alias}} => {% endraw %}{{model.Table.Alias }}
+  {% endfor %}
+
