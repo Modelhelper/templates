@@ -41,7 +41,7 @@
         "{%- for property in model.Table.Columns -%}{% capture dataType %}{{ property.DataType | CSharp }}{% endcapture -%}",
         "{%- capture nullable %}{%if property.IsNullable %}, nullable: true{% endif %}{% endcapture -%}", 
         "{%- capture description %}{%if property.Description.Length > 0 %}.Description(\"{{property.Description}}\"){% endif %}{% endcapture -%}", 
-        "{%- capture name %}{%if property.IsIdentity > 0 %}.Name(\"id\"){% endif %}{% endcapture -%}", 
+        "{%- capture name %}{%if property.IsIdentity > 0 %}.Name(\"id\"){% else %}.Name(\"{{ property.ContextualName }}\"){% endif %}{% endcapture -%}", 
           "\t\t\t{% if property.IsIgnored %}// {% endif %}Field(t => t.{{ property.PropertyName }}{{ nullable }}){{name}}{{description}};",
           "{%- endfor -%}",            
           

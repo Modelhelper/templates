@@ -98,7 +98,7 @@
         "",
         "\t\t\t\t\tvar id = context.GetArgument<int>(\"id\");",
         "",
-        "\t\t\t\t\tvar result = {{ repo }}.Delete(id, null);",
+        "\t\t\t\t\tvar result = {{ repo }}.Delete(id);",
         "\t\t\t\t\treturn new ItemDeletedResultViewModel {Id = id};",
         "\t\t\t\t}",
         "\t\t\t);",
