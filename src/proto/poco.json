@@ -1,0 +1,22 @@
+{
+    "Key": "a54200df-f7b3-4b33-9bf9-521a3a5af63f",
+    "Name": "repository-model-full",
+    "Description": null,
+    "Language": "proto",
+    "CanExport": true,
+    "ExportFileName": "{{model.Table.Name | UpperCamel | Singular}}.proto",
+    "ExportType": "proto.models",
+    "TemplateType": 0,
+    "Groups": [],
+    "Body": [
+      "syntax = \"proto3\";",
+      "",
+      
+      "message {{model.Table.Name | UpperCamel | Singular}} {",    
+      "{%- for property in model.Table.Columns -%}{% capture dataType %}{{ property.DataType | CSharp }}{% endcapture -%}",
+      "\t{% if property.IsIgnored %}// {% endif %}{{ dataType }} {{ property.PropertyName | LCase | SnakeCase }} = {{ forloop.index }}; {% if property.IsNullable and dataType != 'string' %}// Check for null?{% endif %}",
+      "{%- endfor -%}",    
+      "}"
+     
+    ]
+  }
