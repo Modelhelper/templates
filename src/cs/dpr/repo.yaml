@@ -4,4 +4,199 @@ CanExport: true
 ExportFileName: '{{model.Table.Name | UpperCamel | Singular}}Repository.cs'
 Groups: [CoreWebApi, CoreWebApiFull, cs-gql-complete]
 Tags: []
-Body: "{%- capture queryOption -%}{{ model.QueryOptions.ClassName }} queryOption{% endcapture %}\r\n{%- capture appUserId -%}{{ model.QueryOptions.UserIdProperty }}{% endcapture %}\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing System.Data.SqlClient;\r\nusing System.Threading.Tasks;\r\nusing Dapper;\r\n{%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif -%}\r\n{%- if model.IncludeParents == true -%}using {{model.Namespaces[\"api.view-models\"]}};{%- endif %}\r\nusing {{model.Namespaces[\"api.models\"]}};\r\nusing {{model.Namespaces[\"api.interfaces\"]}};\r\nnamespace {{model.Namespaces[\"api.repositories\"]}}\r\n{ \r\n{%- capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}\r\n{%- capture viewModelClassName -%}{%- if model.IncludeParents == true -%}{{ className }}ViewModel{%- else -%}{{ className }}{%- endif -%}{%- endcapture -%}\r\n	public partial class {{ className }}Repository : I{{ className }}Repository\r\n	{\r\n	private readonly {{model.ConnectionInterface}} _{{model.ConnectionVariable}};\r\n	{% if model.UseQueryOptions %}private readonly IUserContext _userContext;{% endif -%}\r\n\r\n	public {{ className }}Repository({{model.ConnectionInterface}} {{model.ConnectionVariable}}{% if model.UseQueryOptions %}, IUserContext userContext{% endif %})\r\n	{\r\n		_{{model.ConnectionVariable}} = {{model.ConnectionVariable}};\r\n		_userContext = userContext;\r\n	}\r\n\r\npublic async Task<{{ className }}> Get({% primaryKeyList cs %}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})\r\n{\r\n	using (var connection =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})\r\n	{\r\n		var sql = @\"\r\n{% sqlSelectSingle %}\r\n{%- if model.Table.UsesDeletedColumn %}AND {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} = 1{% endif %}\";\r\n		var item = await connection.QueryFirstOrDefaultAsync<{{ className }}>(sql, new { {% primaryKeyList %} });\r\n		return item;\r\n	}\r\n}\r\n\r\n\r\npublic async Task<IEnumerable<{{ viewModelClassName }}>> Get({% if model.UseQueryOptions %}{{ queryOption }}{% endif %})\r\n{\r\n	using (var connection  =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})\r\n	{\r\n		var sql = @\"\r\n{% sqlSelectAll %}\r\n{%- if model.Table.UsesDeletedColumn %}WHERE {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} = 1{% endif %}\";\r\n		var items = await connection.QueryAsync<{{ viewModelClassName }}>(sql);\r\n		return items;\r\n	}\r\n}\r\n\r\n\r\npublic async Task<{{ className }}> Create({{ className }} item{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})\r\n{\r\n	if (item == null)\r\n	{\r\n		throw new ArgumentNullException();\r\n	}\r\n	{% if model.Table.UsesGuidAsPrimaryKey %}{% for pk in model.Table.PrimaryKeys %}if (item.{{pk.Name}} == Guid.Empty)\r\n	{\r\n		item.{{pk.Name}} = Guid.NewGuid();\r\n	}{% endfor %}{% endif %}\r\n\r\n	using (var connection =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})\r\n	{\r\n		var sql = @\"\r\n{% sqlInsert %};\r\n{% if model.Table.UsesIdentityColumn %}	declare @itemId int = SCOPE_IDENTITY();\r\n	select @itemId;{% endif %}\r\n\";\r\n		try\r\n		{\r\n{% if model.Table.UsesIdentityColumn %}\r\n			var sqlCreateId = await connection.ExecuteScalarAsync<int>(sql, new { {% propertyList %}{% if model.UseQueryOptions %}, ApplicationUserId = queryOption.{{appUserId}}{% endif %} });\r\n			if (sqlCreateId > 0)\r\n			{\r\n				var entity = await this.Get(sqlCreateId{% if model.UseQueryOptions %}, queryOption{% endif %});\r\n				return entity;\r\n			}\r\n			else\r\n			{\r\n				return null;\r\n			}\r\n{% else %}\r\n			var sqlCreateResult = await connection.ExecuteAsync(sql, new { {% propertyList %}{% if model.UseQueryOptions %}, ApplicationUserId = queryOption.{{appUserId}}{% endif %} });\r\n			if (sqlCreateResult > 0)\r\n			{\r\n{% capture itemKeys %}{% for pk in model.Table.PrimaryKeys %}{% if forloop.first == false %}, {% endif %}item.{{ pk.PropertyName }}{% endfor %}{% endcapture %}\r\n				var entity = await this.Get({{itemKeys}}{% if model.UseQueryOptions %}, queryOption{% endif %});\r\n				return entity;\r\n			}\r\n			else\r\n			{\r\n				return null;\r\n			}\r\n{% endif %}\r\n		}\r\n		catch(Exception exception)\r\n		{\r\n			System.Diagnostics.Debug.Print(exception.Message);\r\n			throw;\r\n		}\r\n	}\r\n}\r\n\r\n\r\npublic async Task<{{ className }}> Update({% primaryKeyList cs %}, {{ className }} item{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})\r\n{\r\n	if (item == null)\r\n	{\r\n		throw new ArgumentNullException();\r\n	}\r\n\r\n\r\n	using (var connection =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})\r\n	{\r\n		var sql = @\"\r\n{% sqlUpdate %}\r\n\";\r\n		try\r\n		{\r\n			var result = await connection.ExecuteAsync(sql, new { \r\n{% propertyList %}{% if model.UseQueryOptions %}, ApplicationUserId = queryOption.{{appUserId}}{% endif %}\r\n});\r\n			if (result > 0)\r\n			{\r\n				var entity = await this.Get({% primaryKeyList %}{% if model.UseQueryOptions %}, queryOption{% endif %});\r\n				return entity;\r\n			}\r\n			else\r\n			{\r\n				return null;\r\n			}\r\n		}\r\n		catch(Exception exception)\r\n		{\r\n			System.Diagnostics.Debug.Print(exception.Message);\r\n			throw;\r\n		}\r\n	}\r\n}\r\n\r\n\r\npublic async Task<bool> Delete({% primaryKeyList cs %}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})\r\n{\r\n	using (var connection =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})\r\n	{\r\n		var sql = @\"{% sqlDelete %};\";\r\n		try\r\n		{\r\n			var result = await connection.ExecuteAsync(sql, new { {% primaryKeyList %} });\r\n			return result > 0;\r\n		}\r\n		catch(Exception exception)\r\n		{\r\n			System.Diagnostics.Debug.Print(exception.Message);\r\n			throw;\r\n		}\r\n	}\r\n}\r\n\r\n\r\n{% if model.IncludeParents == true %}\r\n{%- for parent in model.Table.ParentRelations -%}{% if parent.GroupIndex == 1 %}\r\n	public async Task<IEnumerable<{{className}}ViewModel>> Get{{parent.Name | UpperCamel | Singular}}{{model.Table.Name | UpperCamel | Plural}}({{ parent.ChildColumnType | CSharp}} {{ parent.ChildColumnName | LowerCamel | Singular}}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})\r\n	{\r\n	using (var connection  =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})\r\n	{\r\n		var sql = @\"\r\n{% sqlSelectAll %}\r\nWhere {{parent.ChildColumnName}} = @{{ parent.ChildColumnName | LowerCamel | Singular}}\r\n{% if model.Table.UsesDeletedColumn %}AND {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} != 1{% endif %}\";\r\n		var items = await connection.QueryAsync<{{ className }}ViewModel>(sql, new { \r\n			{{ parent.ChildColumnName | LowerCamel | Singular }}\r\n		});\r\n		return items;\r\n	}\r\n	}\r\n{%- endif %}{%- endfor %}\r\n{%- endif  %}\r\n\r\n//PLACEHOLDER[CHILD_RELATION_SNIPPET]\r\n\r\n	}\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+Body: |+
+  {%- capture queryOption -%}{{ model.QueryOptions.ClassName }} queryOption{% endcapture %}
+  {%- capture appUserId -%}{{ model.QueryOptions.UserIdProperty }}{% endcapture %}
+  using System;
+  using System.Collections.Generic;
+  using System.Data.SqlClient;
+  using System.Threading.Tasks;
+  using Dapper;
+  {%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif -%}
+  {%- if model.IncludeParents == true -%}using {{model.Namespaces[\"api.view-models\"]}};{%- endif %}
+  using {{model.Namespaces[\"api.models\"]}};
+  using {{model.Namespaces[\"api.interfaces\"]}};
+  namespace {{model.Namespaces[\"api.repositories\"]}}
+  { 
+    {%- capture className %}{{model.Table.Name | UpperCamel | Singular}}{% endcapture %}
+  {%- capture viewModelClassName -%}{%- if model.IncludeParents == true -%}{{ className }}ViewModel{%- else -%}{{ className }}{%- endif -%}{%- endcapture -%}
+  	public partial class {{ className }}Repository : I{{ className }}Repository
+  	{
+    	private readonly {{model.ConnectionInterface}} _{{model.ConnectionVariable}};
+  	{% if model.UseQueryOptions %}private readonly IUserContext _userContext;{% endif -%}
+  
+  	public {{ className }}Repository({{model.ConnectionInterface}} {{model.ConnectionVariable}}{% if model.UseQueryOptions %}, IUserContext userContext{% endif %})
+  	{
+    		_{{model.ConnectionVariable}} = {{model.ConnectionVariable}};
+  		_userContext = userContext;
+  	}
+  
+  public async Task<{{ className }}> Get({% primaryKeyList cs %}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})
+  {
+    	using (var connection =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})
+  	{
+    		var sql = @\"
+  {% sqlSelectSingle %}
+  {%- if model.Table.UsesDeletedColumn %}AND {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} = 1{% endif %}\";
+  		var item = await connection.QueryFirstOrDefaultAsync<{{ className }}>(sql, new { {% primaryKeyList %} });
+  		return item;
+  	}
+  }
+  
+  
+  public async Task<IEnumerable<{{ viewModelClassName }}>> Get({% if model.UseQueryOptions %}{{ queryOption }}{% endif %})
+  {
+    	using (var connection  =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})
+  	{
+    		var sql = @\"
+  {% sqlSelectAll %}
+  {%- if model.Table.UsesDeletedColumn %}WHERE {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} = 1{% endif %}\";
+  		var items = await connection.QueryAsync<{{ viewModelClassName }}>(sql);
+  		return items;
+  	}
+  }
+  
+  
+  public async Task<{{ className }}> Create({{ className }} item{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})
+  {
+    	if (item == null)
+  	{
+    		throw new ArgumentNullException();
+  	}
+  	{% if model.Table.UsesGuidAsPrimaryKey %}{% for pk in model.Table.PrimaryKeys %}if (item.{{pk.Name}} == Guid.Empty)
+  	{
+    		item.{{pk.Name}} = Guid.NewGuid();
+  	}{% endfor %}{% endif %}
+  
+  	using (var connection =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})
+  	{
+    		var sql = @\"
+  {% sqlInsert %};
+  {% if model.Table.UsesIdentityColumn %}	declare @itemId int = SCOPE_IDENTITY();
+  	select @itemId;{% endif %}
+  \";
+  		try
+  		{
+    {% if model.Table.UsesIdentityColumn %}
+  			var sqlCreateId = await connection.ExecuteScalarAsync<int>(sql, new { {% propertyList %}{% if model.UseQueryOptions %}, ApplicationUserId = queryOption.{{appUserId}}{% endif %} });
+  			if (sqlCreateId > 0)
+  			{
+    				var entity = await this.Get(sqlCreateId{% if model.UseQueryOptions %}, queryOption{% endif %});
+  				return entity;
+  			}
+  			else
+  			{
+    				return null;
+  			}
+  {% else %}
+  			var sqlCreateResult = await connection.ExecuteAsync(sql, new { {% propertyList %}{% if model.UseQueryOptions %}, ApplicationUserId = queryOption.{{appUserId}}{% endif %} });
+  			if (sqlCreateResult > 0)
+  			{
+    {% capture itemKeys %}{% for pk in model.Table.PrimaryKeys %}{% if forloop.first == false %}, {% endif %}item.{{ pk.PropertyName }}{% endfor %}{% endcapture %}
+  				var entity = await this.Get({{itemKeys}}{% if model.UseQueryOptions %}, queryOption{% endif %});
+  				return entity;
+  			}
+  			else
+  			{
+    				return null;
+  			}
+  {% endif %}
+  		}
+  		catch(Exception exception)
+  		{
+    			System.Diagnostics.Debug.Print(exception.Message);
+  			throw;
+  		}
+  	}
+  }
+  
+  
+  public async Task<{{ className }}> Update({% primaryKeyList cs %}, {{ className }} item{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})
+  {
+    	if (item == null)
+  	{
+    		throw new ArgumentNullException();
+  	}
+  
+  
+  	using (var connection =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})
+  	{
+    		var sql = @\"
+  {% sqlUpdate %}
+  \";
+  		try
+  		{
+    			var result = await connection.ExecuteAsync(sql, new { 
+    {% propertyList %}{% if model.UseQueryOptions %}, ApplicationUserId = queryOption.{{appUserId}}{% endif %}
+  });
+  			if (result > 0)
+  			{
+    				var entity = await this.Get({% primaryKeyList %}{% if model.UseQueryOptions %}, queryOption{% endif %});
+  				return entity;
+  			}
+  			else
+  			{
+    				return null;
+  			}
+  		}
+  		catch(Exception exception)
+  		{
+    			System.Diagnostics.Debug.Print(exception.Message);
+  			throw;
+  		}
+  	}
+  }
+  
+  
+  public async Task<bool> Delete({% primaryKeyList cs %}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})
+  {
+    	using (var connection =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})
+  	{
+    		var sql = @\"{% sqlDelete %};\";
+  		try
+  		{
+    			var result = await connection.ExecuteAsync(sql, new { {% primaryKeyList %} });
+  			return result > 0;
+  		}
+  		catch(Exception exception)
+  		{
+    			System.Diagnostics.Debug.Print(exception.Message);
+  			throw;
+  		}
+  	}
+  }
+  
+  
+  {% if model.IncludeParents == true %}
+  {%- for parent in model.Table.ParentRelations -%}{% if parent.GroupIndex == 1 %}
+  	public async Task<IEnumerable<{{className}}ViewModel>> Get{{parent.Name | UpperCamel | Singular}}{{model.Table.Name | UpperCamel | Plural}}({{ parent.ChildColumnType | CSharp}} {{ parent.ChildColumnName | LowerCamel | Singular}}{% if model.UseQueryOptions %}, {{ queryOption }}{% endif %})
+  	{
+    	using (var connection  =  _{{model.ConnectionVariable}}.{{model.ConnectionMethod}})
+  	{
+    		var sql = @\"
+  {% sqlSelectAll %}
+  Where {{parent.ChildColumnName}} = @{{ parent.ChildColumnName | LowerCamel | Singular}}
+  {% if model.Table.UsesDeletedColumn %}AND {{model.Table.Alias}}.{{model.Table.DeletedColumnName}} != 1{% endif %}\";
+  		var items = await connection.QueryAsync<{{ className }}ViewModel>(sql, new { 
+    			{{ parent.ChildColumnName | LowerCamel | Singular }}
+  		});
+  		return items;
+  	}
+  	}
+  {%- endif %}{%- endfor %}
+  {%- endif  %}
+  
+  //PLACEHOLDER[CHILD_RELATION_SNIPPET]
+  
+  	}
+  
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  "
