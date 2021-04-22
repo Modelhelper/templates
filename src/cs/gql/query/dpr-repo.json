@@ -7,7 +7,7 @@
     "ExportType": "api.repositories",
     "TemplateType": 0,
     "Groups": [
-        "GraphQLCore", "cs-gql-complete"
+        "GraphQLCore", "cs-gql-complete", "cs-gql-query"
     ],
     "Tags": null,
     "Body": [
@@ -17,7 +17,7 @@
         "using System.Linq;",
         "using System.Text;",
         "using System.Collections.Generic;",
-        "using System.Data.SqlClient;",
+        "using Microsoft.Data.SqlClient;",
         "using System.Threading.Tasks;",
         "using System.Threading;",
         "using Dapper;",

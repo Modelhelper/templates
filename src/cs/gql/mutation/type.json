@@ -8,7 +8,7 @@
   "ExportType": "gql.mutation.types",
   "TemplateType": 0,
   "Groups": [
-    "GraphQLCore", "cs-gql-complete"
+    "GraphQLCore", "cs-gql-complete", "cs-gql-mutation"
   ],
   "Tags": ["GraphQL", "Api", "Core"],
   "typeMapper": "points to name",

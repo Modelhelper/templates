@@ -4,11 +4,11 @@
     "Description": null,
     "Language": "cs",
     "CanExport": true,
-    "ExportFileName": "I{{model.Table.Name | UpperCamel | Singular}}MutationPartialRepository.cs",
+    "ExportFileName": "I{{model.Table.Name | UpperCamel | Singular}}Repository_MutationPartial.cs",
     "ExportType": "api.interfaces",
     "TemplateType": 0,
     "Groups": [
-        "GraphQLCore", "cs-gql-complete"
+        "GraphQLCore", "cs-gql-complete", "cs-gql-mutation"
     ],
     "Tags": null,
     "Body": [

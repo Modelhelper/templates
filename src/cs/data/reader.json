@@ -14,7 +14,7 @@
     "Body": [ 
       "using System;",
       "using System.Collections.Generic;",
-      "using System.Data;",
+      "using Microsoft.Data;",
       "using System.Linq;",      
       "using {{model.Namespaces[\"api.models\"]}};",  
       "",

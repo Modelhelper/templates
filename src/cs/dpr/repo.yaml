@@ -9,7 +9,7 @@ Body: |+
   {%- capture appUserId -%}{{ model.QueryOptions.UserIdProperty }}{% endcapture %}
   using System;
   using System.Collections.Generic;
-  using System.Data.SqlClient;
+  using Microsoft.Data.SqlClient;
   using System.Threading.Tasks;
   using Dapper;
   {%- if model.UseQueryOptions -%}using {{model.QueryOptions.Namespace}};{%- endif -%}
