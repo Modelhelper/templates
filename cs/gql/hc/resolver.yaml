@@ -1,0 +1,68 @@
+version: 3
+language: cs
+type: file
+description: |
+    Long description if needed. Will show when 'mh template <template>'
+
+tags: [tag1, tag2, tag3] 
+groups: [group1, group2, group3]
+
+import: table 
+exportFileName: file_to_export
+locationKey: api-interface 
+
+body: |
+  {{- $model := index .Code.Types "resolver" }}  
+  {{- $modelName := .Name | pascal | singular -}}
+  {{- $repoName := $modelName | append "Repository" -}}
+  {{- $className := $modelName | append "Resolver" -}}
+  using System.Threading;
+  using System.Threading.Tasks;
+  using System.Collections.Generic;
+  using HotChocolate;
+  using HotChocolate.Resolvers;
+  using HotChocolate.Types;
+  {{- range $model.Imports }}
+  {{.}}
+  {{- end }}
+  
+  namespace {{ $model.NameSpace }}
+  {
+
+    {{ if .HasDescription -}}[GraphQLDescription("{{.Description}}")]{{- end }}
+    [ExtendObjectType(nameof({{ $modelName }}))]
+    public class {{ $className }}
+    {
+      {{- range .Children }}        
+        {{- $childName := .Name | pascal | singular }}
+        public async Task<IEnumerable<{{ $childName }}>> Get{{ $childName | plural }}(
+          IResolverContext resolverContext,
+          [Parent] {{ $childName }} {{ $childName | camel }}, 
+          [Service] I{{ $repoName }}, 
+          CancellationToken cancellationToken)
+        {
+          return await resolverContext
+            .BatchDataLoader<{{ .PrimaryColumn.DataType | datatypeN .PrimaryColumn.IsNullable}} IEnumerable<{{ $childName }}>>((keys token) => I{{ $repoName }}.Get{{ .Name | pascal | plural}}By{{ $className }}Id(keys token))
+            .LoadAsync({{ $childName | camel }}.{{ .PrimaryColumn.Name | pascal | singular }} cancellationToken);
+        }
+           
+      {{ end }}
+
+      {{ range .Parents }}
+        {{- $parentName := .Name | pascal | singular }}
+        public async Task<{{ $parentName }}> Get{{ $parentName }}(
+            IResolverContext resolverContext,
+            [Parent] {{ $parentName }} {{ $className | camel }},
+            [Service] I{{ $repoName }} {{ $repoName | camel }}, 
+            CancellationToken cancellationToken)
+        {
+            {{ if .ReleatedColumn.IsNullable -}}if(!{{ $className | camel | singular }}.{{ .ReleatedColumn.Name | pascal | singular }}.HasValue) return null;{{ end}}
+            
+            return await resolverContext
+              .BatchDataLoader<{{ .PrimaryColumn.DataType | datatypeN .PrimaryColumn.IsNullable}} {{ $parentName }}>((keys token) => {{ $repoName }}.Get{{ $parentName | plural}}(keys token))
+              .LoadAsync({{ $className | camel }}.{{ .ReleatedColumn.Name | pascal | singular }}{{- if .ReleatedColumn.IsNullable }}.Value{{ end -}}, cancellationToken);
+              
+        }
+      {{ end }}
+    }
+  }
