@@ -1,0 +1,27 @@
+version: 3.0
+language: cs
+key: model 
+type: file
+model: entity
+
+fileName: file_to_export
+
+body: |
+  {{- $model := index .Code.Types "model" }}
+  
+  using System;
+  using System.Collections.Generic;
+  {{- template "cs-imports" $model }}
+  
+  namespace {{ $model.NameSpace }}
+  {
+    
+    {{ template "cs-gql-hc-attr" .}}
+    public class {{ $model.NamePrefix}}{{ .Name | pascal | singular}}{{ $model.NamePostfix}}
+    {
+      {{ range .Columns }}
+        {{ template "cs-gql-hc-attr" .}}
+        {{ template "cs-property" .}}      
+      {{- end }}
+    }
+  }

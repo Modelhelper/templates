@@ -1,0 +1,5 @@
+version: 3.0
+type: block
+short: A block for a generic getter setter property
+body: |
+  public {{ .DataType | datatypeN .IsNullable }} {{ .Name }} { get; set;}

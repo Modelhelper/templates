@@ -1,0 +1,19 @@
+version: 3
+language: cs
+type: file
+key: model
+model: entity
+body: |
+  using System;
+  using System.Collections.Generic;
+  {{- template "cs-imports" .}}
+
+  namespace {{ .Namespace }}
+  {
+    public class {{ .Name | pascal | plural}}
+    {
+      {{ range .Columns -}}       
+        {{ template "cs-property" .}}
+      {{ end }}
+    }
+  }

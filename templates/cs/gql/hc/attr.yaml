@@ -1,0 +1,7 @@
+version: 3.0
+type: block
+body: |
+  {{ if and .HasPrefix .HasDescription -}}[GraphQLName("{{.NameWithoutPrefix}}")", GraphQLDescription("{{.Description}}")]
+  {{- else if .HasPrefix }}[GraphQLName("{{.NameWithoutPrefix}}")]
+  {{- else if .HasDescription }}[GraphQLDescription("{{.Description}}")]
+  {{- end -}}

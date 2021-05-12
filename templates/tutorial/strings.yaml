@@ -29,6 +29,11 @@ body: |+
   int           {{ "int" | datatype | nullable }}
   nvarchar      {{ "nvarchar" | datatype | nullable}}
 
+  nullcheck
+  ---------------------------------------
+  int (null)    {{ "int" | datatypeN true }}
+  bool (!null)  {{ "bool" | datatypeN false }}
+
   Casing
   ---------------------------------------
   upper         {{ "upper" | upper }}
@@ -40,8 +45,3 @@ body: |+
   Sentence      {{ "ThisIsASentence" | sentence }}
   Snake         {{ "ThisIsASentence" | snake }}
   Kebab         {{ "ThisIsASentence" | kebab }}
-
-  nullcheck
-
-  int           {{ "int" | datatypeN true }}
-  bool          {{ "bool" | datatypeN false }}
