@@ -1,8 +1,11 @@
-version: 3
+version: 3.0
 language: cs
 type: file
 key: resolver
 model: entity
+groups: 
+  - cs-gql-hc
+short: This template will create resolver code for the HotChocolate GraphQl
 fileName: file_to_export
 
 body: |

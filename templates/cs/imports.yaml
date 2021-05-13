@@ -1,5 +1,6 @@
 version: 3.0
 type: block
+short: Loops through imports set in language default, project and/or config
 body: |
   {{- range .Imports }}
   {{.}}

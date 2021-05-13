@@ -1,0 +1,10 @@
+version: 3
+language: cs
+short: Creates a snippet that can be used for dependency injection
+type: snippet
+key: startup
+model: entities
+body: |
+  {{ range .Entities -}}       
+    service.AddTransient<I{{.Name}}, {{Name}}>()
+  {{ end }}

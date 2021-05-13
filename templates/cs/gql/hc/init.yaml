@@ -5,7 +5,7 @@ language: cs # mandatory field. connects with correct language definition
 
 # target version for init: 3.1
 # mandatory, default: file 
-type: init | file | snippet | package | block
+type: file
 
 # optional
 description: |
@@ -17,7 +17,8 @@ tags: [tag1, tag2, tag3]
 # what groups this template is included in
 # is used to fetch templates within a group when using -tg in generate command
 # optional, default is null
-groups: [group1, group2, group3]
+groups: 
+  - cs-gql-hc
 
 # Models: [table, tables, project, options, template, context, none, graphql, json]
 
@@ -33,7 +34,7 @@ import: table # values entity | database | project | options | template | none |
 exportFileName: file_to_export
 
     # optional (former ExportType). A key cannot contain . (dot)
-locationKey: api-interface 
+key: init 
     
 
 # the body of the template, mandatory

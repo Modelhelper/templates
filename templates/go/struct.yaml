@@ -1,10 +1,10 @@
 version: 3
-language: cs
+language: go
 type: file
 key: model
 model: entity
 groups: 
-  - cs-dpr-full
+  - go-rest-full
 body: |
   using System;
   using System.Collections.Generic;

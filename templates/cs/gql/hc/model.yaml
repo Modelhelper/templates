@@ -3,7 +3,8 @@ language: cs
 key: model 
 type: file
 model: entity
-
+groups: 
+  - cs-gql-hc
 fileName: file_to_export
 
 body: |
