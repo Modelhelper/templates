@@ -1,0 +1,13 @@
+version: 3
+language: ts
+type: file
+key: model
+model: entity
+
+body: |
+  export interface {{ .Name | pascal | singular }} {  
+      {{ range .Columns -}} 
+      {{ .Name | camel }}{{if .IsNullable}}?{{end}} {{ .DataType | datatype }};
+      {{ end }}
+    }
+  }
