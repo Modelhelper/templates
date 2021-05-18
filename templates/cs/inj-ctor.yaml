@@ -5,6 +5,15 @@ description: |
     This block will create a constructor with injections 
     according to the ...
 body: |
-  {{- range .Imports }}
-  {{.}}
-  {{- end }}
+  
+    {{- range .Inject }}
+    {{.Name}} _{{ .PropertyName | camel | singular }};
+    {{- end }}
+
+    public {{ .Name | pascal | singular}}({{ range $index, $element := .Inject}}{{- if $index }},{{end}} {{$element.Name }} {{ .PropertyName | camel | singular }}{{end}})
+    {
+      {{- range .Inject }}
+      _{{ .PropertyName | camel | singular }} = {{ .PropertyName | camel | singular }};
+      {{- end }}
+    }
+    

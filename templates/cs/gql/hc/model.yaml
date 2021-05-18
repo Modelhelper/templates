@@ -7,18 +7,16 @@ groups:
   - cs-gql-hc
 fileName: file_to_export
 
-body: |
-  {{- $model := index .Code.Types "model" }}
-  
+body: |  
   using System;
   using System.Collections.Generic;
-  {{- template "cs-imports" $model }}
+  {{- template "cs-imports" . }}
   
-  namespace {{ $model.NameSpace }}
+  namespace {{ .Namespace }}
   {
     
     {{ template "cs-gql-hc-attr" .}}
-    public class {{ $model.NamePrefix}}{{ .Name | pascal | singular}}{{ $model.NamePostfix}}
+    public class {{ .Prefix}}{{ .Name | pascal | singular}}{{ .Postfix}}
     {
       {{ range .Columns }}
         {{ template "cs-gql-hc-attr" .}}
