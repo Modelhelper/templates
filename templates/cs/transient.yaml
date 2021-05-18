@@ -3,4 +3,4 @@ language: cs
 short: Creates a snippet that can be used for dependency injection
 type: block
 body: |
-  service.AddTransient<I{{.Name}}, {{Name}}>()
+  service.AddTransient<I{{.Name}}, {{.Name}}>()
