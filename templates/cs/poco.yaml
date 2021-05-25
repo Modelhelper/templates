@@ -12,18 +12,11 @@ body: |
 
   namespace {{ .Namespace }}
   {
-
+    {{ template "cs-inj-ctor" .}}
     public class {{ .Prefix -}}{{ .Name | pascal | singular}}{{- .Postfix}}
     {
-      {{ template "cs-inj-ctor" . }}
       {{ range .Columns -}}       
         {{ template "cs-property" .}}
       {{ end }}
     }
   }
-
-  {{ range $key, $val := .Options }}
-  {{ $key }} {{ $val }}
-  {{ end }}
-
-  {{ index .Options "p"}}

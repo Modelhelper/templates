@@ -1,0 +1,19 @@
+version: 3
+language: cs
+type: init
+key: model
+model: entity
+groups: 
+  - cs-init
+body: |
+  using Microsoft.Data.SqlClient;
+  {{- template "cs-imports" .}}
+
+  namespace {{ .Namespace }}
+  {
+
+    public interface IConnectionFactory
+    {
+      SqlConnection Create();
+    }
+  }

@@ -1,0 +1,12 @@
+version: 3
+language: cs
+type: block
+key: model
+model: entity
+
+body: |
+  {{ range $key, $val := .Options }}
+  {{ $key }} {{ $val }}
+  {{ end }}
+
+  {{ index .Options "p"}}

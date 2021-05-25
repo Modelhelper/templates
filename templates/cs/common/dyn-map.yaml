@@ -1,0 +1,11 @@
+version: 3.0
+type: block
+short: Creates a dynamic object for use in e.g dapper query
+language: cs
+body: |
+  new
+  {
+    {{- range .Columns }}
+      {{ .Name | pascal }} = item.{{ .Name | pascal }},      
+    {{- end }}
+  }

@@ -1,0 +1,8 @@
+version: 3.0
+type: block
+short: creates a list of sql columns (use in select, insert...)
+language: sql
+body: |
+  {{- range $index, $col := .Columns }}
+  {{- if $index }},{{end}}[{{ $col.Name | pascal }}]
+  {{ end }}        

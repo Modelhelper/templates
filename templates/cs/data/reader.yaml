@@ -1,0 +1,6 @@
+version: 3
+language: cs
+type: file
+key: repository
+model: entity
+body: |

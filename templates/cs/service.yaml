@@ -1,0 +1,31 @@
+version: 3
+language: cs
+type: file
+key: service
+model: entity
+body: |
+  using System;
+  using System.Collections.Generic;
+  {{- template "cs-imports" .}}
+
+  namespace {{ .Namespace }}
+  {
+    public interface I{{ .Name | pascal | singular }}{{- .Postfix}}
+    {
+      Task<{{ .Name | pascal | singular }}> Create()
+    }
+    
+    public class {{ .Prefix -}}{{ .Name | pascal | singular}}{{- .Postfix}} : I{{ .Name | pascal | singular }}Service
+    {
+
+      {{ template "cs-inj-ctor" . }}
+      
+      public async Task<{{ .Name | pascal | singular }}> Create({{ .Name | pascal | singular }} item)
+      {
+        var id = await _repo.Create(item);
+        var o = await _repo.Get(id);
+
+        return o;
+      }
+    }
+  }

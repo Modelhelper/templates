@@ -1,0 +1,6 @@
+version: 3.0
+type: block
+language: cs
+short: argument list for primary keys
+body: |
+  {{ range $index, $col := .PrimaryKeys }}{{ $col.DataType | datatype }} {{ $col.Name | camel | singular }}{{- if $index }},{{end}}{{end}}
