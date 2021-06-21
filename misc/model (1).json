@@ -1,0 +1,34 @@
+{
+  "Key": "a54200df-f7b3-4b33-9bf9-521a3a5af63f",
+  "Name": "repository-model-full",
+  "Description": null,
+  "Language": "cs",
+  "CanExport": true,
+  "ExportFileName": "{{model.Table.Name | UpperCamel | Singular}}.cs",
+  "ExportType": "api.models",
+  "TemplateType": 0,
+  "Groups": [
+    "HCGraphQLCore", "cs-gql-hc-complete"
+  ],
+  "Tags": null,
+  "Body": [
+    "using System;",
+    "using System.Collections.Generic;",
+    "using HotChocolate;",
+    "namespace {{model.Namespaces[\"api.models\"]}}",
+    "{ ",
+    "",
+    "\tpublic class {{model.Table.Name | UpperCamel | Singular}}",
+    "\t{",
+    "{%- for property in model.Table.Columns -%}{% capture dataType %}{{ property.DataType | CSharp }}{% endcapture -%}",
+    "\t\t{% if property.ContextualName != property.Name %}\n\t\t[GraphQLName(\"{{ property.ContextualName | LowerCamel }}\")]{% endif %}",
+    "\t\t{% if property.IsIgnored %}// {% endif %}public {{ dataType }}{% if property.IsNullable and dataType != 'string' %}?{% endif %} {{ property.PropertyName }} { get; set; }",
+    "{%- endfor -%}",    
+    "\t}",
+    "}",
+    "",
+    "",
+    "",
+    ""
+  ]
+}
