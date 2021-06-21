@@ -1,0 +1,15 @@
+version: 3
+language: cs
+type: snippet
+key: resolver
+model: entities
+
+groups: 
+  - cs-dpr-full
+
+body: |    
+  services.AddGraphQLServer()
+  {{ range .Entities -}}       
+    .AddTypeExtension<{{ .Name | pascal | singular }}Resolver>()    
+  {{ end }}
+  

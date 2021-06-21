@@ -1,0 +1,16 @@
+version: 3
+language: cs
+type: snippet
+key: model
+model: entities
+fileName: "SomeService.cs"
+
+groups: 
+  - cs-dpr-full
+
+body: |    
+  {{ range .Entities -}}       
+    {{ .Name | pascal | plural}} - {{ .Alias }}
+  {{ end }}
+  
+  

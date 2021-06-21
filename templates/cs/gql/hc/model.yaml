@@ -5,7 +5,7 @@ type: file
 model: entity
 groups: 
   - cs-gql-hc
-fileName: file_to_export
+fileName: "{{ .Name | pascal | singular }}{{ if gt (len .Postfix) 0}}.{{ .Postfix}}{{ end }}.cs"
 
 body: |  
   using System;

@@ -3,9 +3,13 @@ language: cs
 type: file
 key: model
 model: entity
+fileName: "{{ .Name | pascal | plural }}.cs"
+
 groups: 
   - cs-dpr-full
+
 body: |
+  {{ .PageHeader }}
   using System;
   using System.Collections.Generic;
   {{- template "cs-imports" .}}

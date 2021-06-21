@@ -5,17 +5,12 @@ key: model
 model: entity
 groups: 
   - go-rest-full
-body: |
-  using System;
-  using System.Collections.Generic;
-  {{- template "cs-imports" .}}
-
-  namespace {{ .Namespace }}
-  {
-    public class {{ .Name | pascal | plural}}
-    {
-      {{ range .Columns -}}       
-        {{ template "cs-property" .}}
-      {{ end }}
-    }
+body: |  
+  
+  // {{ .Description }}
+  type {{ .Name | pascal | singular}} struct {
+    {{ range .Columns -}}       
+      {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatypeN .IsNullable }}
+    {{ end }}
   }
+  

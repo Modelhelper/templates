@@ -3,4 +3,4 @@ type: block
 short: A block for a generic getter setter property
 language: cs
 body: |
-  public {{ .DataType | datatypeN .IsNullable }} {{ .NameWithoutPrefix }} { get; set;}
+  public {{ .DataType | datatypeN .IsNullable }} {{ .Name }} { get; set;}

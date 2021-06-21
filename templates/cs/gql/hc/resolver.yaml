@@ -6,7 +6,7 @@ model: entity
 groups: 
   - cs-gql-hc
 short: This template will create resolver code for the HotChocolate GraphQl
-fileName: file_to_export
+fileName: "{{ .Name | pascal | singular }}{{ if gt (len .Postfix) 0}}.{{ .Postfix}}{{ end }}.cs"
 
 body: |
   {{- $modelName := .Name | pascal | singular -}}
@@ -27,6 +27,8 @@ body: |
     [ExtendObjectType(nameof({{ $modelName }}))]
     public class {{ $className }}
     {
+      {{- template "cs-inj-ctor" .}}
+
       {{- range .Children }}        
         {{- $childName := .Name | pascal | singular }}
         public async Task<IEnumerable<{{ $childName }}>> Get{{ $childName | plural }}(
@@ -36,7 +38,7 @@ body: |
           CancellationToken cancellationToken)
         {
           return await resolverContext
-            .BatchDataLoader<{{ .OwnerColumn.DataType | datatypeN .OwnerColumn.IsNullable}} IEnumerable<{{ $childName }}>>((keys token) => I{{ $repoName }}.Get{{ .Name | pascal | plural}}By{{ $className }}Id(keys token))
+            .BatchDataLoader<{{ .OwnerColumn.DataType | datatypeN .OwnerColumn.IsNullable}}, IEnumerable<{{ $childName }}>>((keys token) => I{{ $repoName }}.Get{{ .Name | pascal | plural}}By{{ $className }}Id(keys token))
             .LoadAsync({{ $childName | camel }}.{{ .OwnerColumn.Name | pascal | singular }} cancellationToken);
         }
            
@@ -53,7 +55,7 @@ body: |
             {{ if .ReleatedColumn.IsNullable -}}if(!{{ $className | camel | singular }}.{{ .ReleatedColumn.Name | pascal | singular }}.HasValue) return null;{{ end}}
             
             return await resolverContext
-              .BatchDataLoader<{{ .OwnerColumn.DataType | datatypeN .OwnerColumn.IsNullable}} {{ $parentName }}>((keys token) => {{ $repoName }}.Get{{ $parentName | plural}}(keys token))
+              .BatchDataLoader<{{ .OwnerColumn.DataType | datatypeN .OwnerColumn.IsNullable}} {{ $parentName }}>((keys, token) => {{ $repoName }}.Get{{ $parentName | plural}}(keys, token))
               .LoadAsync({{ $className | camel }}.{{ .ReleatedColumn.Name | pascal | singular }}{{- if .ReleatedColumn.IsNullable }}.Value{{ end -}}, cancellationToken);
               
         }
