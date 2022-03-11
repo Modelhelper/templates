@@ -1,0 +1,19 @@
+version: 3
+language: go
+type: file
+key: model
+model: entity
+body: |  
+  package data
+
+  type {{ .Name | singular }}Db struct {
+  }
+  
+  {{ template "go-db-interface" . }}
+
+  {{ template "go-db-model" . }}
+
+  {{ template "go-db-one" . }}   
+
+  {{ template "go-db-list" . }}   
+  

@@ -1,0 +1,11 @@
+version: 3
+language: go
+type: block
+short: Connects to a db
+model: none
+body: |  
+  db, err := OpenConnection(env)
+  if err != nil {
+    return nil, err
+  }
+  defer db.Close()

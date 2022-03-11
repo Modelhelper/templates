@@ -1,0 +1,12 @@
+version: 3
+language: go
+type: block
+key: model
+model: entity
+body: |  
+  
+  func (d *{{ .Name | singular }}Db) Get{{ .Name | singular }}() (*{{ .Name | singular }}, error) {
+    {{ template "go-blocks-db-open" . }}
+    
+    {{ template "go-blocks-db-one" . }}
+  }

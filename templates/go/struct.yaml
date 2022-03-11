@@ -7,10 +7,13 @@ groups:
   - go-rest-full
 body: |  
   
-  // {{ .Description }}
   type {{ .Name | pascal | singular}} struct {
     {{ range .Columns -}}       
-      {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatypeN .IsNullable }}
+      {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatype }} `json:"{{ .NameWithoutPrefix | camel }}"`
+    {{ end }}
+
+    {{ range .Children -}}
+      {{ .Name | pascal }} []{{ .Name | pascal }} `json:"{{ .Name | camel | plural}}"`
     {{ end }}
   }
   

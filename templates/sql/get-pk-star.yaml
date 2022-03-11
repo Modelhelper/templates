@@ -1,10 +1,10 @@
 version: 3.0
 type: block
-short: Selects a single row, filter by PK, specifing column names
+short: Selects a single row, filter by PK without specifing columns (select * from...)
 language: sql
 body: |
     SELECT
-      {{ template "sql-col-list" . }}   
+        *   
     FROM [{{ .Schema }}].[{{ .Name }}]    
     WHERE 
         {{ range $index, $col := .PrimaryKeys }}
