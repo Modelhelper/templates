@@ -23,19 +23,15 @@ body: |
   
   var o {{ .Name | singular }}
   
-  for rows.Next() {
-
-    if err := rows.Scan(
-      {{ range .Columns -}}       
-      &o.{{ .Name }},
-      {{ end }}); err != nil {
-      if err == sql.ErrNoRows {
-        return nil, nil
-      } else {
-        return nil, err
-      }
+  if err := row.Scan(
+    {{ range .Columns -}}       
+    &o.{{ .Name }},
+    {{ end }}); err != nil {
+    if err == sql.ErrNoRows {
+      return nil, nil
+    } else {
+      return nil, err
     }
-
   }
 
   return &o, nil

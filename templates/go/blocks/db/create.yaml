@@ -1,0 +1,31 @@
+version: 3
+language: go
+type: block
+short: Entity body for getting one and only one item from database. Must be inside func and expects a db obj
+key: model
+model: entity
+body: |  
+  {{$item_name := .Name | camel | singular}}
+  ctx := context.Background()
+
+  query := `{{ template "sql-insert" . -}}`
+
+  stmt, err := cn.PrepareContext(ctx, query)
+
+  if err != nil {
+    return -1, err
+  }
+
+  result, err := stmt.Exec(query,
+  {{- range .Columns }}
+      sql.Named("{{ .Name | pascal }}", {{ $item_name }}.{{ .Name | pascal }}),      
+    {{- end }}
+  )
+  
+  id, err := result.LastInsertId()
+
+  if err != nil {
+    return -1, err
+  }
+
+  return id, nil

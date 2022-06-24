@@ -4,8 +4,8 @@ type: block
 short: Connects to a db
 model: none
 body: |  
-  db, err := OpenConnection(env)
+  cn, err := OpenConnection(db.ConnectionString)
   if err != nil {
     return nil, err
   }
-  defer db.Close()
+  defer cn.Close()
