@@ -1,0 +1,188 @@
+version: 3
+language: go
+type: file
+key: model
+model: entity
+
+body: |  
+  
+  package controllers
+
+  import (
+    "github.com/gin-gonic/gin"
+    "github.com/pkg/errors"
+    "net/http"
+    "stages_user_api/core"
+    "stages_user_api/core/query"
+    "stages_user_api/ports/api/http/controllers/utils"
+  )
+
+  func NewWorkoutController(app *core.Application) *WorkoutController {
+    return &WorkoutController{app: app}
+  }
+
+  type WorkoutController struct {
+    app *core.Application
+  }
+
+  // Get is a handler for the user api for getting workout details
+  //
+  // @Summary Get detailed information on a workout
+  // @Tags Workout
+  // @Produce json
+  // @Security BearerAuth
+  // @Success 200 {object} query.UserWorkoutDetail "Returns the list of workouts for the user within the specified parameters"
+  // @Failure 400 {object} object{error=string} "The request contained invalid data"
+  // @Failure 401 {object} object{error=string} "The authorization header is missing or invalid"
+  // @Failure 403 {object} object{error=string} "Attempted to access a workout that does not belong to the authenticated user"
+  // @Failure 404 {object} object{error=string} "User could not be found"
+  // @Router /me/workouts/{id} [get]
+  // @Param id path int true "The workout id"
+  func (controller *WorkoutController) Get(c *gin.Context) {
+    userId, err := utils.GetUserIdFromContext(c)
+    if err != nil {
+      _ = c.Error(core.ErrNotAuthorized)
+      return
+    }
+    workoutId, err := utils.GetParamAsInt(c, "id", utils.ParamLocationPath)
+    if err != nil {
+      _ = c.Error(core.NewRequestValidationError(err))
+      return
+    }
+    wd, err := controller.app.Queries.GetWorkoutDetails.Handle(c.Request.Context(), &query.GetWorkoutDetailQuery{
+      UserId:    userId,
+      WorkoutId: workoutId,
+    })
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+    c.JSON(http.StatusOK, wd)
+  }
+
+  // ListMy is a handler for the user api for getting the authenticated users workouts
+  //
+  // @Summary Get workouts for the authenticated user
+  // @description.markdown get_workout
+  // @Tags Workout
+  // @Produce json
+  // @Security BearerAuth
+  // @Success 200 {object} query.UserWorkouts "Returns the list of workouts for the user within the specified parameters"
+  // @Failure 400 {object} object{error=string} "The request contained invalid data"
+  // @Failure 401 {object} object{error=string} "The authorization header is missing or invalid"
+  // @Failure 404 {object} object{error=string} "User could not be found"
+  // @Router /me/workouts [get]
+  // @Param from query string false "An RFC 3339 timestamp for the earliest point in time from which to get workouts"
+  // @Param to query string false "An RFC 3339 timestamp for the latest point in time to which to get workouts"
+  // @Param page query int false "The page number"
+  // @Param pageSize query int false "The page size"
+  func (controller *WorkoutController) ListMy(c *gin.Context) {
+    userId, err := utils.GetUserIdFromContext(c)
+    if err != nil {
+      _ = c.Error(core.ErrNotAuthorized)
+      return
+    }
+    controller.workoutsInternal(c, userId)
+  }
+
+  // List is a handler for the user api for getting user workouts
+  //
+  // @Summary Get user workouts
+  // @description.markdown get_workout
+  // @Tags Workout
+  // @Produce json
+  // @Security BearerAuth
+  // @Success 200 {object} query.UserWorkouts "Returns the list of workouts for the user within the specified parameters"
+  // @Failure 400 {object} object{error=string} "The request contained invalid data"
+  // @Failure 404 {object} object{error=string} "User could not be found"
+  // @Router /users/{id}/workouts [get]
+  // @Param id path int true "The id of the user for which to get workouts"
+  // @Param from query string false "An RFC 3339 timestamp for the earliest point in time from which to get workouts"
+  // @Param to query string false "An RFC 3339 timestamp for the latest point in time to which to get workouts"
+  // @Param page query int false "The page number"
+  // @Param pageSize query int false "The page size"
+  func (controller *WorkoutController) List(c *gin.Context) {
+    var (
+      err    error
+      userId int
+    )
+    if userId, err = utils.GetParamAsInt(c, "id", utils.ParamLocationPath); err != nil {
+      _ = c.Error(core.NewRequestValidationError(errors.Wrap(err, "user id")))
+      return
+    }
+    controller.workoutsInternal(c, userId)
+  }
+
+  func (controller *WorkoutController) workoutsInternal(c *gin.Context, userId int) {
+    var err error
+
+    q := query.GetUserWorkoutsQuery{
+      UserId: userId,
+    }
+
+    err = c.ShouldBindQuery(&q)
+    if err != nil {
+      _ = c.Error(core.NewRequestValidationError(err))
+      return
+    }
+
+    workoutPage, err := controller.app.Queries.GetUserWorkouts.Handle(c.Request.Context(), &q)
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+
+    c.Set("paginated_response", workoutPage)
+  }
+
+  // StatisticsMonthly is a handler for the user api for getting monthly user workout statistics
+  //
+  // @Summary Get monthly user workout statistics
+  // @Tags Workout
+  // @Produce json
+  // @Security BearerAuth
+  // @Success 200 {object} query.UserMonthlyWorkoutStatistics "Returns the list of monthly workout statistics for the user, if any"
+  // @Router /me/workouts/statistics/monthly [get]
+  func (controller *WorkoutController) StatisticsMonthly(c *gin.Context) {
+    userId, err := utils.GetUserIdFromContext(c)
+    if err != nil {
+      _ = c.Error(core.ErrNotAuthorized)
+      return
+    }
+
+    statistics, err := controller.app.Queries.GetUserWorkoutStatisticsMonthly.Handle(
+      c.Request.Context(),
+      &query.GetUserMonthlyWorkoutStatisticsQuery{UserId: userId},
+    )
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+    c.JSON(http.StatusOK, statistics)
+  }
+
+  // StatisticsYearly is a handler for the user api for getting yearly user workout statistics
+  //
+  // @Summary Get yearly user workout statistics
+  // @Tags Workout
+  // @Produce json
+  // @Security BearerAuth
+  // @Success 200 {object} query.UserYearlyWorkoutStatistics "Returns the list of yearly workout statistics for the user, if any"
+  // @Router /me/workouts/statistics/yearly [get]
+  func (controller *WorkoutController) StatisticsYearly(c *gin.Context) {
+    userId, err := utils.GetUserIdFromContext(c)
+    if err != nil {
+      _ = c.Error(core.ErrNotAuthorized)
+      return
+    }
+
+    statistics, err := controller.app.Queries.GetUserWorkoutStatisticsYearly.Handle(
+      c.Request.Context(),
+      &query.GetUserYearlyWorkoutStatisticsQuery{UserId: userId},
+    )
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+    c.JSON(http.StatusOK, statistics)
+  }

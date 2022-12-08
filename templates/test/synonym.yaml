@@ -1,0 +1,10 @@
+version: 3
+language: go
+type: file
+short: Testing the synonym and Modelname
+model: entity
+body: |  
+  Name:       {{ .Name }}
+  Synonym:    {{ .Synonym }}
+  HasSynonym: {{ .HasSynonym }}
+  ModelName:  {{ .ModelName }}

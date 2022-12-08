@@ -1,0 +1,25 @@
+version: 3
+language: go
+type: file
+key: model
+model: entity
+
+body: |  
+  package sql
+
+  import (
+    "{{ "MustDefineInProject" | snake }}/core/entities"
+    "{{ "MustDefineInProject" | snake }}/core/infrastructure"
+  )
+
+  func NewSql{{ .Name | singular }}Repository(conn SqlConnectionManager) infrastructure.{{ .Name | singular }}Repository {
+    return &sql{{ .Name | singular }}Repository{conn}
+  }
+
+  type sql{{ .Name | singular }}Repository struct {
+    conn SqlConnectionManager
+  }
+
+  func (s *sql{{ .Name | singular }}Repository) Get({{ template "go-blocks-common-pk-args" . }}) (*entities.{{ .Name | singular }}, error) {
+    {{ template "go-blocks-db-one" . }}
+  }

@@ -3,12 +3,10 @@ language: go
 type: block
 key: model
 model: entity
-groups: 
-  - go-rest-full
 body: |  
   
   // {{ .Description }}
-  type {{ .Name | pascal | singular}} struct {
+  type {{ .Name | pascal | singular }} struct {
     {{ range .Columns -}}       
       {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatypeN .IsNullable }}
     {{ end }}

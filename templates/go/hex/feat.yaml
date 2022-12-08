@@ -1,0 +1,92 @@
+version: 3
+language: go
+type: file
+key: model
+model: entity
+
+body: |  
+  package session
+
+  import (
+    "context"
+    "database/sql"
+    _ "embed"
+    "encoding/json"
+    "github.com/pkg/errors"
+    "stages_user_api/core"
+    "stages_user_api/core/entities"
+    "stages_user_api/core/models"
+    "stages_user_api/core/query"
+    "stages_user_api/features/utils"
+    db "stages_user_api/ports/sql"
+    "time"
+  )
+
+  var (
+    //go:embed sql_queries/get_{{ .Name | singular | snake }}_detail.sql
+    get{{ .Name | singular | pascal }}DetailsQuery string
+  )
+
+  type {{ .Name | camel | singular}} struct {
+    {{ range .Columns -}}       
+      {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatypeN .IsNullable }}
+    {{ end }}
+  }
+
+  func NewGet{{ .Name | singular | pascal }}DetailsHandler(conn db.SqlConnectionManager, logger core.LogService) query.Get{{ .Name | singular | pascal }}DetailHandler {
+    return &get{{ .Name | singular | pascal }}DetailsHandler{
+      conn:   conn,
+      logger: logger,
+    }
+  }
+
+  type get{{ .Name | singular | pascal }}DetailsHandler struct {
+    conn   db.SqlConnectionManager
+    logger core.LogService
+  }
+
+  func (s *get{{ .Name | singular | pascal }}DetailsHandler) Handle(ctx context.Context, {{ template "go-blocks-common-pk-args" . }}) (*query.{{ .Name | singular | pascal }}Detail, error) {
+    reqId, _ := ctx.Value("request_id").(string)
+
+    conn, err := s.conn.Get(ctx)
+    if err != nil {
+      s.logger.Errorf("process=\"Get{{ .Name | singular | pascal }}DetailsHandler.Handle: get connection\" requestId=%s error=\"%s\"", reqId, err)
+      return nil, err
+    }
+    defer conn.Close()
+
+    var rowRes {{ .Name | singular | camel }}
+    row := conn.QueryRowContext(
+      ctx,
+      get{{ .Name | singular | pascal }}DetailsQuery,
+      {{- range .PrimaryKeys }}
+      sql.Named("{{ .Name | pascal }}", {{ .Name | camel }}),      
+    {{- end }}
+    )
+    err = row.Scan(
+      {{ range .Columns -}}       
+    &rowRes.{{ .Name }},
+    {{ end }})
+    )
+    if errors.Is(err, sql.ErrNoRows) {
+      return nil, core.ErrSessionNotFound
+    }
+    if err != nil {
+      s.logger.Errorf("process=\"Get{{ .Name | singular | pascal }}DetailsHandler.Handle: scan row\" requestId=%s error=\"%s\"", reqId, err)
+      return nil, err
+    }
+
+    return to{{ .Name | singular | pascal }}Detail(&rowRes), nil
+  }
+
+  func to{{ .Name | singular | pascal }}Detail(row *{{ .Name | singular | camel }}DetailRowResult) *query.{{ .Name | singular | pascal }}Detail {
+    {{ .Name | singular | camel }} := &query.{{ .Name | singular | pascal }}Detail{
+    
+    {{- range .Columns -}}       
+      {{ .Name | pascal }}: {{ if .IsNullable }}utils.To{{ .DataType | datatype | pascal}}(row.{{ .Name }}){{ else }}row.{{ .Name }}{{ end }},
+    {{ end -}}      
+    }    
+
+    return {{ .Name | camel }}
+  }
+

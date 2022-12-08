@@ -1,0 +1,21 @@
+version: 3
+language: go
+type: file
+key: model
+model: entities
+
+body: |  
+  {{ range .Entities -}}
+  {{- $rootResource := .Name | plural | snake -}}
+  {{- $controllerName := .Name | plural | camel -}}
+
+  meGroup.HEAD("/{{ $rootResource }}", {{ $controllerName }}.GetList)
+  meGroup.GET("/{{ $rootResource }}", {{ $controllerName }}.GetList)
+  meGroup.POST("/{{ $rootResource }}", {{ $controllerName }}.Create)
+  meGroup.GET("/{{ $rootResource }}/:id", {{ $controllerName }}.Get)
+  meGroup.PUT("/{{ $rootResource }}/:id", {{ $controllerName }}.Update)
+
+  {{ range .Children -}}
+  meGroup.GET("/{{ $rootResource }}/:id/{{ .Name | plural | snake }}", {{ $controllerName }}.Get{{ .Name | plural | pascal }})
+  {{ end -}}
+  {{ end -}}
