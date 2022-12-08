@@ -1,0 +1,14 @@
+version: 3
+language: go
+type: block
+key: model
+model: entity
+body: |  
+  
+  // {{ .Description }}
+  type {{ .Name | pascal | singular }} struct {
+    {{ range .Columns -}}       
+      {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatypeN .IsNullable }}
+    {{ end }}
+  }
+  

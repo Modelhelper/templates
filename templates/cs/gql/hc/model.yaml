@@ -1,0 +1,26 @@
+version: 3.0
+language: cs
+key: model 
+type: file
+model: entity
+groups: 
+  - cs-gql-hc
+fileName: "{{ .Name | pascal | singular }}{{ if gt (len .Postfix) 0}}.{{ .Postfix}}{{ end }}.cs"
+
+body: |  
+  using System;
+  using System.Collections.Generic;
+  {{- template "cs-imports" . }}
+  
+  namespace {{ .Namespace }}
+  {
+    
+    {{ template "cs-gql-hc-attr" .}}
+    public class {{ .Prefix}}{{ .Name | pascal | singular}}{{ .Postfix}}
+    {
+      {{ range .Columns }}
+        {{ template "cs-gql-hc-attr" .}}
+        {{ template "cs-property" .}}      
+      {{- end }}
+    }
+  }

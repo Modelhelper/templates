@@ -1,0 +1,13 @@
+version: 3.0
+type: block
+short: Selects a single row, filter by PK, specifing column names
+language: sql
+body: |
+    SELECT
+      {{ template "sql-col-list" . }}  
+    FROM [{{ .Schema }}].[{{ .Name }}]    
+    WHERE 
+        {{ range $index, $col := .PrimaryKeys }}
+        {{- if $index }} AND {{end}}{{ $col.Name }} = @{{ $col.Name | singular }}
+        {{end}}    
+    

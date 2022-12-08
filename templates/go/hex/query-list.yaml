@@ -1,0 +1,8 @@
+version: 3
+language: sql
+type: file
+key: model
+model: entity
+
+body: |  
+  {{ template "sql-get-pk" . -}}

@@ -1,0 +1,1 @@
+# C# templates for GraphQL with HotChoclate

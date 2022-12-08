@@ -1,0 +1,37 @@
+version: 3
+language: go
+type: block
+short: Entity body for getting one and only one item from database. Must be inside func and expects a db obj
+key: model
+model: entity
+body: |  
+  ctx := context.Background()
+
+  query := `{{ template "sql-get-pk" . -}}`
+
+  stmt, err := db.PrepareContext(ctx, query)
+
+  if err != nil {
+    return nil, err
+  }
+
+  row := stmt.QueryRow(query
+  {{- range .PrimaryKeys }}
+      sql.Named("{{ .Name | pascal }}", {{ .Name | camel }}),      
+    {{- end }}
+  )
+  
+  var o {{ .Name | singular }}
+  
+  if err := row.Scan(
+    {{ range .Columns -}}       
+    &o.{{ .Name }},
+    {{ end }}); err != nil {
+    if err == sql.ErrNoRows {
+      return nil, nil
+    } else {
+      return nil, err
+    }
+  }
+
+  return &o, nil

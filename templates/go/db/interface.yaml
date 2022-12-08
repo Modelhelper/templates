@@ -1,0 +1,10 @@
+version: 3
+language: go
+type: block
+key: model
+model: entity
+body: |  
+  type {{ .Name | pascal | singular }}Repo interface {
+    Get{{ .Name | pascal | singular }}({{ template "go-blocks-common-pk-args" . }})
+    Get{{ .Name | pascal | plural }}()  
+  }

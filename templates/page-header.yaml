@@ -1,0 +1,6 @@
+version: 3.0
+type: block
+short: A block to set page header
+language: any
+body: |
+  {{ .PageHeader }}

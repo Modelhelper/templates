@@ -1,0 +1,8 @@
+version: 3
+language: go
+type: file
+key: query
+model: entity
+
+body: |  
+  {{ template "sql-get-pk" . -}}

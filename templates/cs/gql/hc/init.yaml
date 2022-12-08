@@ -1,0 +1,42 @@
+
+version: 3.0 #mandatory, this is the template version
+
+language: cs # mandatory field. connects with correct language definition
+
+# target version for init: 3.1
+# mandatory, default: file 
+type: file
+
+# optional
+description: |
+    Long description if needed. Will show when 'mh template <template>'
+
+# optional
+tags: [tag1, tag2, tag3] 
+
+# what groups this template is included in
+# is used to fetch templates within a group when using -tg in generate command
+# optional, default is null
+groups: 
+  - cs-gql-hc
+
+# Models: [table, tables, project, options, template, context, none, graphql, json]
+
+# target version 3.0
+# indicates the model classes to be injected
+# optional, default is none
+import: table # values entity | database | project | options | template | none | graphql | json
+
+# target version 3.0 
+# can use template syntax to use information from the models
+# if snippet is used, this will be the filename to inject the snippets to
+# optional if ExportType = none
+exportFileName: file_to_export
+
+    # optional (former ExportType). A key cannot contain . (dot)
+key: init 
+    
+
+# the body of the template, mandatory
+body: |
+  

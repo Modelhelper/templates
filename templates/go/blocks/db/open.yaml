@@ -1,0 +1,11 @@
+version: 3
+language: go
+type: block
+short: Connects to a db
+model: none
+body: |  
+  cn, err := OpenConnection(db.ConnectionString)
+  if err != nil {
+    return nil, err
+  }
+  defer cn.Close()

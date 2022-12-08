@@ -1,0 +1,1 @@
+# Microservice template for Golang

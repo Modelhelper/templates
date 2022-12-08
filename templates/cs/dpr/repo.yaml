@@ -1,0 +1,30 @@
+version: 3
+language: cs
+type: file
+key: repository
+model: entity
+groups: 
+  - cs-dpr-full
+body: |
+  using System;
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+  using Microsoft.Data.SqlClient;
+  using Dapper;
+  {{- template "cs-imports" .}}
+
+  namespace {{ .Namespace }}
+  {
+    // {{ .Description }}
+    public class {{ .Name | pascal | singular}}{{- .Postfix}}
+    {
+      {{- template "cs-inj-ctor" .}}
+
+    }
+
+    {{ template "cs-dpr-get" .}}
+    
+    {{ template "cs-dpr-get-all" .}}
+
+    {{ template "cs-dpr-create" .}}
+  }

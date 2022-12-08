@@ -1,0 +1,20 @@
+version: 3.0
+type: block
+short: Creates a constructor with injections set in project and/or config
+description: |
+    This block will create a constructor with injections 
+    according to the ...
+language: cs
+body: |
+  
+    {{- range .Inject }}
+    {{.Name}} _{{ .PropertyName | camel | singular }};
+    {{- end }}
+
+    public {{ .Name | pascal | singular}}{{- .Postfix}}({{ range $index, $element := .Inject}}{{- if $index }},{{end}} {{$element.Name }} {{ .PropertyName | camel | singular }}{{end}})
+    {
+      {{- range .Inject }}
+      _{{ .PropertyName | camel | singular }} = {{ .PropertyName | camel | singular }};
+      {{- end }}
+    }
+    

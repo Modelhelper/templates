@@ -1,0 +1,16 @@
+version: 3
+language: go
+type: file
+key: model
+model: entity
+groups: 
+  - go-hex-gin-data
+  - go-hex-data
+body: |  
+  
+  type {{ .Name | camel | singular}} struct {
+    {{ range .Columns -}}       
+      {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatype }}"`
+    {{ end }}
+  }
+  

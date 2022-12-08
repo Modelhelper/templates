@@ -1,0 +1,30 @@
+version: 3.0
+type: block
+short: Get a single row from entity with dapper
+language: cs
+model: entity
+body: |
+  public async Task<{{ .Name | pascal | singular }}> Get({{ template "cs-common-pk-args" .}})
+  {
+    using (var connection = _factory.Create())
+    {
+      var sql = @"
+  {{ template "sql-get-pk" . }}
+  ";        
+        try
+        {            
+            var item = await connection.QueryFirstOrDefaultAsync<{{ .Name | pascal | singular }}>(sql, new
+  {
+    {{- range .PrimaryKeys }}
+      {{ .Name | pascal }} = {{ .Name | camel }},      
+    {{- end }}
+  });            
+            return item;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not insert data");
+            throw;
+        }
+    }
+  }

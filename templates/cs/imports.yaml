@@ -1,0 +1,8 @@
+version: 3.0
+type: block
+short: Loops through imports set in language default, project and/or config
+language: cs
+body: |
+  {{- range .Imports }}
+  {{.}}
+  {{- end }}

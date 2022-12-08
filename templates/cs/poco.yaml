@@ -1,0 +1,26 @@
+version: 3
+language: cs
+type: file
+key: model
+model: entity
+fileName: "{{ .Name | pascal | plural }}.cs"
+
+groups: 
+  - cs-dpr-full
+
+body: |
+  {{ .PageHeader }}
+  using System;
+  using System.Collections.Generic;
+  {{- template "cs-imports" .}}
+
+  namespace {{ .Namespace }}
+  {
+    {{ template "cs-inj-ctor" .}}
+    public class {{ .Prefix -}}{{ .Name | pascal | singular}}{{- .Postfix}}
+    {
+      {{ range .Columns -}}       
+        {{ template "cs-property" .}}
+      {{ end }}
+    }
+  }

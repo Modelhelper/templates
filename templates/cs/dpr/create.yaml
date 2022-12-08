@@ -1,0 +1,29 @@
+version: 3.0
+type: block
+short: Create a row in an entity with dapper
+language: cs
+model: entity
+body: |
+  
+  public async Task<int> Create({{ .Name | pascal | singular}} item)
+  {
+    using (var connection = _factory.Create())
+    {
+      var sql = @"
+  {{ template "sql-insert" . }}
+  declare @itemId int = SCOPE_IDENTITY();
+  select @itemId;
+
+  ";        
+        try
+        {            
+            var sqlCreateId = await connection.ExecuteScalarAsync<int>(sql, {{ template "cs-common-dyn-map" .}});            
+            return sqlCreateId;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not insert data");
+            throw;
+        }
+    }
+  }
