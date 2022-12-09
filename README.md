@@ -41,7 +41,9 @@ groups:
  - group3
 
 # optional, default is none
-model: table # values entity | database | project | options | template | none | graphql | json
+model: none # values none | basic | entity | entities
+# planned but not implemented models
+## template | none | graphql | json | database | project | options 
 
 # optional, settings here will only be used if --export or --export-file has been used as option argument in the cli
 export:
