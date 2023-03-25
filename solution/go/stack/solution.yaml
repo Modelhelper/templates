@@ -1,0 +1,10 @@
+version: 3.0
+
+name: swarm-stack
+
+description: This is the description for this solution.
+
+tags:
+  - solution
+  - docker
+  - swarm

@@ -1,4 +1,5 @@
 version: 3
+name: go-hex-query-one
 language: go
 type: file
 key: query

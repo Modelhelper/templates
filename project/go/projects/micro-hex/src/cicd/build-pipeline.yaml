@@ -1,0 +1,59 @@
+variables:
+  - name: ProjectDirectory
+    value: 'src/hesp-channel'
+  - name: DockerImageName
+    value: 'streaming.hesp_channel.service'
+
+trigger:
+  branches:
+    include:
+      - 'main'
+  paths:
+    include:
+      - 'src/hesp-channel'
+    exclude:
+      - 'src/hesp-channel/release-pipeline.yaml'
+
+pr: none
+
+pool:
+  name: 'Stages'
+
+jobs:
+  - job: 'build_and_push'
+    displayName: 'Build and push image'
+    variables:
+      DockerImageTag: $(Build.BuildNumber)
+    steps:
+      - bash: 'echo "$(DockerImageTag)" >> src/hesp-channel/version'
+      - task: Docker@2
+        displayName: 'Build image'
+        inputs:
+          containerRegistry: 'stages-cr'
+          repository: ${{ variables.DockerImageName }}
+          command: 'build'
+          Dockerfile: '${{ variables.ProjectDirectory }}/Dockerfile'
+          buildContext: '${{ variables.ProjectDirectory }}'
+          tags: |
+            $(DockerImageTag)
+            latest
+
+      - task: Docker@2
+        displayName: 'Push image'
+        inputs:
+          containerRegistry: 'stages-cr'
+          repository: ${{ variables.DockerImageName }}
+          command: 'push'
+          tags: |
+            $(DockerImageTag)
+            latest
+
+  - job: 'publish_config'
+    displayName: 'Publish config file'
+    condition: succeeded()
+    steps:
+      - task: PublishBuildArtifacts@1
+        displayName: Publish build artifact
+        inputs:
+          pathtoPublish: '$(Build.SourcesDirectory)/${{ variables.ProjectDirectory }}/config.json'
+          artifactName: Config

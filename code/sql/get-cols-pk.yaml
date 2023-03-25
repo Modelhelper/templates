@@ -1,4 +1,5 @@
 version: 3.0
+name: sql-get-cols-pk
 type: block
 short: Selects a single row, filter by PK, specifing all columns (select col1, col2... from ...)
 language: sql

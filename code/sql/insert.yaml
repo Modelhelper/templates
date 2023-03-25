@@ -1,4 +1,5 @@
 version: 3.0
+name: sql-insert
 type: block
 short: Create a row in an entity with dapper
 language: sql
@@ -9,6 +10,6 @@ body: |
         {{ end }}         
     ) VALUES (
         {{- range $index, $col := .Columns }}
-        {{- if $index }},@{{end}}[{{ $col.Name | pascal }}]
+        {{- if $index }},@{{end}}{{ $col.Name | pascal }}
         {{ end }}          
     );    

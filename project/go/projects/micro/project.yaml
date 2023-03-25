@@ -1,0 +1,62 @@
+version: 3.0
+
+name: go-api-hex
+language: go
+
+description: This is the description for this service.
+
+tags:
+  - microservice
+  - golang
+
+sources:
+  - input: ./src/**.*
+    output: src
+  - feature-input: go-logger-zap
+    feature-output:
+      logger-config: src
+      logger-source: src/ports/logger
+  - feature-input: go-router-gin
+    feature-output:
+      gin-config: src
+      gin-source: src/ports/logger
+
+setup:
+  - title: "This is the title for this project"
+    description: |
+      This description will appear under the title and before the question
+    type: simple
+    returns: name    
+
+commands:
+  - name: bla
+    command: go get
+  - name: format code
+    command: go fmt ./..
+  - name: clean up
+    command: go tidy
+
+
+options:
+  - name
+  - version
+
+## UNCERTAIN FEATURES...
+notes: |
+  what do we need to know about a project
+    - name
+
+wishlist: |
+  Need to configure a logger
+  Use database or not
+  Use Rest, Gql, gRPC
+  Use Docker
+  What build system is used
+    Azure Devops, Github, Travis CI...
+  Use Git?
+  
+
+features:
+  logger: go-logger-zap    
+  tests: true
+  router: gin

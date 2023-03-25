@@ -1,4 +1,5 @@
 version: 3.0
+name: sql-col-list
 type: block
 short: creates a list of sql columns (use in select, insert...)
 language: sql

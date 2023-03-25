@@ -1,0 +1,68 @@
+version: 3.0
+
+key: stream-listener
+language: go
+
+description: This is the description for this service.
+
+tags:
+  - microservice
+  - golang
+
+wishlist: |
+  Need to configure a logger
+  Use database or not
+  Use Rest, Gql, gRPC
+  Use Docker
+  What build system is used
+    Azure Devops, Github, Travis CI...
+  Use Git?
+
+
+# All direct packages
+packages:
+  - name: redis
+    caller: github.com/go-redis/redis/v9
+    version: v9.0.0-rc.2
+
+src: ./src
+
+structure:
+  - src/
+
+wizard:
+  setup:
+    title: "This is the title for this project"
+    description: |
+      This description will appear under the title and before the questionare
+    type: question
+    command: 
+      - name: bla
+        # desc: bla bla
+        command: dotnet new console -n {{ .Name | pascal }}
+        # params: 
+        #  - new
+        #  - console
+        #  - -n myname
+  stream:
+    title: Please enter the stream name
+    type: input
+post:
+  command:
+    - name: bla
+      command: go get
+    - name: format code
+      command: go fmt ./..
+    - name: clean up
+      command: go tidy
+
+rename:
+  mssql-repo: mssql-{{ .Name | snake }}
+
+notes: |
+  what do we need to know about a project
+    - name
+
+options:
+  - name
+  - version

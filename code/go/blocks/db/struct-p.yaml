@@ -1,4 +1,5 @@
 version: 3
+name: go-blocks-db-struct-p
 language: go
 type: file
 key: model

@@ -1,0 +1,21 @@
+version: 3.0
+
+name: go-logger-zap
+language: go
+
+description: This is the description for this service.
+
+tags:
+  - logger
+  - golang
+
+sources:
+  - input: ./src/zap.json
+    key: logger-config
+  - input: ./src/*.go
+    key: logger-source
+
+packages:
+  - name: zap
+    caller: github.com/go-redis/redis/v9
+    version: v9.0.0-rc.2

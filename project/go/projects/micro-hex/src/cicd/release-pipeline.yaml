@@ -1,0 +1,121 @@
+variables:
+  - name: ConfigTarget
+    value: '/go/config.json'
+  - name: ConfigVersion
+    value: $(Build.BuildNumber)
+  - name: DockerImageName
+    value: 'streaming.hesp_channel.service'
+  - name: DockerServiceName
+    value: 'streaming_services_hesp_channel'
+
+trigger:
+  - none
+
+pr: none
+
+resources:
+  pipelines:
+    - pipeline: 'sourcepipeline'
+      source: 'Builds\Streaming.HespChannel.Service'
+      trigger:
+        branches:
+          include:
+            - refs/heads/main
+
+stages:
+  - stage: Dev
+    displayName: Dev deployment stage
+    jobs:
+      - deployment: dev_deploy
+        displayName: Deploy to development
+        environment:
+          name: Dev
+          resourceType: VirtualMachine
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: sourcepipeline
+                  patterns: '**/config.json'
+
+                - template: swarm-deploy.yaml
+                  parameters:
+                    DockerImageName: $(DockerImageName)
+                    DockerImageTag: $(resources.pipeline.sourcepipeline.runName)
+                    DockerServiceName: $(DockerServiceName)
+                    ConfigPath: $(Pipeline.WorkSpace)/sourcepipeline/Config/config.json
+                    ConfigPrefix: $(DockerServiceName)_config
+                    ConfigTarget: $(ConfigTarget)
+                    ConfigVersion: $(ConfigVersion)
+
+  - stage: QA
+    displayName: QA deployment stage
+    dependsOn: [ ]
+    jobs:
+      - deployment: qa_deploy
+        displayName: Deploy to QA
+        environment:
+          name: QA
+          resourceType: VirtualMachine
+        pool:
+          vmImage: 'ubuntu-latest'
+        variables:
+          - group: Stream HESP-Channel (QA)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: sourcepipeline
+                  patterns: '**/config.json'
+
+                - task: FileTransform@1
+                  inputs:
+                    folderPath: $(Pipeline.WorkSpace)/sourcepipeline/Config
+                    fileType: json
+
+                - template: swarm-deploy.yaml
+                  parameters:
+                    DockerImageName: $(DockerImageName)
+                    DockerImageTag: $(resources.pipeline.sourcepipeline.runName)
+                    DockerServiceName: $(DockerServiceName)
+                    ConfigPath: $(Pipeline.WorkSpace)/sourcepipeline/Config/config.json
+                    ConfigPrefix: $(DockerServiceName)_config
+                    ConfigTarget: $(ConfigTarget)
+                    ConfigVersion: $(ConfigVersion)
+
+  - stage: Prod
+    displayName: Prod deployment stage
+    dependsOn: [ ]
+    jobs:
+      - deployment: prod_deploy
+        displayName: Deploy to Production
+        environment:
+          name: Prod
+          resourceType: VirtualMachine
+        pool:
+          vmImage: 'ubuntu-latest'
+        variables:
+          - group: Stream HESP-Channel (Prod)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: sourcepipeline
+                  patterns: '**/config.json'
+
+                - task: FileTransform@1
+                  inputs:
+                    folderPath: $(Pipeline.WorkSpace)/sourcepipeline/Config
+                    fileType: json
+
+                - template: swarm-deploy.yaml
+                  parameters:
+                    DockerImageName: $(DockerImageName)
+                    DockerImageTag: $(resources.pipeline.sourcepipeline.runName)
+                    DockerServiceName: $(DockerServiceName)
+                    ConfigPath: $(Pipeline.WorkSpace)/sourcepipeline/Config/config.json
+                    ConfigPrefix: $(DockerServiceName)_config
+                    ConfigTarget: $(ConfigTarget)
+                    ConfigVersion: $(ConfigVersion)

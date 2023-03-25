@@ -1,4 +1,5 @@
 version: 3
+name: go-db-list
 language: go
 type: block
 key: model

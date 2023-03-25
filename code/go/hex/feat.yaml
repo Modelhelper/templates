@@ -1,4 +1,5 @@
 version: 3
+name: go-hex-feat
 language: go
 type: file
 key: model

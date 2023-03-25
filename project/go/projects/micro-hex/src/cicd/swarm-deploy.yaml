@@ -1,0 +1,73 @@
+parameters:
+  - name: DockerImageName
+    type: string
+  - name: DockerImageTag
+    type: string
+  - name: DockerServiceName
+    type: string
+  - name: ConfigPath
+    type: string
+  - name: ConfigPrefix
+    type: string
+  - name: ConfigTarget
+    type: string
+  - name: ConfigVersion
+    type: string
+
+steps:
+  - bash: 'docker config create ${{ parameters.ConfigPrefix }}_${{ parameters.ConfigVersion }} ${{ parameters.ConfigPath }}'
+    displayName: 'Create new config'
+
+  - bash: >-
+      echo "##vso[task.setvariable variable=ConfigNames;isSecret=false;isOutput=true;]$(docker service inspect ${{ parameters.DockerServiceName }} 
+      | jq -r '.[0].Spec.TaskTemplate.ContainerSpec.Configs[].ConfigName 
+      | select(test("${{ parameters.ConfigPrefix }}.*"; "ix"))' 
+      | tr '\n' ' ')"
+    name: GetExistingConfigs
+    displayName: 'Find existing configs'
+
+  - task: Docker@2
+    displayName: 'Docker login'
+    inputs:
+      containerRegistry: 'stages-cr'
+      command: 'login'
+
+  - task: Bash@3
+    displayName: Update service
+    inputs:
+      #continueOnError: true
+      targetType: inline
+      script: >-
+        docker service update  
+        --with-registry-auth 
+        --image stagescloudcr.azurecr.io/${{ parameters.DockerImageName }}:${{ parameters.DockerImageTag }} 
+        $(docker service inspect ${{ parameters.DockerServiceName }} 
+        | jq -r '.[0].Spec.TaskTemplate.ContainerSpec.Configs[].ConfigName 
+        | select(test("${{ parameters.ConfigPrefix }}.*|dummy"; "ix"))' 
+        | while read x; do echo "--config-rm $x"; done)
+        --config-add src=${{ parameters.ConfigPrefix }}_${{ parameters.ConfigVersion }},target=${{ parameters.ConfigTarget }} ${{ parameters.DockerServiceName }}
+
+  - task: Bash@3
+    displayName: Confirm image version
+    inputs:
+      targetType: inline
+      script: >-
+        docker service inspect ${{ parameters.DockerServiceName }}
+        | jq -r '.[0].Spec.TaskTemplate.ContainerSpec.Image'
+        | grep -oP ':\K.*?(?=@)'
+        | { read imgver; [ "$imgver" == "${{ parameters.DockerImageTag }}" ] && echo "Success: image tag matched ${{ parameters.DockerImageTag }}" || (echo "Image version did not match expected version ${{ parameters.DockerImageTag }}" & exit 1); }
+
+  # This one might fail if the service is not rolling back and is still using the newly created config.
+  - task: Bash@3
+    displayName: Clean up failed run
+    condition: failed()
+    inputs:
+      targetType: inline
+      script: 'docker config rm ${{ parameters.ConfigPrefix }}_${{ parameters.ConfigVersion }}'
+
+  - bash: '[[ ! -z "$(GetExistingConfigs.ConfigNames)" ]] && docker config rm $(GetExistingConfigs.ConfigNames) || echo "Config names empty. Skipping..."'
+    continueOnError: true
+    displayName: 'Remove old configs'
+
+  - bash: 'docker config rm ${{ parameters.ConfigPrefix }}_latest 2>/dev/null || true && docker config create ${{ parameters.ConfigPrefix }}_latest ${{ parameters.ConfigPath }}'
+    displayName: Create a "latest" entry with the new config

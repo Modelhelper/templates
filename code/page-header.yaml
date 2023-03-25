@@ -1,4 +1,5 @@
 version: 3.0
+name: page-header
 type: block
 short: A block to set page header
 language: any

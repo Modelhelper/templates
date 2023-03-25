@@ -1,4 +1,5 @@
 version: 3
+name: go-db-struct
 language: go
 type: block
 key: model

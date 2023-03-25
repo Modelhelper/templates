@@ -1,4 +1,5 @@
 version: 3
+name: go-blocks-db-one
 language: go
 type: block
 short: Entity body for getting one and only one item from database. Must be inside func and expects a db obj

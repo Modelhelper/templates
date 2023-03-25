@@ -1,8 +1,13 @@
 version: 3
+name: go-struct
 language: go
 type: file
 key: model
+identifier: model
 model: entity
+fileName: "{{ .Name | kebab }}.go"
+feature: 
+  - go-rest-full
 groups: 
   - go-rest-full
 body: |  

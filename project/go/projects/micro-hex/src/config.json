@@ -1,0 +1,19 @@
+{
+  "redis": {
+    "addresses": [
+      "20.118.25.220:6360",
+      "20.118.25.220:6361",
+      "20.118.25.220:6362"
+    ],
+    "consumerPrefix": "hesp-channel-",
+    "eventStreamName": "workout-events",
+    "consumerGroup": "hesp_channel_consumers"
+  },
+  "sql": {
+    "connectionString": ""
+  },
+  "hesp": {
+    "api": "https://api.theo.live/channels",
+    "clientKey": ""
+  }
+}

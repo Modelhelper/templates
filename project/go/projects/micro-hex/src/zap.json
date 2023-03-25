@@ -1,0 +1,20 @@
+{
+    "level": "info",
+    "encoding": "json",
+    "outputPaths": [
+      "stdout"
+    ],
+    "errorOutputPaths": [
+      "stderr"
+    ],
+    "initialFields": {
+      "app": "{{ .Name | snake }}"
+    },
+    "encoderConfig": {
+      "messageKey": "message",
+      "levelKey": "level",
+      "timeKey": "ts",
+      "timeEncoder": "RFC3339",
+      "levelEncoder": "lowercase"
+    }
+  }

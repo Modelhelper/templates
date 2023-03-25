@@ -1,4 +1,5 @@
 version: 3
+name: go-hex-repo
 language: go
 type: file
 key: model

@@ -1,11 +1,12 @@
 version: 3
+name: go-db-create
 language: go
 type: block
 key: model
 model: entity
 body: |  
   
-  func (d *{{ .Name | singular }}Db) Create{{ .Name | singular }}({{ .Name | camel | singular }} *{{ .Name | singular }}) (int64, error) {
+  func (d *{{ .Name | singular }}Db) create{{ .Name | singular }}(ctx context.Context, {{ .Name | camel | singular }} *{{ .Name | singular }}) (int64, error) {
     {{ template "go-blocks-db-open" . }}
     
     {{ template "go-blocks-db-create" . }}

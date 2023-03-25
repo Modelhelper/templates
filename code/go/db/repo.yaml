@@ -1,4 +1,5 @@
 version: 3
+name: go-db-repo
 language: go
 type: file
 key: model

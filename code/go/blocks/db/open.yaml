@@ -1,4 +1,5 @@
 version: 3
+name: go-blocks-db-open
 language: go
 type: block
 short: Connects to a db

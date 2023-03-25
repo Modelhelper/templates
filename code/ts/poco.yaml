@@ -1,4 +1,5 @@
 version: 3
+name: ts-poco
 language: ts
 type: file
 key: model

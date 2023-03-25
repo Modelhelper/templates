@@ -1,4 +1,5 @@
 version: 3
+name: tutorial-strings
 body: |+
   This is a template using pipelines
 

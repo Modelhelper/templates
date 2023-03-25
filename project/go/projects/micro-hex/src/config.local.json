@@ -1,0 +1,19 @@
+{
+  "redis": {
+    "addresses": [
+      "20.118.25.220:6360",
+      "20.118.25.220:6361",
+      "20.118.25.220:6362"
+    ],
+    "consumerPrefix": "{{ .Name | snake }}-",
+    "eventStreamName": "{{ .Option[stream] }}",
+    "consumerGroup": "{{ .Name | kebab }}_consumers"
+  },
+  "sql": {
+    "connectionString": "sqlserver://vismox:Leobit2018@stages.database.windows.net?database=stagescloud-test"
+  },
+  "hesp": {
+    "api": "https://api.theo.live/channels",
+    "clientKey": "YjVjYWI5NTMtMDliNC00OWRiLWFlOWItYzM2YWI2ODQ1MjJlOlU0Ujh2SERocWR6bVFLTDdXaTBmdEx1Sw=="
+  }
+}

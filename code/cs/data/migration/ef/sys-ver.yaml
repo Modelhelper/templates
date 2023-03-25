@@ -1,0 +1,23 @@
+version: 3.0
+type: file
+short: creates a migration script for adding sys-version
+language: cs
+model: entities
+fileName: ""
+
+body: |
+
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
+        {{- range $index, $col := .Entities }}
+        migrationBuilder.RunSqlFileMigration("StagesFlight.DAL.Migrations.SqlScripts.AddSystemVersion_{{ $col.Name | kebab }}.sql");
+        {{ end }}        
+    }
+
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        {{- range $index, $col := .Entities }}
+        migrationBuilder.RunSqlFileMigration("StagesFlight.DAL.Migrations.SqlScripts.RemoveSystemVersion_{{ $col.Name | kebab  }}.sql");
+        {{ end }}  
+    }
+ 

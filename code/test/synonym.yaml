@@ -1,4 +1,5 @@
 version: 3
+name: go-test-synonym
 language: go
 type: file
 short: Testing the synonym and Modelname

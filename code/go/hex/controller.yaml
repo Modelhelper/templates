@@ -1,4 +1,5 @@
 version: 3
+name: go-hex-controller
 language: go
 type: file
 key: model

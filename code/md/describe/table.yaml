@@ -1,0 +1,57 @@
+version: 3.0
+name: md-describe-table
+type: file
+short: describes a table with markdown
+language: md
+model: entity
+fileName: "{{ .Schema | kebab}}-{{ .Name | kebab}}.mdx"
+body: |
+  {{$table := .Name }}
+  {{$schema := .Schema }}
+  # {{$schema}}.{{.Name}}
+  
+  {{ if .HasDescription}}
+  :::info
+  {{ .Description }}
+  :::
+  {{ end }}
+  ## Columns
+
+  | Name | Datatype | Nullable | PK  | FK |
+  |:--- |:--- |:--- |:---: |:---: |
+  {{ range .Columns -}}
+  |{{ .Name}}| {{ .DataType }}| {{ if .IsNullable }} YES {{ else }} NO {{end}}|{{ if .IsPrimaryKey }} YES {{end}}|{{ if .IsForeignKey }} YES {{end}}
+  {{ end }}
+
+
+  ## {{$schema}}.{{$table}} Complete relation map
+
+  ```mermaid
+  erDiagram
+    {{ range .Children -}}
+    {{$table }} ||--o{ {{.Name}} : has
+    {{ end }}
+
+    {{ range .Parents -}}
+    {{.Name}} ||--o{ {{$table}} : is
+    {{ end }}
+  ```
+  {{ if and .HasChildren .HasParents}}
+  ### Child relations
+
+  ```mermaid
+  erDiagram
+    {{ range .Children -}}
+    {{$table }} ||--o{ {{.Name}} : is
+    {{ end }}
+  ```
+  
+  ### parent relations
+
+  ```mermaid
+  erDiagram
+    {{ range .Parents -}}
+    {{.Name}} ||--o{ {{$table}} : has
+    {{ end }}
+  ```
+  {{ end }}
