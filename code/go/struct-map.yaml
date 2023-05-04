@@ -1,0 +1,42 @@
+version: 3
+name: go-struct
+language: go
+type: file
+key: model
+identifier: model
+model: entity
+fileName: "{{ .Name | kebab }}.go"
+feature: 
+  - go-rest-full
+groups: 
+  - go-rest-full
+body: |  
+  package mapper {{$item_name := .Name | camel | singular}}
+
+  import (
+    "time"
+    "{{ .Name | kebab }}/core/models/flight"
+  )
+
+  func Map{{ .Name | pascal }}(data []flight.{{ .Name | singular | pascal }}) []flight.{{ .Name | singular | pascal }}Json {
+
+    ls := []flight.{{ .Name | singular | pascal }}Json{}
+    for _, item := range data {
+
+  {{- range .Columns }} {{ if .IsNullable }}
+    var {{ .Name | camel }} *{{ .DataType | datatype }} = nil
+    if item.{{ .Name | pascal }}.Valid {
+        {{ .Name | camel }} = &item.{{ .Name | pascal }}.{{ .DataType | datatype | title }}
+      }
+    {{ end }}{{- end }}
+  
+  jsonItem := flight.{{ .Name | singular | pascal }}Json{}
+
+  {{ range .Columns -}}       
+    jsonItem.{{ .NameWithoutPrefix | pascal }} = {{ if .IsNullable }}{{ .NameWithoutPrefix | camel }}{{ else }}item.{{ .NameWithoutPrefix | pascal }} {{ end }} 
+  {{ end }}
+    ls = append(ls, jsonItem)
+    }
+
+    return ls
+  }

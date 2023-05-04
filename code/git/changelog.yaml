@@ -1,0 +1,30 @@
+version: 3
+language: md
+name: git_changelog
+type: file
+fileName: "changelog-{{ .Name | kebab }}.md"
+short: Creates a changelog based on commit history and conventional commits
+key: root
+model: commits
+body: |  
+  # Changelog for {{ .Name}}
+  {{ if .HasFeatures }}
+  ## Features
+  {{- range .Features }} 
+    - {{ if .Scope -}}**{{.Scope}}:** {{ end}}{{.Title}}
+  {{- end }}
+  {{- end }}
+
+  {{ if .HasFixes }}
+  ## Fixes
+  {{- range .Fixes }} 
+    - {{.Title}}
+  {{- end }}
+  {{- end }}
+  
+  {{ if .HasAuthors }}
+  ## Contributing authors 
+  {{- range .Authors }} 
+    {{.Name}} ({{ .Commits }}{{ if gt .Commits 1}} commits{{ else }} commit{{ end }})
+  {{- end }}
+  {{- end }}

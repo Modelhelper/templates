@@ -1,0 +1,21 @@
+version: 3
+name: go-struct
+language: go
+type: file
+key: model
+identifier: model
+model: entity
+fileName: "{{ .Name | kebab }}.go"
+feature: 
+  - go-rest-full
+groups: 
+  - go-rest-full
+body: |  
+  
+  type {{ .Name | pascal | singular}}Json struct {
+    {{ range .Columns -}}       
+      {{ .Name | pascal }} {{ if .IsNullable }}*{{ end }}{{ .DataType | datatype }} `json:"{{ .Name | camel }}{{ if .IsNullable}},omitempty{{ end}}"`
+    {{ end }}
+    
+  }
+  

@@ -1,0 +1,91 @@
+version: 3
+language: yaml
+type: file
+features: 
+  - docker-stack
+
+fileName: "{{ .Project.Name | kebab }}.yaml"
+
+model: basic
+body: |
+  version: "3.7"
+
+  services:
+    api:
+      image: stagescloudcr.azurecr.io/{{ .Project.Name | dot | lower}}:${ {{ .Project.Name | snake | upper}}_VERSION}
+      logging:
+        driver: loki
+        options:
+          loki-url: "http://localhost:3100/loki/api/v1/push"
+          loki-pipeline-stages: |
+            - json:
+                expressions:
+                  app:
+                  version:
+                  build:
+                  level:
+                  ts:
+                  message:
+            - labels:
+                app:
+                version:
+                build:
+            - timestamp:
+                source: ts
+                format: RFC3339
+            - template:
+                source: new_key
+                template: 'level={{ .level }} {{ .message }}'
+            - output:
+                source: new_key
+          loki-relabel-config: |
+            - action: labelmap
+              regex: swarm_stack
+              replacement: DockerStackName
+            - action: labelmap
+              regex: swarm_service
+              replacement: DockerServiceName
+      deploy:
+        replicas: ${ {{ .Project.Name | snake | upper}}_REPLICAS}
+        labels:
+          com.stagescloud.proxy.domain: ${ {{ .Project.Name | snake | upper}}_DOMAIN}
+          com.stagescloud.proxy.namespace: "/{{ .Project.Name | pascal }}/"
+          com.stagescloud.proxy.rewrite: "/"
+          com.stagescloud.proxy.port: 80
+          prometheus-job: {{ .Project.Name | kebab }}
+          prometheus-metrics-path: /metrics
+        placement:
+          constraints: [ node.labels.usage != encoding ]
+        restart_policy:
+          condition: any
+          delay: 5s
+          max_attempts: 3
+          window: 120s
+        update_config:
+          failure_action: rollback
+      environment:
+        - GO_ENV=${GO_ENV}
+        - ZAP_LOG_LEVEL=${ZAP_LOG_LEVEL}
+      configs:
+        - source: {{ .Project.Name | pascal }}Config
+          target: /go/config.json
+      networks:
+        - caching
+        - metrics
+        - tracing
+        - proxy
+
+  configs:
+    {{ .Project.Name | pascal }}Config:
+      name: ${ {{ .Project.Name | snake | upper}}_CONFIG_NAME}
+      external: true
+
+  networks:
+    caching:
+      external: true
+    metrics:
+      external: true
+    tracing:
+      external: true
+    proxy:
+      external: true

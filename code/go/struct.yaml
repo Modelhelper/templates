@@ -11,10 +11,11 @@ feature:
 groups: 
   - go-rest-full
 body: |  
+  package {{ .Namespace}}
   
   type {{ .Name | pascal | singular}} struct {
     {{ range .Columns -}}       
-      {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatype }} `json:"{{ .NameWithoutPrefix | camel }}"`
+      {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatype }} `json:"{{ .NameWithoutPrefix | camel }},omitempty"`
     {{ end }}
 
     {{ range .Children -}}
