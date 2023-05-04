@@ -1,0 +1,13 @@
+version: 3
+name: go-hex-feat-controller
+language: go
+type: snippet
+features: 
+  - go-hex-feature
+  - go-hex-snippets
+  
+identifier: "%%MH_SNIPPET_CONTROLLER%%"
+
+model: entity
+body: |
+   {{ template "go-hex-gin-controller-get" . -}}

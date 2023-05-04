@@ -1,0 +1,18 @@
+version: 3
+name: go-hex-qry-get-item
+language: md
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-delete
+  - go-hex-api-doc
+  
+
+key: docs
+fileName: "delete_{{ .Name | snake }}.md"
+
+model: entity
+body: |
+  # Description
+
+  Description of this endpoint for {{ .Name }}

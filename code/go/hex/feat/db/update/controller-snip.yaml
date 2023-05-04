@@ -1,0 +1,55 @@
+version: 3
+name: go-hex-feat-controller
+language: go
+type: snippet
+features: 
+  - go-hex-feature
+  - go-hex-update
+  
+identifier: "%%MH_SNIPPET_CONTROLLER%%"
+key: ports-controller
+model: entity
+fileName: "{{ .Name | snake }}_controller.go"
+body: |
+  // Create is a gin handler function. It creates a new {{ .Name | words }}
+  //
+  // @Summary Creates a new {{ .Name | words }}
+  // @description.markdown get_{{ .Name | snake }}
+  // @Tags {{ .Name | singular | words}}
+  // @Accept json
+  // @Produce json
+  // @Security BasicAuth
+  // @Success 200 {object} models.{{ .Name | pascal | singular}} "Returns the updated {{ .Name | words }}"
+  // @Router /{{ .Name | pascal | plural}}/:id [put]
+  // @Param config body command.Update{{ .Name | pascal | singular}}Command true "The configuration to create"
+  func (controller *{{ .Name | pascal | singular}}Controller) Update(c *gin.Context) {
+
+    id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+    if err != nil {
+      _ = c.Error(core.NewRequestValidationError(err))
+      return
+    }
+
+    cmd := &command.Update{{ .Name | pascal | singular}}Command{}
+
+    err = c.ShouldBind(cmd)
+    if err != nil {
+      _ = c.Error(core.NewRequestValidationError(err))
+      return
+    }
+
+    err = controller.app.Commands.Update{{ .Name | pascal | singular}}.Handle(c.Request.Context(), id, cmd)
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+
+    item, err := controller.app.Query.Get{{ .Name | pascal | singular}}.Handle(c.Request.Context(), id)
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+
+
+    c.JSON(http.StatusOK, item)
+  }

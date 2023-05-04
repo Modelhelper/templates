@@ -1,0 +1,44 @@
+version: 3
+name: go-blocks-db-one
+language: go
+type: block
+short: Entity body for getting one and only one item from database. Must be inside func and expects a db obj
+model: entity
+body: |  
+  // Create is a gin handler function. It creates a new {{ .Name | words }}
+  //
+  // @Summary Creates a new {{ .Name | words }}
+  // @description.markdown get_{{ .Name | snake }}
+  // @Tags {{ .Name | singular | words}}
+  // @Accept json
+  // @Produce json
+  // @Security BasicAuth
+  // @Success 201 {object} command.Created{{ .Name | pascal | singular}} "Returns the created {{ .Name | words }}"
+  // @Router /{{ .Name | pascal | plural}} [post]
+  // @Param config body command.Create{{ .Name | pascal | singular}}Command true "The configuration to create"
+  func (controller *{{ .Name | pascal | singular}}Controller) Create(c *gin.Context) {
+
+    cmd := &command.Create{{ .Name | pascal | singular}}Command{}
+
+    err := c.ShouldBind(cmd)
+    if err != nil {
+      _ = c.Error(core.NewRequestValidationError(err))
+      return
+    }
+
+    id, err := controller.app.Commands.Create{{ .Name | pascal | singular}}.Handle(c.Request.Context(), cmd)
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+
+    item, err := controller.app.Query.Get{{ .Name | pascal | singular}}.Handle(c.Request.Context(), id)
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+
+
+    c.JSON(http.StatusCreated, item)
+  }
+  

@@ -1,0 +1,22 @@
+version: 3
+name: go-hex-feat-controller
+language: go
+type: snippet
+features: 
+  - go-hex-snippets
+  - go-hex-feature
+  - go-hex-gin-api
+identifier: "%%ROUTER_GROUP_SNIPPETS%%"
+
+key: ports-api
+
+fileName: router.go
+model: entity
+body: |
+
+  {{ .Name | camel | plural}} := api.Group("/{{ .Name | camel | plural}}")
+  {
+    {{ .Name | camel | plural }}Controller := controllers.New{{ .Name | pascal | singular}}Controller(app)
+    {{ .Name | camel | plural}}.GET("/:id", {{ .Name | camel | plural}}Controller.Get)
+    {{ .Name | camel | plural}}.POST("", {{ .Name | camel | plural}}Controller.Create)
+  }

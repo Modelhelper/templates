@@ -1,0 +1,14 @@
+version: 3
+name: go-hex-feat-controller
+language: go
+type: snippet
+features: 
+  - go-hex-update
+  - go-hex-feature
+
+identifier: "%%COMMAND_PROPERTY_SNIPPETS%%"
+fileName: commands.go
+key: core
+model: entity
+body: |
+ Update{{ .Name | pascal | singular}} command.Update{{ .Name | pascal | singular}}Handler // Updates a {{ .Name }}

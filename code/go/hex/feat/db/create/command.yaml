@@ -1,0 +1,28 @@
+version: 3
+name: go-hex-qry-get-item
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-create
+
+key: core-command
+fileName: "{{ .Name | snake }}_create.go"
+
+model: entity
+body: |
+ package command
+
+ import (
+  	"context"
+ )
+
+ type Create{{ .Name | pascal | singular}}Command struct {
+  {{ range .NonPrimaryColumns -}}       
+    {{ .Name | pascal }} {{ if .IsNullable }}*{{ end }}{{ .DataType | datatype }} `json:"{{ .Name | camel }}{{ if .IsNullable}},omitempty{{ end}}"`
+  {{ end }}
+ }
+
+ type Create{{ .Name | pascal | singular}}Handler interface {
+  Handle(ctx context.Context, cmd *Create{{ .Name | pascal | singular}}Command) ({{- range .PrimaryKeys }}{{ .DataType | datatype }}{{- end }}, error)
+ }

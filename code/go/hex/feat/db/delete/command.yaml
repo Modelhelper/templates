@@ -1,0 +1,22 @@
+version: 3
+name: go-hex-qry-get-item
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-delete
+
+key: core-command
+fileName: "{{ .Name | snake }}_delete.go"
+
+model: entity
+body: |
+ package command
+
+ import (
+  	"context"
+ )
+
+ type Delete{{ .Name | pascal | singular}}Handler interface {
+  Handle(ctx context.Context {{- range .PrimaryKeys }}, {{ .Name | camel }} {{ .DataType | datatype }}{{- end }}) (error)
+ }

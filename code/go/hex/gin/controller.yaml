@@ -1,0 +1,36 @@
+version: 3
+name: go-hex-feat-controller
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-gin-api
+
+key: ports-controller
+fileName: "{{ .Name | snake }}_controller.go"
+
+model: entity
+body: |
+ package controllers
+
+ import (
+    "net/http"
+  	"context"
+    "strconv"
+    "{{ .Project.Name | kebab | singular }}/core"
+    "{{ .Project.Name | kebab | singular }}/core/command"
+
+    "github.com/gin-gonic/gin"
+ )
+
+ func New{{ .Name | pascal | singular}}Controller(app *core.Application) *{{ .Name | pascal | singular}}Controller {
+    return &{{ .Name | pascal | singular}}Controller{app: app}
+  }
+
+  type {{ .Name | pascal | singular}}Controller struct {
+    app *core.Application
+  }
+
+  %%MH_SNIPPET_CONTROLLER%%
+
+  

@@ -1,0 +1,29 @@
+version: 3
+name: go-hex-qry-get-item
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-update
+
+key: core-command
+fileName: "{{ .Name | snake }}_update.go"
+
+model: entity
+body: |
+ package command
+
+ import (
+    "{{ .Project.Name | kebab }}/core/models"
+  	"context"
+ )
+
+ type Update{{ .Name | pascal | singular}}Command struct {
+  {{ range .NonPrimaryColumns -}}       
+    {{ .Name | pascal }} {{ if .IsNullable }}*{{ end }}{{ .DataType | datatype }} `json:"{{ .Name | camel }}{{ if .IsNullable}},omitempty{{ end}}"`
+  {{ end }}
+ }
+
+ type Update{{ .Name | pascal | singular}}Handler interface {
+  Handle(ctx context.Context {{- range .PrimaryKeys }}, {{ .Name | camel }} {{ .DataType | datatype }}{{- end }}, cmd *Update{{ .Name | pascal | singular}}Command) error
+ }

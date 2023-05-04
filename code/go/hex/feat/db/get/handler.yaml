@@ -1,0 +1,67 @@
+version: 3
+name: go-hex-qry-get-item
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-one
+key: feature
+fileName: "get_{{ .Name | snake }}_query.go"
+model: entity
+bodyFile: handler.go
+body: |
+  package {{ .Name | camel | singular}}
+
+  import (
+    db "{{ .Project.Name | kebab | singular }}/ports/sql"
+    "{{ .Project.Name | kebab | singular }}/core"
+    "{{ .Project.Name | kebab | singular }}/core/models"
+    "{{ .Project.Name | kebab | singular }}/core/query"
+    "context"
+    "database/sql"
+    _ "embed"
+    "github.com/pkg/errors"
+  )
+
+  var (
+    //go:embed sql-queries/get_{{ .Name | singular | snake}}.sql
+    get{{ .Name | pascal | singular}}Query string
+  )
+
+  type get{{ .Name | camel | singular}}Handler struct {
+    conn db.ConnectionManager
+    logger logging.StagesLogger
+  }
+
+  func NewGet{{ .Name | pascal | singular}}Handler(conn db.ConnectionManager, logger logging.StagesLogger) query.Get{{ .Name | pascal | singular}}Handler  {
+    return &get{{ .Name | camel | singular}}Handler{conn, logger}
+  }
+  
+
+  func (h *get{{ .Name | camel | singular}}Handler)Handle(ctx context.Context, {{- range .PrimaryKeys }}{{ .Name | camel}} {{ .DataType | datatype }}{{- end }}) (*models.{{ .Name | pascal | singular}}, error) {
+    conn, err := h.conn.Get(ctx)
+    if err != nil {
+      return nil, errors.Wrap(err, "Get{{ .Name | pascal | singular}}.Handle: get conn")
+    }
+    defer conn.Close()
+
+    row := conn.QueryRowContext(ctx, get{{ .Name | pascal | singular}}Query, 
+      {{- range .PrimaryKeys }}sql.Named("{{ .Name | pascal }}", {{ .Name | camel }}), {{- end }}
+    )
+
+    var item models.{{ .Name | pascal | singular}}
+    err = row.Scan(
+      {{ range .Columns -}}       
+      &item.{{ .Name | pascal }},
+      {{ end }}
+    )
+    if errors.Is(err, sql.ErrNoRows) {
+      return nil, core.ErrNotFound
+    }
+    if err != nil {
+      return nil, err
+    }
+
+    return &item, nil
+  }

@@ -1,0 +1,22 @@
+version: 3
+name: go-hex-qry-get-item
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-one
+
+key: model
+fileName: "{{ .Name | snake }}.go"
+
+model: entity
+body: |
+  package models
+
+  type {{ .Name | pascal | singular}} struct {
+    {{ range .Columns -}}       
+      {{ .Name | pascal }} {{ if .IsNullable }}*{{ end }}{{ .DataType | datatype }} `json:"{{ .Name | camel }}{{ if .IsNullable}},omitempty{{ end}}"`
+    {{ end }}
+    
+  }

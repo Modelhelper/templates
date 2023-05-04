@@ -1,0 +1,114 @@
+version: 3
+name: go-hex-qry-get-item
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-paged
+key: feature
+fileName: "get_{{ .Name | snake | plural }}_paged_query.go"
+model: entity
+bodyFile: handler.go
+body: |
+  package {{ .Name | camel| singular}}
+
+  import (
+    "{{ .Project.Name | kebab }}/core/models"
+    "{{ .Project.Name | kebab }}/core/query"
+    "{{ .Project.Name | kebab }}/features/utils"
+    db "{{ .Project.Name | kebab }}/ports/sql"
+    "strings"
+
+    logging "bitbucket.org/VismoXClub2/gopkg/stages-logging"
+    "github.com/pkg/errors"
+
+    "context"
+    "database/sql"
+    _ "embed"
+  )
+
+  var (
+    //go:embed sql-queries/get_{{ .Name | snake | plural}}.sql
+    get{{ .Name | pascal | plural}}Query string
+  )
+
+  type get{{ .Name | pascal | plural}}Handler struct {
+    conn   db.ConnectionManager
+    logger logging.StagesLogger
+  }
+
+  func NewGet{{ .Name | pascal | plural}}Handler(conn db.ConnectionManager, logger logging.StagesLogger) query.Get{{ .Name | pascal | plural}}Handler {
+    return &get{{ .Name | pascal | plural}}Handler{conn, logger}
+  }
+
+  func (h *get{{ .Name | pascal | plural}}Handler) Handle(ctx context.Context, q *query.Get{{ .Name | pascal | plural}}Query) (*models.PaginatedResponse, error) {
+    reqId, _ := ctx.Value("request_id").(string)
+
+    conn, err := h.conn.Get(ctx)
+    if err != nil {
+      return nil, errors.Wrap(err, "Get{{ .Name | pascal | plural}}.Handle: get conn")
+    }
+    defer conn.Close()
+
+    var (
+      fromDate = utils.ToSqlNullTime(q.From)
+      offset   = utils.ToOffset(q.Page, q.PageSize)
+      // pos      = 1
+      sqlQuery = get{{ .Name | pascal | plural}}Query
+      toDate   = utils.ToSqlNullTime(q.To)
+    )
+
+    if q.Page != nil && q.PageSize != nil {
+      sqlQuery = strings.Replace(
+        sqlQuery,
+        "-- REPLACE_WITH_PAGINATION",
+        "OFFSET $3 ROWS LIMIT $4",
+        1,
+      )
+    }
+
+    rows, err := conn.QueryContext(ctx,
+      sqlQuery,
+      sql.Named("from", fromDate),       // $1
+      sql.Named("to", toDate),           // $2
+      sql.Named("offset", offset),       // $3
+      sql.Named("pageSize", q.PageSize), // $4
+    )
+    if err != nil {
+      h.logger.Error("process=\"Get{{ .Name | pascal | plural}}Handler.Handle: query\" requestId=%s error=\"%S\"", reqId, err)
+      return nil, err
+    }
+
+    var (
+      items         = make([]*models.{{ .Name | pascal | singular}}, 0)
+      totalRowCount int
+    )
+    for rows.Next() {
+      var (
+        item models.{{ .Name | pascal | singular}}
+      )
+
+      err = rows.Scan(
+        {{ range .Columns }}
+        &item.{{ .Name | pascal }},{{ end }}        
+        &totalRowCount,
+      )
+      if err != nil {
+        h.logger.Error("process=\"{{ .Name | pascal | plural}}QueryHandler.Handle: scan rows\" requestId=%s error=\"%S\"", reqId, err)
+        _ = rows.Close()
+        continue
+      }
+
+      items = append(items, &item)
+    }
+
+    return utils.NewPaginatedResponse(
+      items,
+      len(items),
+      totalRowCount,
+      q.Page,
+      q.PageSize,
+    ), nil
+  }
+  

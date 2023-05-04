@@ -1,0 +1,19 @@
+version: 3
+name: go-hex-feat-controller
+language: go
+type: snippet
+features: 
+  - go-hex-snippets
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-paged
+
+# identifier: "%%QUERY_{{ .Name | camel | plural}}_SNIPPETS%%"
+
+# key: core
+# fileName: router.go
+
+model: entity
+body: |
+  {{ .Name | camel | plural}}.GET("", {{ .Name | camel | plural}}Controller.GetPaged)
+ 

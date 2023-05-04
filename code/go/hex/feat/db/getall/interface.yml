@@ -1,0 +1,31 @@
+version: 3
+name: go-hex-qry-get-item
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-paged
+
+key: core-query
+fileName: "{{ .Name | snake | plural}}_paged_get.go"
+model: entity
+body: |
+  package query
+
+  import (
+    "context"
+    "{{ .Project.Name | kebab }}/core/models"
+    "time"
+  )
+
+  type Get{{ .Name | pascal | plural}}Query struct {
+    From     *time.Time `json:"from" form:"from" binding:"" time_format:"2006-01-02T15:04:05Z07:00"`
+    To       *time.Time `json:"to" form:"to" binding:"gtefield=From" time_format:"2006-01-02T15:04:05Z07:00"`
+    Page     *int       `json:"page" form:"page" binding:"omitempty,gt=0"`
+    PageSize *int       `json:"pageSize" form:"pageSize" binding:"omitempty,gt=0"`
+  }
+
+  type Get{{ .Name | pascal | plural}}Handler interface {
+    Handle(ctx context.Context, q *Get{{ .Name | pascal | plural}}Query) (*models.PaginatedResponse, error)
+  }

@@ -1,0 +1,15 @@
+version: 3
+name: go-hex-feat-controller
+language: go
+type: snippet
+features: 
+  - go-hex-feature
+  - go-hex-query-paged
+
+key: main
+fileName: main.go
+identifier: "MH_SNIPPET_QUERY_DEF"
+
+model: entity
+body: |
+ Get{{ .Name | pascal | plural}}: {{.Name | singular | kebab}}.NewGet{{ .Name | pascal | plural}}Handler(sqlConn, logger),

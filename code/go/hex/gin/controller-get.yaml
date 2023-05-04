@@ -1,0 +1,35 @@
+version: 3
+name: go-blocks-db-one
+language: go
+type: block
+short: Entity body for getting one and only one item from database. Must be inside func and expects a db obj
+model: entity
+body: |  
+  // Get is a gin handler function. It returns the details of the {{ .Name | words }} with the given id
+  //
+  // @Summary Get the details for the workout with the given id
+  // @description.markdown get_{{ .Name | snake }}
+  // @Tags Workout
+  // @Accept json
+  // @Produce json
+  // @Security BasicAuth
+  // @Success 200 {object} query.{{ .Name | pascal | singular}} "Returns {{ .Name | pascal | singular}} details"
+  // @Router /{{ .Name | pascal | plural}}{{ range .PrimaryKeys }}/:{{ .Name | camel | singular }} {{end}} [get]
+  // {{ range .PrimaryKeys }}@Param {{ .Name | camel | singular }} path {{ .DataType | datatype }} true "The {{ .Name | pascal | singular}}" {{ end}}
+  func (controller *{{ .Name | pascal | singular}}Controller) Get(c *gin.Context) {
+
+    id, err := strconv.Atoi(c.Param("id"))
+
+    if err != nil {
+      c.JSON(http.StatusBadRequest, err)
+      return
+    }
+
+    item, err := controller.app.Query.Get{{ .Name | pascal | singular}}.Handle(c.Request.Context(), id)
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+
+    c.JSON(http.StatusOK, item)
+  }

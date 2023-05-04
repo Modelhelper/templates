@@ -1,0 +1,98 @@
+version: 3
+name: go-hex-qry-get-item
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-update
+
+key: feature
+fileName: "{{ .Name | snake }}_update_command.go"
+
+model: entity
+body: |
+  package {{ .Name | camel | singular}}
+
+  import (
+  	"{{ .Project.Name | kebab | singular }}/core/command"
+    "{{ .Project.Name | kebab | singular }}/core/models"
+    logging "bitbucket.org/VismoXClub2/gopkg/stages-logging"
+    db "{{ .Project.Name | kebab | singular }}/ports/sql"
+
+    "context"
+    "database/sql"
+    _ "embed"
+    "github.com/pkg/errors"
+  )
+
+  var (
+    //go:embed sql-queries/update_{{ .Name | singular | snake}}.sql
+    update{{ .Name | pascal | singular}}Query string
+  )
+
+  type update{{ .Name | pascal | singular}}Handler struct {
+    conn db.ConnectionManager
+    logger logging.StagesLogger
+  }
+
+  func NewUpdate{{ .Name | pascal | singular}}Handler(conn db.ConnectionManager, logger logging.StagesLogger) command.Update{{ .Name | pascal | singular}}Handler  {
+    return &update{{ .Name | pascal | singular}}Handler{conn, logger}
+  }
+  
+
+  func (h *update{{ .Name | pascal | singular}}Handler)Handle(ctx context.Context {{- range .PrimaryKeys }}, {{ .Name | camel }} {{ .DataType | datatype }}{{- end }}, cmd *command.Update{{ .Name | pascal | singular}}Command) error {
+    conn, err := h.conn.Get(ctx)
+    if err != nil {
+      return errors.Wrap(err, "update{{ .Name | pascal | singular}}.Handle: get conn")
+    }
+    defer conn.Close()
+
+    tx, err := conn.BeginTx(ctx, nil)
+    if err != nil {
+      return errors.Wrap(err, "Update{{ .Name | pascal | singular}}Handler.Handle: begin tx")
+    }
+    var isSuccess bool
+    defer func() {
+      if isSuccess {
+        return
+      }
+      err = tx.Rollback()
+      if err != nil {
+        h.logger.Errorf("process=\"Update{{ .Name | pascal | singular}}Handler.Handle: rollback\" error=\"%s\"", err)
+      }
+    }()
+
+    res, err := tx.ExecContext(
+      ctx,
+      update{{ .Name | pascal | singular}}Query,
+      
+      {{ range .NonPrimaryColumns }}
+        sql.Named("{{ .Name | camel }}", cmd.{{ .Name | pascal }}), {{ end }}
+
+      {{ range .PrimaryKeys }}
+        sql.Named("{{ .Name | camel }}", {{ .Name | camel }}), {{ end }}
+    )
+        
+    var rowsAffected int64
+    if rowsAffected, err = res.RowsAffected(); err != nil {
+      err = errors.Wrap(err, "Update{{ .Name | camel }}Handler.Handle: RowsAffected")
+      return err
+    }
+
+    if rowsAffected == 0 {
+      err = core.ErrRowNotFound
+      return err
+    }
+    if rowsAffected > 1 {
+      err = fmt.Errorf("Update{{ .Name | camel }}Handler.Handle: unexpected number of rows affected %d", rowsAffected)
+      return err
+    }
+
+    isSuccess = true
+    err = tx.Commit()
+    if err != nil {
+      h.logger.LogError(err)
+    }
+
+    return nil
+  }

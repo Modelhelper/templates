@@ -1,0 +1,42 @@
+version: 3
+language: go
+type: snippet
+features: 
+  - go-hex-feature
+  - go-hex-delete
+  
+identifier: "MH_SNIPPET_CONTROLLER"
+key: ports-controller
+fileName: "{{ .Name | snake}}_controller.go"
+model: entity
+
+body: |
+ // Get is a gin handler function. It returns the details of the {{ .Name | words }} with the given id
+ //
+ // @Summary Deletes the specified { .Name | pascal | plural}}
+ // @description.markdown delete_{{ .Name | snake }}
+ // @Tags Workout
+ // @Accept json
+ // @Produce json
+ // @Security BasicAuth
+ // @Success 204 "The {{ .Name | pascal | singular}} was successfully deleted"
+ // @Router /{{ .Name | pascal | plural}}{{ range .PrimaryKeys }}/:{{ .Name | camel | singular }} {{end}} [delete]
+ // {{ range .PrimaryKeys }}@Param {{ .Name | camel | singular }} path {{ .DataType | datatype }} true "The {{ .Name | pascal | singular}}" {{ end}}
+ func (controller *{{ .Name | pascal | singular}}Controller) Delete(c *gin.Context) {
+
+  id, err := strconv.Atoi(c.Param("id"))
+
+  if err != nil {
+    c.JSON(http.StatusBadRequest, err)
+    return
+  }
+
+    err = controller.app.Commands.Delete{{ .Name | pascal | singular}}.Handle(c.Request.Context(), id)
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+
+    c.Status(http.StatusNoContent)
+  }
+

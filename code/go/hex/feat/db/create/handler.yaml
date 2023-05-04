@@ -1,0 +1,86 @@
+version: 3
+name: go-hex-qry-get-item
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-create  
+
+key: feature
+fileName: "{{ .Name | snake }}_create_command.go"
+
+model: entity
+body: |
+  package {{ .Name | camel | singular}}
+
+  import (
+  	"{{ .Project.Name | kebab | singular }}/core/command"
+    "{{ .Project.Name | kebab | singular }}/core/models"
+    logging "bitbucket.org/VismoXClub2/gopkg/stages-logging"
+    db "{{ .Project.Name | kebab | singular }}/ports/sql"
+
+    "context"
+    "database/sql"
+    _ "embed"
+    "github.com/pkg/errors"
+  )
+
+  var (
+    //go:embed sql-queries/create_{{ .Name | singular | snake}}.sql
+    create{{ .Name | pascal | singular}}Query string
+  )
+
+  type create{{ .Name | pascal | singular}}Handler struct {
+    conn db.ConnectionManager
+    logger logging.StagesLogger
+  }
+
+  func NewCreate{{ .Name | pascal | singular}}Handler(conn db.ConnectionManager, logger logging.StagesLogger) command.Create{{ .Name | pascal | singular}}Handler  {
+    return &create{{ .Name | pascal | singular}}Handler{conn, logger}
+  }
+  
+
+  func (h *create{{ .Name | pascal | singular}}Handler)Handle(ctx context.Context, cmd *command.Create{{ .Name | pascal | singular}}Command) ({{- range .PrimaryKeys }}{{ .Name | camel}} {{ .DataType | datatype }}{{- end }}, error) {
+    conn, err := h.conn.Get(ctx)
+    if err != nil {
+      return 0, errors.Wrap(err, "Create{{ .Name | pascal | singular}}.Handle: get conn")
+    }
+    defer conn.Close()
+
+    tx, err := conn.BeginTx(ctx, nil)
+    if err != nil {
+      return 0, errors.Wrap(err, "Create{{ .Name | pascal | singular}}Handler.Handle: begin tx")
+    }
+    var isSuccess bool
+    defer func() {
+      if isSuccess {
+        return
+      }
+      err = tx.Rollback()
+      if err != nil {
+        h.logger.Errorf("process=\"Create{{ .Name | pascal | singular}}Handler.Handle: rollback\" error=\"%s\"", err)
+      }
+    }()
+
+    id := 0
+
+    err = tx.QueryRowContext(
+      ctx,
+      create{{ .Name | pascal | singular}}Query,
+      {{ range .NonPrimaryColumns -}}
+        sql.Named("{{ .Name | camel }}", cmd.{{ .Name | pascal }}), {{ end }}
+
+    ).Scan(&id)
+        
+    if err != nil {
+      return 0, errors.Wrap(err, "Create{{ .Name | pascal | singular}}Handler.Handle: scan row")
+    }
+
+    isSuccess = true
+    err = tx.Commit()
+    if err != nil {
+      h.logger.LogError(err)
+    }
+
+    return id, nil
+  }

@@ -1,0 +1,55 @@
+version: 3
+language: go
+type: snippet
+features: 
+  - go-hex-feature
+  - go-hex-query-paged
+  
+identifier: "%%MH_SNIPPET_CONTROLLER%%"
+key: ports-controller
+fileName: "{{ .Name | snake}}_controller.go"
+
+model: entity
+body: |
+  // GetPaged returns a paged result for workout with the given id
+  //
+  // @Summary Gets a paged list of {{ .Name | camel| plural}}
+  // @description.markdown get_paged_{{ .Name | snake }}
+  // @Tags Workout
+  // @Accept json
+  // @Produce json
+  // @Security BasicAuth
+  // @Success 200 {object} models.PaginatedResponse "Returns paged {{ .Name | camel| plural}} details"
+  // @Router /{{ .Name | camel | plural}} [get]
+  // @Param from query string false "An RFC 3339 timestamp for the earliest point in time from which to get {{ .Name | camel| plural}}"
+  // @Param to query string false "An RFC 3339 timestamp for the latest point in time to which to get {{ .Name | camel| plural}}"
+  // @Param page query int false "The page number"
+  // @Param pageSize query int false "The page size"
+  func (controller *{{ .Name | pascal | singular}}Controller) GetPaged(c *gin.Context) {
+
+    q := query.Get{{ .Name | pascal | plural}}Query{}
+
+    err := c.ShouldBindQuery(&q)
+    if err != nil {
+      _ = c.Error(core.NewRequestValidationError(err))
+      return
+    }
+
+    defPage := 1
+    defPageSize := 50
+
+    if q.Page == nil {
+      q.Page = &defPage
+    }
+
+    if q.PageSize == nil {
+      q.PageSize = &defPageSize
+    }
+    items, err := controller.app.Query.Get{{ .Name | pascal | plural}}.Handle(c.Request.Context(), &q)
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+
+    c.JSON(http.StatusOK, items)
+  }

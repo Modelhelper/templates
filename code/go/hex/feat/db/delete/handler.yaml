@@ -1,0 +1,95 @@
+version: 3
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-delete
+
+key: feature
+fileName: "{{ .Name | snake }}_delete_command.go"
+
+model: entity
+body: |
+  package {{ .Name | camel | singular}}
+
+  import (
+  	"{{ .Project.Name | kebab | singular }}/core/command"
+    "{{ .Project.Name | kebab | singular }}/core/models"
+    logging "bitbucket.org/VismoXClub2/gopkg/stages-logging"
+    db "{{ .Project.Name | kebab | singular }}/ports/sql"
+
+    "context"
+    "database/sql"
+    _ "embed"
+    "github.com/pkg/errors"
+  )
+
+  var (
+    //go:embed sql-queries/delete_{{ .Name | singular | snake}}.sql
+    delete{{ .Name | pascal | singular}}Query string
+  )
+
+  type delete{{ .Name | pascal | singular}}Handler struct {
+    conn db.ConnectionManager
+    logger logging.StagesLogger
+  }
+
+  func NewDelete{{ .Name | pascal | singular}}Handler(conn db.ConnectionManager, logger logging.StagesLogger) command.Delete{{ .Name | pascal | singular}}Handler  {
+    return &delete{{ .Name | pascal | singular}}Handler{conn, logger}
+  }
+  
+
+  func (h *delete{{ .Name | pascal | singular}}Handler)Handle(ctx context.Context {{- range .PrimaryKeys }}, {{ .Name | camel }} {{ .DataType | datatype }}{{- end }}) error {
+    conn, err := h.conn.Get(ctx)
+    if err != nil {
+      return errors.Wrap(err, "Create{{ .Name | pascal | singular}}.Handle: get conn")
+    }
+    defer conn.Close()
+
+    tx, err := conn.BeginTx(ctx, nil)
+    if err != nil {
+      return errors.Wrap(err, "Create{{ .Name | pascal | singular}}Handler.Handle: begin tx")
+    }
+    var isSuccess bool
+    defer func() {
+      if isSuccess {
+        return
+      }
+      err = tx.Rollback()
+      if err != nil {
+        h.logger.Errorf("process=\"Create{{ .Name | pascal | singular}}Handler.Handle: rollback\" error=\"%s\"", err)
+      }
+    }()
+
+
+    var (
+      {{ range .PrimaryKeys }} 
+      {{ .Name | camel }}Affected {{ .DataType | datatype }} {{end}}
+    )
+
+    err = tx.QueryRowContext(
+      ctx,
+      delete{{ .Name | pascal | singular}}Query,
+      {{ range .PrimaryKeys -}}
+        sql.Named("{{ .Name | camel }}", {{ .Name | camel }}), {{ end }}
+
+    ).Scan(&idAffected)
+    
+    if err != nil {
+      return core.ErrRowNotFound
+    }
+
+    {{ range .PrimaryKeys }} 
+    if {{ .Name | camel }}Affected != {{ .Name | camel }} {
+      err = core.ErrRowNotFound
+      return err
+    } {{end}}
+    
+    isSuccess = true
+    err = tx.Commit()
+    if err != nil {
+      h.logger.LogError(err)
+    }
+
+    return nil
+  }

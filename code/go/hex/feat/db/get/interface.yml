@@ -1,0 +1,18 @@
+version: 3
+name: go-hex-qry-get-item
+language: go
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-one
+
+key: core-query
+fileName: "{{ .Name | snake }}_get.go"
+model: entity
+body: |
+  package query
+
+  type Get{{ .Name | pascal | singular }}Handler interface {
+    Handle(ctx context.Context, {{- range .PrimaryKeys }}{{ .Name | camel}} {{ .DataType | datatype }}{{- end }}) (*models.{{ .Name | pascal | singular }}, error)
+  }

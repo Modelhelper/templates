@@ -1,0 +1,15 @@
+version: 3
+name: go-hex-feat-controller
+language: go
+type: snippet
+features: 
+  - go-hex-delete
+  - go-hex-feature
+
+identifier: "MH_SNIPPET_COMMAND_DEF"
+
+key: "MH_SNIPPET_COMMAND_DEF"
+fileName: main.go
+model: entity
+body: |
+ Delete{{ .Name | pascal | singular}}: {{.Name | singular | kebab}}.NewDelete{{ .Name | pascal | singular}}Handler(sqlConn, logger),

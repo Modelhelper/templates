@@ -1,0 +1,18 @@
+version: 3
+name: go-hex-feat-controller
+language: go
+type: snippet
+features: 
+  - go-hex-snippets
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-paged
+
+identifier: "%%QUERY_PROPERTY_SNIPPETS%%"
+
+key: core
+fileName: queries.go
+
+model: entity
+body: |
+ Get{{ .Name | pascal | plural}} query.Get{{ .Name | pascal | plural}}Handler // Gets a paged set of {{ .Name | pascal | plural}}
