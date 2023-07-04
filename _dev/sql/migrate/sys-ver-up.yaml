@@ -1,0 +1,34 @@
+version: 3.0
+name: sql-migrate-sys-ver-up
+
+type: file
+short: creates a migration script for adding sys-version
+language: sql
+model: entities
+fileName: "tables-sys-ver-up.sql"
+groups:
+  - cs-migration
+body: |
+  {{- range .Entities }}
+  --------------------------------------------------------------------------------
+  -- table: {{.Name}}
+  
+  ALTER TABLE [{{ .Schema }}].[{{ .Name }}] ADD 
+      ValidFrom DATETIME2 GENERATED ALWAYS AS ROW START HIDDEN 
+            CONSTRAINT DF_{{ .Name }}_ValidFrom 
+            DEFAULT SYSUTCDATETIME()
+    , ValidTo DATETIME2 GENERATED ALWAYS AS ROW END HIDDEN
+            CONSTRAINT DF_{{ .Name }}_ValidTo 
+            DEFAULT CONVERT(DATETIME2, '9999-12-31 23:59:59.9999999')
+    , PERIOD FOR SYSTEM_TIME (ValidFrom, ValidTo);
+
+  ALTER TABLE [{{ .Schema }}].[{{ .Name }}] SET (SYSTEM_VERSIONING = ON
+    (
+        HISTORY_TABLE = [{{ .Schema }}].[{{ .Name }}_History],
+        HISTORY_RETENTION_PERIOD = 1 month
+    ))
+
+  GO
+
+  {{- end -}}        
+  
