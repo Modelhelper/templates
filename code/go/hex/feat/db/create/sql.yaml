@@ -1,0 +1,15 @@
+version: 3
+short: "Creates a file for inserting a single row into a specific source table"
+language: sql
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-create
+ 
+
+key: feature-sql
+fileName: "create_{{ .Name | snake | singular }}.sql"
+
+model: entity
+body: |
+  {{ template "sql-insert" .}}

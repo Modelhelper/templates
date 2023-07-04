@@ -1,9 +1,0 @@
-version: 3.0
-name: sql-get-all
-type: block
-short: Selects a single row filter by PK, specifing column names
-language: sql
-body: |
-    SELECT 
-      {{ template "sql-col-list" . }}
-    FROM [{{ .Schema }}].[{{ .Name }}];

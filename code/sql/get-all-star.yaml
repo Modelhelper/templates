@@ -1,7 +1,0 @@
-version: 3.0
-name: sql-get-all-star
-type: block
-short: Selects a single row filter by PK, without specifing columns (select * from ...)
-language: sql
-body: |
-    SELECT * FROM [{{ .Schema }}].[{{ .Name }}];
