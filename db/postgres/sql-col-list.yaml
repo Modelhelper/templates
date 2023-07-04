@@ -1,0 +1,11 @@
+version: 3.0
+name: sql-col-list
+type: block
+short: "POSTGRES: creates a list of sql columns (use in select, insert...)"
+model: entity
+
+language: sql
+body: |
+  {{- range $index, $col := .Columns }}
+  {{- if $index }},{{end}}[{{ $col.Name | pascal }}] as {{ $col.Name | pascal }}
+  {{ end }}

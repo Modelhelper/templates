@@ -1,0 +1,23 @@
+version: 3
+language: sql
+short: "selects a paged list of rows from a postgres table"
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-paged
+
+key: feature-sql
+fileName: "get_{{ .Name | snake | plural }}.sql"
+
+model: entity
+body: |
+  select 
+    {{ range .Columns}} {{ .Name }}, {{ end }}
+    COUNT(*) OVER() AS total_row_count
+  from {{ .Schema}}.{{ .Name }}
+  WHERE ($1::timestamp IS NULL OR created_at >= $1::timestamp)
+    AND ($2::timestamp IS NULL OR created_at <= $2::timestamp)
+  order by created_at desc
+  -- REPLACE_WITH_PAGINATION
+  -- OFFSET $3 ROWS LIMIT $4

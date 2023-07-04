@@ -1,0 +1,26 @@
+version: 3
+short: "inserts a single row into a postgres table"
+language: sql
+type: block
+# features: 
+#   - go-hex-feature
+#   - go-hex-create
+ 
+
+# key: feature-sql
+# fileName: "create_{{ .Name | snake | singular }}.sql"
+
+model: entity
+body: |
+  insert into {{ .Schema}}.{{ .Name}} (
+    {{ range $index, $col := .NonPrimaryColumns }}
+  {{- if $index }},{{end}} {{ $col.Name }}  -- ${{ increment $index }}
+  {{ end }}
+  )  values (
+    {{ range $index, $col := .NonPrimaryColumns }}
+    {{- if $index }},{{end}}${{ increment $index }} -- {{ $col.Name }}
+  {{ end }}
+  );
+  
+  RETURNING id;
+  
