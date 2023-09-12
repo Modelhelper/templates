@@ -1,0 +1,15 @@
+version: 3
+short: "deletes a single row from a postgres table"
+language: sql
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-delete
+ 
+
+key: feature-sql
+fileName: "delete_{{ .Name | snake | singular }}.sql"
+
+model: entity
+body: |
+  {{ template "sql-delete-one" .}}

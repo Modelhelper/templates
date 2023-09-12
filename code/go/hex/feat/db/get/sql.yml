@@ -1,0 +1,16 @@
+version: 3
+name: go-hex-qry-get-item
+short: "selects a single row, based on PK, from a postgres table"
+language: sql
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-one
+
+key: feature-sql
+fileName: "get_{{ .Name | snake | singular }}.sql"
+
+model: entity
+body: |
+  {{ template "sql-get-one" .}}

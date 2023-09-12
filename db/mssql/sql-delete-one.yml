@@ -6,5 +6,3 @@ model: entity
 body: |
   delete from {{ .Schema}}.{{ .Name}} 
   where id = $1
-  
-  returning id

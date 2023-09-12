@@ -1,0 +1,15 @@
+version: 3
+language: sql
+short: "selects a paged list of rows from a postgres table"
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-paged
+
+key: feature-sql
+fileName: "get_{{ .Name | snake | plural }}.sql"
+
+model: entity
+body: |
+  {{ template "sql-get-paged" .}}
