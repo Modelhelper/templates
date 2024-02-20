@@ -1,0 +1,17 @@
+version: 3
+short: "Selects a single row from a specific source table"
+language: sql
+type: file 
+fileName: "select_{{ .Name | snake | singular }}.sql"
+
+model: entity
+body: |
+  select 
+    {{- range .Columns }}
+      {{ .Name }}{{ if not .IsLast }}, {{ end -}}
+    {{- end }} 
+  from {{ .Schema }}.{{ .Name }} 
+  where
+    {{- range .PrimaryKeys }}
+    {{ .Name }} = @{{ .Name  }}
+    {{- end }}

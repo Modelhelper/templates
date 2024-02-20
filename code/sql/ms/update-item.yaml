@@ -1,0 +1,17 @@
+version: 3
+short: "Update item from a specific source table"
+language: sql
+type: file 
+fileName: "update_{{ .Name | snake | plural }}.sql"
+
+model: entity
+body: |
+  update {{ .Schema }}.{{ .Name }} set
+    {{- range .Columns }}
+      {{ .Name }} = @{{ .Name }}{{ if not .IsLast }}, {{ end -}}
+    {{- end }}
+  where 1 = 1
+    {{- range .PrimaryKeys }}
+      and {{ .Name }} = @{{ .Name }}
+    {{- end }}
+  

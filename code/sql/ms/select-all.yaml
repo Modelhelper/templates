@@ -1,0 +1,14 @@
+version: 3
+short: "Selects all rows from a specific source table"
+language: sql
+type: file 
+fileName: "select_{{ .Name | snake | plural }}.sql"
+
+model: entity
+body: |
+  select 
+    {{- range .Columns }}
+      {{ .Name }}{{ if not .IsLast }}, {{ end -}}
+    {{- end }} 
+  from {{ .Schema }}.{{ .Name }} 
+  

@@ -1,0 +1,19 @@
+version: 3
+short: "Insert item into a specific source table"
+language: sql
+type: file 
+fileName: "insert_{{ .Name | snake | plural }}.sql"
+
+model: entity
+body: |
+  insert into {{ .Schema }}.{{ .Name }} (
+    {{- range .NonPrimaryColumns }}
+      {{ .Name }}{{ if not .IsLast }}, {{ end -}}
+    {{- end }}
+  ) values (
+    {{- range .NonPrimaryColumns }}
+      @{{ .Name }}{{ if not .IsLast }}, {{ end -}}
+    {{- end }}
+  )
+
+  select SCOPE_IDENTITY() as Id
