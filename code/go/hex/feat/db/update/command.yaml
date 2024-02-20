@@ -14,7 +14,7 @@ body: |
  package command
 
  import (
-    "{{ .Project.Name | kebab }}/core/models"
+    "time"
   	"context"
  )
 

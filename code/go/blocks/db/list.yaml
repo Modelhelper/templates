@@ -10,7 +10,7 @@ body: |
 
   ctx := context.Background()
 
-  query := `{{ template "sql-get-all" . -}}`
+  query := ``
 
   stmt, err := db.PrepareContext(ctx, query)
 

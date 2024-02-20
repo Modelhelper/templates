@@ -2,10 +2,42 @@ version: 3
 name: go-db-interface
 language: go
 type: block
-key: model
+key: repo-interface
 model: entity
 body: |  
-  type {{ .Name | pascal | singular }}Repo interface {
-    Get{{ .Name | pascal | singular }}({{ template "go-blocks-common-pk-args" . }})
-    Get{{ .Name | pascal | plural }}()  
+  package repository
+
+  import (
+    "context"
+    "{{ .Project.Name | kebab }}/core/models"
+  )
+
+  type {{ .Name | pascal | singular }}Repository interface {
+    // Get returns a single {{ .Name | pascal | singular }} record
+    // It takes a context and primary key arguments, and returns a pointer to the model and an error if any.
+    Get(ctx context.Context, {{ template "go-blocks-common-pk-args" . }}) (*models.{{ .Name | pascal | singular }}Model, error)
+
+    // GetList returns all {{ .Name | pascal | singular }} records
+    // It takes a context and returns a slice of pointers to the models and an error if any.
+    GetList(ctx context.Context) ([]*models.{{ .Name | pascal | singular }}Model, error) 
+
+    // Create adds a new {{ .Name | pascal | singular }} record
+    // It takes a context and a pointer to the model to be created, and returns an error if any.
+    Create(ctx context.Context, {{ .Name | camel | singular }} *models.{{ .Name | pascal | singular }}Model) error
+
+    // Update modifies an existing {{ .Name | pascal | singular }} record
+    // It takes a context and a pointer to the model to be updated, and returns an error if any.
+    Update(ctx context.Context, {{ .Name | camel | singular }} *models.{{ .Name | pascal | singular }}Model) error
+
+    // Delete removes an existing {{ .Name | pascal | singular }} record
+    // It takes a context and primary key arguments, and returns an error if any.
+    Delete(ctx context.Context, {{ template "go-blocks-common-pk-args" . }}) error
+    
+    {{ range .Children -}}
+    // Get{{ .NameWithoutPrefix | pascal | plural }} returns all {{ .Name | pascal | singular }} records related to the parent entity
+    // It takes a context and a related column value, and returns a slice of pointers to the models and an error if any.
+    Get{{ .NameWithoutPrefix | pascal | plural }}(ctx context.Context, {{ .RelatedColumn.Name | pascal }} {{ .RelatedColumn.DataType | datatype }}) ([]*models.{{ .Name | pascal | singular }}Model, error)
+
+    {{ end -}}
+
   }

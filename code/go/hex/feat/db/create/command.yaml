@@ -15,6 +15,7 @@ body: |
 
  import (
   	"context"
+    "time"
  )
 
  type Create{{ .Name | pascal | singular}}Command struct {

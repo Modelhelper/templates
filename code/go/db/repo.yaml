@@ -2,19 +2,56 @@ version: 3
 name: go-db-repo
 language: go
 type: file
-key: model
+key: repo
 model: entity
 body: |  
-  package data
+  package repos
 
-  type {{ .Name | singular }}Db struct {
+  type {{ .Name | camel | singular }}Repo struct {
+    conn   db.ConnectionManager
+    logger logging.StagesLogger
   }
-  
-  {{ template "go-db-interface" . }}
 
-  {{ template "go-db-model" . }}
+  func New{{ .Name | pascal | singular }}Repo(conn db.ConnectionManager, logger logging.StagesLogger) {{ .Name | pascal | singular }}Repository {
+    return &{{ .Name | camel | singular }}Repo{
+      conn:   conn,
+      logger: logger,
+    }
+  }
 
-  {{ template "go-db-one" . }}   
+  func (r *{{ .Name | singular }}Repo) Get(ctx context.Context, {{ template "go-blocks-common-pk-args" . }}) (*models.{{ .Name | singular }}Model, error) {
+    conn, err := r.conn.Get(ctx)
+    if err != nil {
+      return nil, errors.Wrap(err, "Get{{ .Name | pascal | singular}}.Repo: get conn")
+    }
+    defer conn.Close()
 
-  {{ template "go-db-list" . }}   
+    row := conn.QueryRowContext(ctx, get{{ .Name | pascal | singular}}Query, 
+      {{- range .PrimaryKeys }}sql.Named("{{ .Name | pascal }}", {{ .Name | camel }}), {{- end }}
+    )
+
+    var item models.{{ .Name | pascal | singular}}Model
+    err = row.Scan(
+      {{ range .Columns -}}       
+      &item.{{ .Name | pascal }},
+      {{ end }}
+    )
+    if errors.Is(err, sql.ErrNoRows) {
+      return nil, core.ErrNotFound
+    }
+    if err != nil {
+      return nil, err
+    }
+
+    return &item, nil
+  }  
+
+  // test child columns
+  {{ range .Children -}}
+    //////////////////////////////////////////////////////////////////////
+    Child name: {{ .Schema }}.{{ .Name }}
+    {{ range .Columns }}
+      {{ .Name | pascal }} {{ .DataType | datatype }} | Last: {{ .IsLast}} | First: {{ .IsFirst }} | PK: {{ .IsPrimaryKey }}
+    {{ end -}}
+  {{ end -}}
   

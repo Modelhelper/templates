@@ -1,0 +1,12 @@
+version: 3
+name: go-db-struct
+language: go
+type: block
+key: model
+model: entity
+body: |      
+  type {{ .Name | pascal | singular }}Model{{- .Postfix}} struct {
+    {{ range .Columns -}}       
+      {{ .NameWithoutPrefix | pascal }} {{ if .IsNullable }}*{{ end }}{{ .DataType | datatype }} 
+    {{ end }}
+  }

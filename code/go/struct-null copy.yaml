@@ -11,9 +11,11 @@ feature:
 groups: 
   - go-rest-full
 body: |  
-  type {{ .Name | pascal | singular}}Model struct {
+  
+  type {{ .Name | pascal | singular}}Json struct {
     {{ range .Columns -}}       
       {{ .Name | pascal }} {{ if .IsNullable }}*{{ end }}{{ .DataType | datatype }} `json:"{{ .Name | camel }}{{ if .IsNullable}},omitempty{{ end}}"`
-    {{ end }}    
+    {{ end }}
+    
   }
   

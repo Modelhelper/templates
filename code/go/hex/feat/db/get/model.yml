@@ -14,6 +14,8 @@ model: entity
 body: |
   package models
 
+  import "time"
+  
   type {{ .Name | pascal | singular}} struct {
     {{ range .Columns -}}       
       {{ .Name | pascal }} {{ if .IsNullable }}*{{ end }}{{ .DataType | datatype }} `json:"{{ .Name | camel }}{{ if .IsNullable}},omitempty{{ end}}"`

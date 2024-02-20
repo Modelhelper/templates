@@ -40,7 +40,7 @@ body: |
   }
   
 
-  func (h *create{{ .Name | pascal | singular}}Handler)Handle(ctx context.Context, cmd *command.Create{{ .Name | pascal | singular}}Command) ({{- range .PrimaryKeys }}{{ .Name | camel}} {{ .DataType | datatype }}{{- end }}, error) {
+  func (h *create{{ .Name | pascal | singular}}Handler)Handle(ctx context.Context, cmd *command.Create{{ .Name | pascal | singular}}Command) ({{- range .PrimaryKeys }}{{ .DataType | datatype }}{{- end }}, error) {
     conn, err := h.conn.Get(ctx)
     if err != nil {
       return 0, errors.Wrap(err, "Create{{ .Name | pascal | singular}}.Handle: get conn")

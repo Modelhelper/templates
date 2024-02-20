@@ -6,8 +6,6 @@ key: model
 model: entity
 body: |  
   
-  func (d *{{ .Name | singular }}Db) Get{{ .Name | singular }}() (*{{ .Name | singular }}, error) {
-    {{ template "go-blocks-db-open" . }}
-    
+  func (r *{{ .Name | singular }}Repo) Get{{ .Name | singular }}() (*models.{{ .Name | singular }}Model, error) {
     {{ template "go-blocks-db-one" . }}
   }

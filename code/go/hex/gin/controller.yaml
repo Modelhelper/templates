@@ -19,6 +19,7 @@ body: |
     "strconv"
     "{{ .Project.Name | kebab | singular }}/core"
     "{{ .Project.Name | kebab | singular }}/core/command"
+    "{{ .Project.Name | kebab | singular }}/query"
 
     "github.com/gin-gonic/gin"
  )
@@ -31,6 +32,6 @@ body: |
     app *core.Application
   }
 
-  %%MH_SNIPPET_CONTROLLER%%
+  // %%MH_SNIPPET_CONTROLLER%%
 
   

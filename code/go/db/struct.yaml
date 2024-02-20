@@ -7,7 +7,7 @@ model: entity
 body: |  
   
   // {{ .Description }}
-  type {{ .Name | pascal | singular }} struct {
+  type {{ .Name | pascal | singular }}{{- .Postfix}} struct {
     {{ range .Columns -}}       
       {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatypeN .IsNullable }}
     {{ end }}

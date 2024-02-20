@@ -6,7 +6,7 @@ key: model
 model: entity
 body: |  
   
-  func (d *{{ .Name | singular }}Db) create{{ .Name | singular }}(ctx context.Context, {{ .Name | camel | singular }} *{{ .Name | singular }}) (int64, error) {
+  func (d *{{ .Name | singular }}Db) create{{ .Name | singular }}(ctx context.Context, {{ .Name | camel | singular }} *{{ .Name | singular }}) ({{- range .PrimaryKeys }}{{ .DataType | datatype }}{{- end }}, error) {
     {{ template "go-blocks-db-open" . }}
     
     {{ template "go-blocks-db-create" . }}

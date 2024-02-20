@@ -1,0 +1,16 @@
+version: 3
+short: "Creates a file for inserting a single row into a specific source table"
+language: sql
+type: file
+features: 
+  - go-hex-feature
+  - go-hex-query
+  - go-hex-query-paged
+ 
+
+key: feature-sql
+fileName: "delete_{{ .Name | snake | singular }}.sql"
+
+model: entity
+body: |
+  select * from {{ .Schema }}.{{ .Name }} where 1 = 1 AND {{ range .PrimaryKeys }}{{ .Name }} = @{{ .Name  }}{{ end }}

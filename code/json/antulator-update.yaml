@@ -1,0 +1,62 @@
+version: 3
+name: Antulator file
+language: json
+type: file
+fileName: "sensors.json"
+model: custom
+
+body: |   
+    with d as (
+        select * from Antulator.Simulation where id = {{index .Custom "id"}}
+    )
+    update d set Metadata = N'    
+    {{$sensor:=index .Custom "sensors"}}   
+    {    
+        "name": "{{index .Custom "name"}}",
+        "duration": 1800,
+        "roomId": "{{index .Custom "roomId"}}",
+        "targets": {
+            "primary": {
+                "type": "power",
+                "value": 150
+            }
+        },
+        "sensors": { 
+            {{- range $i, $s := $sensor }}
+            {{if gt $i 0}},{{end}} "{{index $s "id"}}": {
+                "type": "BikePowerSensor",
+                "values": {
+                    "cadence": {
+                        "type": "cadence",
+                        "min": 85,
+                        "max": 120,
+                        "variance": 1,
+                        "step": 2,
+                        "calculation": "sequence",
+                        "direction": "up",
+                        "value": 90,
+                        "threshold": 100,
+                        "target": 0,
+                        "unit": "rpm"
+                    },
+                    "power": {
+                        "type": "power",
+                        "min": 100,
+                        "max": 400,
+                        "variance": 1,
+                        "step": 10,
+                        "calculation": "target",
+                        "direction": "up",
+                        "value": 220,
+                        "threshold": 150,
+                        "target": 0,
+                        "unit": "W"
+                    }
+                }
+            }        
+        {{- end}}
+        },
+        "emitRoomId": true,
+        "createdBy": "hpe"
+    }'
+    
