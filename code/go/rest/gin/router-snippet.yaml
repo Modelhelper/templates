@@ -1,0 +1,27 @@
+version: 3
+language: go
+type: snippet
+identifier: "%%ROUTER_GROUP_SNIPPETS%%"
+key: model
+model: entity
+fileName: router.go
+body: |  
+  
+  {{- $resource := .Name | plural | camel -}}
+  {{- $controllerName := .Name | plural | camel -}}
+
+  {{ $resource }} := api.Group("/{{ $resource }}")
+  {
+    {{ $resource }}Controller := controllers.New{{ .Name | singular |  pascal }}Controller(app)
+    {{ $resource }}.HEAD("", {{ $controllerName }}Controller.GetList)
+    {{ $resource }}.GET("", {{ $controllerName }}Controller.GetPaged)
+    {{ $resource }}.POST("", {{ $controllerName }}Controller.Create)
+    {{ $resource }}.GET("/:id", {{ $controllerName }}Controller.Get)
+    {{ $resource }}.PUT("/:id", {{ $controllerName }}Controller.Update)
+    {{ $resource }}.DELETE("/:id", {{ $controllerName }}Controller.Delete)
+
+    {{ range .Children -}}
+    {{ $resource }}.GET("/:id/{{ .NameWithoutPrefix | plural | camel }}", {{ $controllerName }}Controller.Get{{ .NameWithoutPrefix | plural | pascal }})
+    {{ end }}
+  }
+

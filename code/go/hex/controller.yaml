@@ -36,7 +36,7 @@ body: |
   // @Failure 400 {object} object{error=string} "The request contained invalid data"
   // @Failure 401 {object} object{error=string} "The authorization header is missing or invalid"
   // @Failure 403 {object} object{error=string} "Attempted to access a workout that does not belong to the authenticated user"
-  // @Failure 404 {object} object{error=string} "User could not be found"
+  // @Failure 404 {object} object{error=string} "{{ .Name | singular | pascal }} could not be found"
   // @Router /me/workouts/{id} [get]
   // @Param id path int true "The workout id"
   func (controller *WorkoutController) Get(c *gin.Context) {
@@ -71,7 +71,7 @@ body: |
   // @Success 200 {object} query.UserWorkouts "Returns the list of workouts for the user within the specified parameters"
   // @Failure 400 {object} object{error=string} "The request contained invalid data"
   // @Failure 401 {object} object{error=string} "The authorization header is missing or invalid"
-  // @Failure 404 {object} object{error=string} "User could not be found"
+  // @Failure 404 {object} object{error=string} "{{ .Name | singular | pascal }} could not be found"
   // @Router /me/workouts [get]
   // @Param from query string false "An RFC 3339 timestamp for the earliest point in time from which to get workouts"
   // @Param to query string false "An RFC 3339 timestamp for the latest point in time to which to get workouts"
@@ -95,7 +95,7 @@ body: |
   // @Security BearerAuth
   // @Success 200 {object} query.UserWorkouts "Returns the list of workouts for the user within the specified parameters"
   // @Failure 400 {object} object{error=string} "The request contained invalid data"
-  // @Failure 404 {object} object{error=string} "User could not be found"
+  // @Failure 404 {object} object{error=string} "{{ .Name | singular | pascal }} could not be found"
   // @Router /users/{id}/workouts [get]
   // @Param id path int true "The id of the user for which to get workouts"
   // @Param from query string false "An RFC 3339 timestamp for the earliest point in time from which to get workouts"

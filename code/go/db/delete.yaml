@@ -1,0 +1,11 @@
+version: 3
+name: go-db-create
+language: go
+type: block
+key: model
+model: entity
+body: |  
+  
+  func (r *{{ .Name | singular | camel}}Repo) Delete(ctx context.Context, {{ template "go-blocks-common-pk-args" . }}) error {
+    {{ template "go-blocks-db-delete" . }}
+  }

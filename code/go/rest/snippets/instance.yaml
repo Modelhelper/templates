@@ -1,0 +1,14 @@
+version: 3
+language: go
+type: snippet
+features:   
+  - go-hex-update
+  - go-hex-feature
+
+identifier: "MH_SNIPPET_COMMAND_DEF"
+
+key: "MH_SNIPPET_COMMAND_DEF"
+fileName: main.go
+model: entity
+body: |
+ Update{{ .Name | pascal | singular}}: {{.Name | singular | kebab}}.NewUpdate{{ .Name | pascal | singular}}Handler(sqlConn, logger),

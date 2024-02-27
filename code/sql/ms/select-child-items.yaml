@@ -1,7 +1,8 @@
 version: 3
 short: "Selects all rows from a specific source table"
 language: sql
-type: block
+type: block 
+
 model: entity
 body: |
   select 
@@ -9,4 +10,5 @@ body: |
       {{ .Name }}{{ if not .IsLast }}, {{ end -}}
     {{- end }} 
   from {{ .Schema }}.{{ .Name }} 
-  
+  where {{ .RelatedColumn.Name }} = @{{ .RelatedColumn.Name | pascal }}
+

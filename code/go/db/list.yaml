@@ -6,35 +6,6 @@ key: model
 model: entity
 body: |  
   
-  func (r *{{ .Name | singular }}Repo) GetList() ([]*models.{{ .Name | singular }}Model, error) {
-    conn, err := r.conn.Get(ctx)
-    if err != nil {
-      return nil, errors.Wrap(err, "GetList.Handle: get conn")
-    }
-    defer conn.Close()
-
-    rows, err := conn.QueryContext(ctx, select{{ .Name | pascal | plural }}Query)
-    if err != nil {
-      return nil, err
-    }
-    defer rows.Close()
-
-    var items []*models.{{ .Name | pascal | plural }}Model
-    for rows.Next() {
-      var (
-        item models.{{ .Name | pascal | plural }}Model
-      )
-      err = rows.Scan(
-        {{ range .Columns -}}
-        &item.{{ .Name | pascal }},
-        {{ end }}
-      )
-      if err != nil {
-        return nil, err
-      }
-
-      items = append(items, &item)
-    }
-
-    return items, nil
+  func (r *{{ .Name | singular | camel}}Repo) GetList(ctx context.Context) ([]*models.{{ .Name | singular }}Model, error) {
+    {{ template "go-blocks-db-list" . }}
   }

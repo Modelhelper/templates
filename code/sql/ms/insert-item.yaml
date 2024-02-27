@@ -1,9 +1,7 @@
 version: 3
 short: "Insert item into a specific source table"
 language: sql
-type: file 
-fileName: "insert_{{ .Name | snake | plural }}.sql"
-
+type: block 
 model: entity
 body: |
   insert into {{ .Schema }}.{{ .Name }} (

@@ -1,0 +1,24 @@
+version: 3
+language: go
+type: file
+key: model
+identifier: model
+model: basic
+fileName: "page_options.go"
+
+body: |  
+  package models
+
+  import (
+    "{{ .Project.Name | kebab }}/core/models"
+    "context"
+    "time"
+  )
+
+  type PageOptions struct {
+    From     *time.Time `json:"from" form:"from" binding:"omitempty" time_format:"2006-01-02T15:04:05Z07:00"`
+    To       *time.Time `json:"to" form:"to" binding:"omitempty" time_format:"2006-01-02T15:04:05Z07:00"`
+    Page     *int       `json:"page" form:"page" binding:"omitempty,gt=0"`
+    PageSize *int       `json:"pageSize" form:"pageSize" binding:"omitempty,gt=0"`
+  }
+  

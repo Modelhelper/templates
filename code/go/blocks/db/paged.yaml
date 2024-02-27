@@ -1,0 +1,75 @@
+version: 3
+name: go-blocks-db-list
+language: go
+type: block
+short: Entity body for getting a list from database. Must be inside func and expects a db obj
+key: model
+model: entity
+body: |  
+  reqId, _ := ctx.Value("request_id").(string)
+
+  conn, err := r.conn.Get(ctx)
+  if err != nil {
+    return nil, errors.Wrap(err, "{{ .Name | singular | pascal }}Repository.GetPaged: get conn")
+  }
+  defer conn.Close()
+
+  var (
+    fromDate = utils.ToSqlNullTime(options.From)
+    offset   = utils.ToOffset(options.Page, options.PageSize)
+    toDate   = utils.ToSqlNullTime(options.To)
+  )
+
+  sqlQuery := `{{ template "sql-ms-select-paged" . }}`
+
+  if options.Page != nil && options.PageSize != nil {
+    sqlQuery = strings.Replace(
+      sqlQuery,
+      "-- REPLACE_WITH_PAGINATION",
+      "OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY",
+      1,
+    )
+  }
+
+  rows, err := conn.QueryContext(ctx,
+    sqlQuery,
+    sql.Named("from", fromDate),       // $1
+    sql.Named("to", toDate),           // $2
+    sql.Named("offset", offset),       // $3
+    sql.Named("pageSize", options.PageSize), // $4
+  )
+  if err != nil {
+    r.logger.Error("process=\"{{ .Name | singular | pascal }}Repository.GetPaged: query\" requestId=%s error=\"%S\"", reqId, err)
+    return nil, err
+  }
+
+  var (
+    items         = make([]*models.{{ .Name | singular | pascal }}Model, 0)
+    totalRowCount int
+  )
+  for rows.Next() {
+    var (
+      item models.{{ .Name | singular | pascal }}Model
+    )
+
+    err = rows.Scan(
+      {{ range .Columns -}}
+      &item.{{ .Name | pascal }},
+      {{ end }}
+    )
+    if err != nil {
+      r.logger.Error("process=\"{{ .Name | singular | pascal }}Repository.GetPaged: scan rows\" requestId=%s error=\"%S\"", reqId, err)
+      _ = rows.Close()
+      continue
+    }
+
+    items = append(items, &item)
+  }
+
+  return utils.NewPaginatedResponse(
+    items,
+    len(items),
+    totalRowCount,
+    options.Page,
+    options.PageSize,
+  ), nil

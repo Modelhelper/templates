@@ -35,7 +35,7 @@ tags:
 # what groups this template is included in
 # is used to fetch templates within a group when using -tg in generate command
 # optional, default is null
-groups: 
+features: 
  - group1
  - group2
  - group3

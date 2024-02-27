@@ -1,0 +1,13 @@
+version: 3
+short: "Select paged"
+language: sql
+type: block 
+model: entity
+body: |
+  select 
+    {{- range .Columns }}
+    {{ .Name }}{{ if not .IsLast }}, {{ end -}}
+    {{- end }},
+    COUNT(*) OVER() AS total_row_count 
+  from {{ .Schema }}.{{ .Name }} 
+  -- REPLACE_WITH_PAGINATION

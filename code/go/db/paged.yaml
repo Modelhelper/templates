@@ -1,0 +1,11 @@
+version: 3
+name: go-db-list
+language: go
+type: block
+key: model
+model: entity
+body: |  
+  
+  func (r *{{ .Name | singular | camel}}Repo) GetPaged(ctx context.Context, options *models.PageOptions) (*models.PaginatedResponse, error) {
+    {{ template "go-blocks-db-paged" . }}
+  }

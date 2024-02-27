@@ -9,13 +9,13 @@ body: |
   {{$model := .Name | camel | singular }}
   conn, err := r.conn.Get(ctx)
   if err != nil {
-    return 0, errors.Wrap(err, "Create{{ .Name }}.Repository: get conn")
+    return errors.Wrap(err, "Update{{ .Name }}.Repository: get conn")
   }
   defer conn.Close()
 
   tx, err := conn.BeginTx(ctx, nil)
   if err != nil {
-    return 0, errors.Wrap(err, "Create{{ .Name }}.Repository: begin tx")
+    return errors.Wrap(err, "Update{{ .Name }}.Repository: begin tx")
   }
   var isSuccess bool
   defer func() {
@@ -24,24 +24,27 @@ body: |
     }
     err = tx.Rollback()
     if err != nil {
-      r.logger.Errorf("process=\"Create{{ .Name }}.Repository: rollback\" error=\"%s\"", err)
+      r.logger.Errorf("process=\"Update{{ .Name }}.Repository: rollback\" error=\"%s\"", err)
     }
   }()
 
-  query := `{{ template "sql-ms-insert-item" . -}}`
+  query := `{{ template "sql-ms-update-item" . -}}`
 
-  id := 0
+  var outId int
 
   err = tx.QueryRowContext(
     ctx,
     query,
+    {{ range .PrimaryKeys -}}
+    sql.Named("{{ .Name }}", {{ .Name | camel }}),
+    {{ end }}
     {{ range .NonPrimaryColumns -}}
     sql.Named("{{ .Name }}", {{ $model }}.{{ .Name | pascal }}),
     {{ end }}    
-  ).Scan(&id)
+  ).Scan(&outId)
 
   if err != nil {
-    return 0, errors.Wrap(err, "Create{{ .Name }}.Repository: scan row")
+    return errors.Wrap(err, "Update{{ .Name }}.Repository: scan row")
   }
 
   isSuccess = true
@@ -50,4 +53,4 @@ body: |
     r.logger.LogError(err)
   }
 
-  return id, nil
+  return nil

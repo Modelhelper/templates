@@ -1,8 +1,7 @@
 version: 3
 short: "delete item from a specific source table"
 language: sql
-type: file 
-fileName: "delete_{{ .Name | snake | plural }}.sql"
+type: block
 
 model: entity
 body: |

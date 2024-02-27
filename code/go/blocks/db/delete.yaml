@@ -1,0 +1,56 @@
+version: 3
+language: go
+type: block
+short: Removes an item from the database. Must be inside func and expects a db obj
+key: model
+model: entity
+body: |  
+  conn, err := r.conn.Get(ctx)
+  if err != nil {
+    return errors.Wrap(err, "Delete{{ .Name }}.Repository: get conn")
+  }
+  defer conn.Close()
+
+  tx, err := conn.BeginTx(ctx, nil)
+  if err != nil {
+    return errors.Wrap(err, "Delete{{ .Name }}.Repository: begin tx")
+  }
+  var isSuccess bool
+  defer func() {
+    if isSuccess {
+      return
+    }
+    err = tx.Rollback()
+    if err != nil {
+      r.logger.Errorf("process=\"Delete{{ .Name }}.Repository: rollback\" error=\"%s\"", err)
+    }
+  }()
+
+  var (
+    idAffected int
+  )
+
+  deleteQuery := `{{ template "sql-ms-delete-item" . }}`
+
+  err = tx.QueryRowContext(
+    ctx,
+    deleteQuery,
+    sql.Named("id", id),
+  ).Scan(&idAffected)
+
+  if err != nil {
+    return core.ErrRowNotFound
+  }
+
+  if idAffected != id {
+    err = core.ErrRowNotFound
+    return err
+  }
+
+  isSuccess = true
+  err = tx.Commit()
+  if err != nil {
+    r.logger.LogError(err)
+  }
+
+  return nil

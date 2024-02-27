@@ -1,0 +1,11 @@
+version: 3
+language: go
+type: snippet
+key: model
+model: entity
+
+body: |  
+  {{ range .Children -}}    
+    {{ .OwnerName | plural | camel }}.GET("/:id/{{ .NameWithoutPrefix | plural | camel  }}", {{ .OwnerName | plural | camel }}Controller.Get{{ .NameWithoutPrefix | pascal | plural }})
+    
+  {{ end -}}

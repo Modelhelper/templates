@@ -1,9 +1,7 @@
 version: 3
 short: "Update item from a specific source table"
 language: sql
-type: file 
-fileName: "update_{{ .Name | snake | plural }}.sql"
-
+type:  block
 model: entity
 body: |
   update {{ .Schema }}.{{ .Name }} set
@@ -13,5 +11,9 @@ body: |
   where 1 = 1
     {{- range .PrimaryKeys }}
       and {{ .Name }} = @{{ .Name }}
+    {{- end }}
+
+  select {{- range .PrimaryKeys }}
+      {{ .Name }} = @{{ .Name }}
     {{- end }}
   

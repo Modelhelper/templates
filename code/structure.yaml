@@ -14,6 +14,11 @@ language: cs
 # A block is a set of common code that can be used in a snippet or a file
 type: file | snippet | block
 
+# optional, used when the type = 'snippet'. 
+# Where ever you put this in a code file, 
+# It will usethe identifier is used to identify the template
+identifier: "%%YOUR_IDENTIFIER%%"
+
 # optional
 description: |
     Long description if needed. Will show when 'mh template <template-name>'

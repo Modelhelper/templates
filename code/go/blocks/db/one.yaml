@@ -12,7 +12,9 @@ body: |
     }
     defer conn.Close()
 
-    row := conn.QueryRowContext(ctx, get{{ .Name | pascal | singular}}Query, 
+    query := `{{ template "sql-ms-select-single" . -}}`
+
+    row := conn.QueryRowContext(ctx, query, 
       {{- range .PrimaryKeys }}sql.Named("{{ .Name | pascal }}", {{ .Name | camel }}), {{- end }}
     )
 

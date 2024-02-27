@@ -1,0 +1,65 @@
+version: 3
+language: go
+type: file
+key: model
+model: name
+
+body: |
+  package {{ .Name | camel | singular }}
+
+  import (
+    "context"
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "{{ .Project.Name | singular | kebab }}/core"
+    "{{ .Project.Name | singular | kebab }}/core/{{ .Name | singular | camel }}/models"
+    "{{ .Project.Name | singular | kebab }}/core/{{ .Name | singular | camel }}/query"
+  )
+
+  func NewGet{{ .Name | pascal }}Handler(cfg core.ConfigService) query.Get{{ .Name | pascal }}Handler {
+    return &get{{ .Name | pascal }}Handler{cfg}
+  }
+
+  type get{{ .Name | pascal }}Handler struct {
+    cfg core.ConfigService
+  }
+
+  type {{ .Name | pascal }}Response struct {
+    Tasks []*models.Task `json:"."`
+  }
+
+  // Handle implements query.GetSimulationHandler.
+  func (h *get{{ .Name | pascal }}Handler) Handle(ctx context.Context) ([]models.Task, error) {
+
+    cfg, _ := h.cfg.Get(ctx)
+    ac := cfg.Antulator
+    url := fmt.Sprintf("%s/tasks", ac.BaseUrl)
+
+    client := &http.Client{}
+    req, err := http.NewRequest("GET", url, nil)
+    if err != nil {
+      fmt.Print(err.Error())
+    }
+    req.Header.Add("Accept", "application/json")
+    req.Header.Add("Content-Type", "application/json")
+    resp, err := client.Do(req)
+    if err != nil {
+      fmt.Print(err.Error())
+    }
+
+    defer resp.Body.Close()
+    bodyBytes, err := io.ReadAll(resp.Body)
+    if err != nil {
+      fmt.Print(err.Error())
+    }
+
+    var tsk {{ .Name | pascal }}Response
+    json.Unmarshal(bodyBytes, &tsk)
+
+    var responseObject []models.Task
+    json.Unmarshal(bodyBytes, &responseObject)
+
+    return responseObject, nil
+  }

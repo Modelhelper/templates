@@ -7,7 +7,7 @@ body: |
     SELECT
         {{ template "sql-col-list" . }}   
     FROM [{{ .Schema }}].[{{ .Name }}]
-    {{ if len .PrimaryColumns }} 
+    {{ if len .PrimaryKeys }} 
     WHERE 
         {{ range $index, $col := .PrimaryKeys }}
         {{- if $index }} AND {{end}}{{ $col.Name }} = @{{ $col.Name | singular }}

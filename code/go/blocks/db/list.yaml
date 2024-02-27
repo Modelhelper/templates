@@ -6,38 +6,35 @@ short: Entity body for getting a list from database. Must be inside func and exp
 key: model
 model: entity
 body: |  
-  list := {{ .Name | singular }}{}
+  conn, err := r.conn.Get(ctx)
+    if err != nil {
+      return nil, errors.Wrap(err, "GetList.Handle: get conn")
+    }
+    defer conn.Close()
 
-  ctx := context.Background()
+    query := `{{ template "sql-ms-select-all" . -}}`
 
-  query := ``
-
-  stmt, err := db.PrepareContext(ctx, query)
-
-  if err != nil {
-    return nil, err
-  }
-
-  rows, err := stmt.Query(query)
-  if err != nil {
-    return nil, err
-  }
-
-  defer rows.Close()
-
-  var o {{ .Name | singular }}
-  
-  for rows.Next() {
-
-    if err := rows.Scan(
-      {{ range .Columns -}}       
-      &o.{{ .Name }},
-      {{ end }}); err != nil {
+    rows, err := conn.QueryContext(ctx, query)
+    if err != nil {
       return nil, err
-    } else {
-      list = append(list, o)
+    }
+    defer rows.Close()
+
+    var items []*models.{{ .Name| singular | pascal  }}Model
+    for rows.Next() {
+      var (
+        item models.{{ .Name | pascal | singular }}Model
+      )
+      err = rows.Scan(
+        {{ range .Columns -}}
+        &item.{{ .Name | pascal }},
+        {{ end }}
+      )
+      if err != nil {
+        return nil, err
+      }
+
+      items = append(items, &item)
     }
 
-  }
-
-  return &list, nil
+    return items, nil

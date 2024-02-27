@@ -1,0 +1,17 @@
+version: 3
+language: go
+type: block
+key: model
+model: entity
+
+body: |  
+  // @Summary Get detailed information on a workout
+  // @Tags {{ .Name | pascal }}
+  // @Produce json
+  // @Success 200 {object} query.UserWorkoutDetail "Returns the list of workouts for the user within the specified parameters"
+  // @Failure 400 {object} object{error=string} "The request contained invalid data"
+  // @Failure 401 {object} object{error=string} "The authorization header is missing or invalid"
+  // @Failure 403 {object} object{error=string} "Attempted to access a workout that does not belong to the authenticated user"
+  // @Failure 404 {object} object{error=string} "{{ .Name | singular | pascal }} could not be found"
+  // @Router /me/workouts/{id} [get]
+  // @Param id path int true "The workout id"

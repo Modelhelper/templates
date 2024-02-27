@@ -1,0 +1,25 @@
+version: 3
+language: go
+type: block
+key: model
+model: entity
+
+body: |  
+  
+    id, err := strconv.Atoi(c.Param("id"))
+
+    if err != nil {
+      c.JSON(http.StatusBadRequest, err)
+      return
+    }
+
+    items, err := controller.app.{{ .Name | singular | pascal}}Repository.Update(c.Request.Context(), id)
+
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+    
+    c.JSON(http.StatusOK, items)
+
+    

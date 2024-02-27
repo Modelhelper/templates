@@ -1,0 +1,62 @@
+version: 3
+name: go-hex-controller
+language: go
+type: file
+fileName: "{{ .Name | kebab }}-controller.go"
+key: model
+model: entity
+features:
+  - go-rest
+  - go-rest-repo
+
+body: |  
+  
+  package controllers
+
+  import (
+    "github.com/gin-gonic/gin"
+    "github.com/pkg/errors"
+    "net/http"
+    "stages_user_api/core"
+    "stages_user_api/core/query"
+    "stages_user_api/ports/api/http/controllers/utils"
+  )
+
+  func New{{ .Name | singular | pascal }}Controller(app *core.Application) *{{ .Name | singular | pascal }}Controller {
+    return &{{ .Name | singular | pascal }}Controller{app: app}
+  }
+
+  type {{ .Name | singular | pascal }}Controller struct {
+    app *core.Application
+  }
+
+  {{ template "go-rest-swag-get" . }}
+  func (controller *{{ .Name | singular | pascal }}Controller) Get(c *gin.Context)  {
+    
+  }
+
+  {{ template "go-rest-swag-post" . }}
+  func (controller *{{ .Name | singular | pascal }}Controller) Create(c *gin.Context)  {
+
+  }
+
+  {{ template "go-rest-swag-delete" . }}
+  func (controller *{{ .Name | singular | pascal }}Controller) Update(c *gin.Context)  {
+
+
+  }
+
+  {{ template "go-rest-swag-update" . }}
+  func (controller *{{ .Name | singular | pascal }}Controller) Update(c *gin.Context)  {
+  }
+
+  {{ template "go-rest-swag-get-paged" . }}
+  func (controller *{{ .Name | singular | pascal }}Controller) GetPaged(c *gin.Context)  {
+  }
+
+  {{ range .Children -}}        
+  {{ template "go-rest-swag-get-child" . }}
+  func (controller *{{ .OwnerName | singular | pascal }}Controller) Get{{ .NameWithoutPrefix | pascal | plural }}(c *gin.Context)  {
+  }
+    
+  {{ end -}}

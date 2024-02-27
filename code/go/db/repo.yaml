@@ -1,57 +1,59 @@
 version: 3
-name: go-db-repo
 language: go
 type: file
 key: repo
+fileName: "{{ .Name | kebab }}-repo.go"
 model: entity
+features:
+  - go-repo
+
 body: |  
   package repos
 
+  import (
+    "{{ .Project.Name | kebab }}/core"
+    "{{ .Project.Name | kebab }}/core/repos"
+    "{{ .Project.Name | kebab }}/features/utils"
+    "{{ .Project.Name | kebab }}/core/models"
+    db "{{ .Project.Name | kebab }}/ports/sql"
+    
+    "context"
+    "database/sql"
+    _ "embed"
+    "strings"
+
+    logging "bitbucket.org/VismoXClub2/gopkg/stages-logging"
+    "github.com/pkg/errors"
+  )
+
+  
   type {{ .Name | camel | singular }}Repo struct {
     conn   db.ConnectionManager
     logger logging.StagesLogger
   }
 
-  func New{{ .Name | pascal | singular }}Repo(conn db.ConnectionManager, logger logging.StagesLogger) {{ .Name | pascal | singular }}Repository {
+  func New{{ .Name | pascal | singular }}Repo(conn db.ConnectionManager, logger logging.StagesLogger) repos.{{ .Name | pascal | singular }}Repository {
     return &{{ .Name | camel | singular }}Repo{
       conn:   conn,
       logger: logger,
     }
   }
 
-  func (r *{{ .Name | singular }}Repo) Get(ctx context.Context, {{ template "go-blocks-common-pk-args" . }}) (*models.{{ .Name | singular }}Model, error) {
-    conn, err := r.conn.Get(ctx)
-    if err != nil {
-      return nil, errors.Wrap(err, "Get{{ .Name | pascal | singular}}.Repo: get conn")
-    }
-    defer conn.Close()
+  {{ template "go-db-one" . }}
 
-    row := conn.QueryRowContext(ctx, get{{ .Name | pascal | singular}}Query, 
-      {{- range .PrimaryKeys }}sql.Named("{{ .Name | pascal }}", {{ .Name | camel }}), {{- end }}
-    )
+  {{ template "go-db-list" . }}  
 
-    var item models.{{ .Name | pascal | singular}}Model
-    err = row.Scan(
-      {{ range .Columns -}}       
-      &item.{{ .Name | pascal }},
-      {{ end }}
-    )
-    if errors.Is(err, sql.ErrNoRows) {
-      return nil, core.ErrNotFound
-    }
-    if err != nil {
-      return nil, err
-    }
+  {{ template "go-db-paged" . }}  
+  
+  {{ template "go-db-create" . }} 
 
-    return &item, nil
-  }  
+  {{ template "go-db-update" . }}
 
-  // test child columns
-  {{ range .Children -}}
-    //////////////////////////////////////////////////////////////////////
-    Child name: {{ .Schema }}.{{ .Name }}
-    {{ range .Columns }}
-      {{ .Name | pascal }} {{ .DataType | datatype }} | Last: {{ .IsLast}} | First: {{ .IsFirst }} | PK: {{ .IsPrimaryKey }}
-    {{ end -}}
+  {{ template "go-db-delete" . }}  
+  
+
+  {{ range .Children -}}    
+    {{ template "go-db-child-list" . }}
+    
   {{ end -}}
   

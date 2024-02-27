@@ -1,0 +1,18 @@
+version: 3
+language: go
+type: block
+key: model
+model: entity
+
+body: |  
+  // @Summary Update detailed information on a {{ .Name | singular | words }}
+  // @Tags {{ .Name | singular | words }}
+  // @Produce json
+  // @Security BearerAuth
+  // @Success 200 {object} []models.{{ .Name | singular | pascal }}Model "Returns a list of {{ .Name | pascal | plural }} for the user within the specified parameters"
+  // @Failure 400 {object} object{error=string} "The request contained invalid data"
+  // @Failure 401 {object} object{error=string} "The authorization header is missing or invalid"
+  // @Failure 403 {object} object{error=string} "Attempted to access a {{ .Name | singular | words }} that does not belong to the authenticated user"
+  // @Failure 404 {object} object{error=string} "{{ .Name | singular | pascal }} could not be found"
+  // @Router /{{ .Name | plural | camel }}/{id} [post]
+  // @Param id path int true "The {{ .Name | singular | words }} id"

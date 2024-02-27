@@ -1,0 +1,12 @@
+version: 3
+language: go
+type: snippet
+key: repo
+model: entity
+body: |  
+  
+  {{ range .Children -}}    
+    {{ template "go-db-child-list" . }}
+    
+  {{ end -}}
+  

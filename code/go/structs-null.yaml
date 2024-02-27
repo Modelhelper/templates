@@ -4,17 +4,11 @@ language: go
 type: file
 key: model
 identifier: model
-model: entity
+model: entities
 fileName: "{{ .Name | kebab }}.go"
-feature: 
-  - go-rest-full
-  - go-repo
-groups: 
-  - go-rest-full
-body: |  
-  package models
 
-  type {{ .Name | pascal | singular}}{{ .Postfix }} struct {
+body: |  
+  type {{ .Name | pascal | singular}}Model struct {
     {{ range .Columns -}}       
       {{ .Name | pascal }} {{ if .IsNullable }}*{{ end }}{{ .DataType | datatype }} `json:"{{ .Name | camel }}{{ if .IsNullable}},omitempty{{ end}}"`
     {{ end }}    

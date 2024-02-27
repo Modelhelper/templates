@@ -6,6 +6,6 @@ key: model
 model: entity
 body: |  
   
-  func (r *{{ .Name | singular }}Repo) Get{{ .Name | singular }}() (*models.{{ .Name | singular }}Model, error) {
+  func (r *{{ .Name | singular | camel }}Repo) Get(ctx context.Context, {{ template "go-blocks-common-pk-args" . }}) (*models.{{ .Name | singular }}Model, error) {
     {{ template "go-blocks-db-one" . }}
   }

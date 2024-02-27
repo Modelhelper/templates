@@ -1,0 +1,44 @@
+version: 3
+name: go-struct
+language: go
+type: file
+key: model
+identifier: model
+model: basic
+fileName: "paginated_response.go"
+
+body: |  
+  package utils
+
+  import (
+    "antulator-api/core/models"
+    "math"
+  )
+
+  func NewPaginatedResponse(items any, numResults int, totalResults int, page *int, pageSize *int) *models.PaginatedResponse {
+    isPaginated := page != nil && pageSize != nil
+
+    res := &models.PaginatedResponse{
+      IsPaginated:   isPaginated,
+      TotalRecords:  totalResults,
+      ItemRangeStop: totalResults - 1,
+      Items:         items,
+    }
+    if !isPaginated {
+      return res
+    }
+
+    res.PageNumber = *page
+    res.PageSize = *pageSize
+    res.TotalPages = MaxInt(
+      int(math.Ceil(float64(totalResults)/float64(*pageSize))),
+      1,
+    )
+    res.ItemRangeStart = *ToOffset(page, pageSize)
+    res.ItemRangeStop = MinInt(
+      (res.PageNumber*res.PageSize)-1,
+      numResults-1,
+    )
+    return res
+  }
+  

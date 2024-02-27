@@ -1,0 +1,36 @@
+version: 3
+language: go
+type: block
+key: model
+model: entity
+
+body: |  
+  
+  // @Summary Update detailed information on a {{ .Name | singular | words }}
+  // @Tags {{ .Name | singular | pascal }}
+  // @Produce json
+  // @Security BearerAuth
+  // @Success 200 {object} []models.{{ .Name | singular | pascal }} "Returns a list of {{ .NameWithoutPrefix | pascal | plural }} for the user within the specified parameters"
+  // @Failure 400 {object} object{error=string} "The request contained invalid data"
+  // @Failure 401 {object} object{error=string} "The authorization header is missing or invalid"
+  // @Failure 403 {object} object{error=string} "Attempted to access a {{ .Name | singular | words }} that does not belong to the authenticated user"
+  // @Router /{{ .OwnerName | plural | camel }}/{id}/{{ .NameWithoutPrefix | plural | camel  }} [get]
+  // @Param id path int true "The {{ .OwnerName | singular | words }} id"
+  func (controller *{{ .Name | singular | pascal }}Controller) Update(c *gin.Context)  {
+    id, err := strconv.Atoi(c.Param("id"))
+
+    if err != nil {
+      c.JSON(http.StatusBadRequest, err)
+      return
+    }
+
+    items, err := controller.app.{{ .OwnerName | singular | pascal}}Repository.Update(c.Request.Context(), id)
+
+    if err != nil {
+      _ = c.Error(err)
+      return
+    }
+    
+    c.JSON(http.StatusOK, items)
+  }
+    
