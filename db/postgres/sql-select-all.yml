@@ -8,8 +8,4 @@ body: |
     {{ range $index, $col := .Columns }}
   {{- if $index }},{{end}}[{{ $col.Name }}] 
   {{ end }}  
-  from {{ .Name }}
-  where 
-    {{ range .PrimaryKeys -}}
-      {{ .Name }} = @{{ .Name }}
-    {{ end }}
+  from {{ .Name }}  

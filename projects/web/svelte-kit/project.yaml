@@ -1,0 +1,27 @@
+templateVersion: 3.0
+
+name: web-ts-svelte-kit
+language: ts
+
+description: |
+  This project will create a SvelteKit website, using the latest version of SvelteKit.
+  It's using Svelte 5 and SvelteKit 2. It's using TailwindCSS 3 and DaisyUI for design.
+
+tags:
+  - website
+  - Svelte
+  - SvelteKit
+  - TailwindCSS
+  - DaisyUI
+  - TypeScript
+
+# default version for the application
+version: 1.0.0
+
+
+# this will be used for the root directory of the project
+rootDirectory: "src/{{ .Name | kebab }}"
+
+# default version for the application
+sources:
+  - ./src

@@ -5,6 +5,8 @@ short: Removes an item from the database. Must be inside func and expects a db o
 key: model
 model: entity
 body: |  
+  reqId, _ := ctx.Value("request_id").(string)
+  
   conn, err := r.conn.Get(ctx)
   if err != nil {
     return errors.Wrap(err, "Delete{{ .Name }}.Repository: get conn")
@@ -21,8 +23,8 @@ body: |
       return
     }
     err = tx.Rollback()
-    if err != nil {
-      r.logger.Errorf("process=\"Delete{{ .Name }}.Repository: rollback\" error=\"%s\"", err)
+    if err != nil {      
+      slog.Error("process", "Delete{{ .Name }}.Repository: rollback", "request_id", reqId, "error", err)    
     }
   }()
 
@@ -30,7 +32,7 @@ body: |
     idAffected int
   )
 
-  deleteQuery := `{{ template "sql-ms-delete-item" . }}`
+  deleteQuery := `{{ template "sql-delete-item" . }}`
 
   err = tx.QueryRowContext(
     ctx,
@@ -50,7 +52,7 @@ body: |
   isSuccess = true
   err = tx.Commit()
   if err != nil {
-    r.logger.LogError(err)
+    slog.Error("process", "Delete{{ .Name }}.Repository: commit", "request_id", reqId, "error", err)
   }
 
   return nil

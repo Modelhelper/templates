@@ -1,0 +1,12 @@
+version: 3
+short: "selects a single row, based on PK, from a MS SQL table"
+language: sql
+type: block
+model: entity
+body: |
+  select
+    {{ range $index, $col := .Columns }}
+  {{- if $index }},{{end}}[{{ $col.Name }}] 
+  {{ end }}  
+  from [{{.Schema}}].[{{ .Name }}]
+  

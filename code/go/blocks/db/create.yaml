@@ -7,6 +7,10 @@ key: model
 model: entity
 body: |    
   {{$model := .Name | camel | singular }}
+  reqId, _ := ctx.Value("request_id").(string)
+  logger := slog.With("process", "{{ .Name | camel | singular }}Repository.Paged", "request_id", reqId)
+
+
   conn, err := r.conn.Get(ctx)
   if err != nil {
     return 0, errors.Wrap(err, "Create{{ .Name }}.Repository: get conn")
@@ -24,11 +28,11 @@ body: |
     }
     err = tx.Rollback()
     if err != nil {
-      r.logger.Errorf("process=\"Create{{ .Name }}.Repository: rollback\" error=\"%s\"", err)
+      logger.Error("action", "rollback", "error", err)      
     }
   }()
 
-  query := `{{ template "sql-ms-insert-item" . -}}`
+  query := `{{ template "sql-insert-item" . -}}`
 
   id := 0
 
@@ -47,7 +51,7 @@ body: |
   isSuccess = true
   err = tx.Commit()
   if err != nil {
-    r.logger.LogError(err)
+    logger.Error("action", "commit", "error", err)
   }
 
   return id, nil

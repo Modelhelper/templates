@@ -4,12 +4,22 @@ language: go
 type: block
 key: model
 model: entity
+fileName: "{{ .Name | kebab }}.go"
+
+features:
+  - go-repo
 body: |  
+  package {{ .Namespace}}
   
-  // {{ .Description }}
-  type {{ .Name | pascal | singular }}{{- .Postfix}} struct {
+  import "time"
+  
+  type {{ .Name | pascal | singular}} struct {
     {{ range .Columns -}}       
-      {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatypeN .IsNullable }}
+      {{ .NameWithoutPrefix | pascal }} {{ .DataType | datatype }} `json:"{{ .NameWithoutPrefix | camel }},omitempty"`
+    {{ end }}
+
+    {{ range .Children -}}
+      {{ .Name | pascal }} []{{ .Name | pascal }} `json:"{{ .Name | camel | plural}}"`
     {{ end }}
   }
   

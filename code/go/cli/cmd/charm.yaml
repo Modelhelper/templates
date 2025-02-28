@@ -1,0 +1,84 @@
+version: 3
+language: go
+type: snippet
+key: cli-cmd
+model: name
+
+body: |  
+
+  /* 
+  // copy and paste to the handler
+  model := &{{ .Name | singular | camel }}Model {
+    app: h.app,
+    ctx: cmd.Context(),
+    data: data,
+    title: "List of {{ .Name | singular | words }}",
+  
+  }
+
+  h.program = tea.NewProgram(model)
+  if _, err = h.program.Run(); err != nil {
+    fmt.Println("error running program:", err)
+  }
+  
+  */
+  type {{ .Name | singular | camel }}Model struct {
+    app      *core.Application
+    ctx      context.Context    
+    quitting bool
+    err      error
+    data *models.{{ .Name | singular | pascal }}
+    title string
+  }
+
+  func (m {{ .Name | singular | camel }}Model) Init() tea.Cmd {
+    return nil
+  }
+
+  func (m {{ .Name | singular | camel }}Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+    switch msg := msg.(type) {
+
+    case tea.KeyMsg:
+      switch msg.String() {
+      case "q", "esc", "ctrl+c":
+        m.quitting = true
+        return m, tea.Quit
+
+      default:
+        return m, tea.Quit
+      }
+
+    }
+    return m, tea.Quit
+  }
+
+  func (m {{ .Name | singular | camel }}Model) View() string {
+    var b strings.Builder
+
+    if m.err != nil {
+      return m.err.Error()
+    }
+    
+    b.WriteString(fmt.Sprintf("\n\n%s\n-------------------\n\n", m.title))
+
+    // var rows []table.Row
+    // for _, item := range m.data.Items {
+
+    //   rows = append(rows, table.Row{
+    //     item.data,
+    
+    //   })
+    // }
+
+    // t := table.NewWriter()
+    // t.AppendHeader(table.Row{"header"})
+    // t.AppendRows(rows)
+    // table := t.Render()
+
+    // b.WriteString(table)
+
+    b.WriteString("\n\n\n")
+
+    return b.String()
+
+  }  

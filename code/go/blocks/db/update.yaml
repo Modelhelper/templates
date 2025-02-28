@@ -7,15 +7,18 @@ key: model
 model: entity
 body: |    
   {{$model := .Name | camel | singular }}
+  reqId, _ := ctx.Value("request_id").(string)
+  logger := slog.With("process", "{{ .Name | camel | singular }}Repository.Update", "request_id", reqId)
+
   conn, err := r.conn.Get(ctx)
   if err != nil {
-    return errors.Wrap(err, "Update{{ .Name }}.Repository: get conn")
+    return errors.Wrap(err, "{{ .Name | camel | singular }}Repository.Update: get conn")
   }
   defer conn.Close()
 
   tx, err := conn.BeginTx(ctx, nil)
   if err != nil {
-    return errors.Wrap(err, "Update{{ .Name }}.Repository: begin tx")
+    return errors.Wrap(err, "{{ .Name | camel | singular }}Repository.Update: begin tx")
   }
   var isSuccess bool
   defer func() {
@@ -24,11 +27,12 @@ body: |
     }
     err = tx.Rollback()
     if err != nil {
-      r.logger.Errorf("process=\"Update{{ .Name }}.Repository: rollback\" error=\"%s\"", err)
+      logger.Error("action", "rollback", "error", err)    
+      
     }
   }()
 
-  query := `{{ template "sql-ms-update-item" . -}}`
+  query := `{{ template "sql-update-item" . -}}`
 
   var outId int
 
@@ -44,13 +48,14 @@ body: |
   ).Scan(&outId)
 
   if err != nil {
-    return errors.Wrap(err, "Update{{ .Name }}.Repository: scan row")
+    return errors.Wrap(err, "{{ .Name | camel | singular }}Repository.Update: scan row")
   }
 
   isSuccess = true
   err = tx.Commit()
   if err != nil {
-    r.logger.LogError(err)
+    logger.Error("action", "commit", "error", err)    
+
   }
 
   return nil

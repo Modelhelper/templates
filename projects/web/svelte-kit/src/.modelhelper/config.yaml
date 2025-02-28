@@ -1,0 +1,16 @@
+configVersion: 3.0
+version: 1.0.0
+
+name: {{ .Name }} # will be the .Project.Name for code generation
+language: ts
+useFileHeader: false
+
+
+# Where to export code.
+# each location key can be found in the template 'key'
+locations:
+  main: ./
+  core: ./core
+  model: ./src/lib/models
+  route: ./src/routes
+  

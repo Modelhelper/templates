@@ -19,7 +19,8 @@ body: |
     {{ template "cs-inj-ctor" .}}
     public class {{ .Prefix -}}{{ .Name | pascal | singular}}{{- .Postfix}}
     {
-      {{ range .Columns -}}       
+      {{ range .Columns -}}      
+        {{ .Name | pascal }} {{ .DataType | datatype }} { get; set; }
         {{ template "cs-property" .}}
       {{ end }}
     }

@@ -22,20 +22,17 @@ body: |
     _ "embed"
     "strings"
 
-    logging "bitbucket.org/VismoXClub2/gopkg/stages-logging"
     "github.com/pkg/errors"
   )
 
   
   type {{ .Name | camel | singular }}Repo struct {
     conn   db.ConnectionManager
-    logger logging.StagesLogger
   }
 
-  func New{{ .Name | pascal | singular }}Repo(conn db.ConnectionManager, logger logging.StagesLogger) repos.{{ .Name | pascal | singular }}Repository {
+  func New{{ .Name | pascal | singular }}Repo(conn db.ConnectionManager) repos.{{ .Name | pascal | singular }}Repository {
     return &{{ .Name | camel | singular }}Repo{
       conn:   conn,
-      logger: logger,
     }
   }
 

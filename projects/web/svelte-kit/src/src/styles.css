@@ -1,0 +1,222 @@
+@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bubblegum+Sans&family=Vina+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Turret+Road&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tomorrow&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Stick+No+Bills&display=swap');
+@import './design/_buttons.css';
+:root {
+	--width: 200px;
+	--font: 'Roboto', sans-serif;
+	--metric-value-font: 'Roboto', sans-serif;
+    /* --metric-value-font: 'Stick No Bills', cursive; */
+
+	--zone-1: rgb(41, 171, 226);
+	--zone-1-bg: rgb(41, 171, 226);
+	--zone-1-bg-start: rgb(41, 171, 226);
+	--zone-1-text: rgba(255, 255, 255, 0.87);
+
+	--zone-2: rgb(140, 198, 63);
+	--zone-2-bg: rgb(140, 198, 63);
+	--zone-2-bg-start: rgb(140, 198, 63);
+	--zone-2-text: rgba(255, 255, 255, 0.87);
+
+	--zone-3: rgb(255, 255, 0);
+	--zone-3-bg: rgb(255, 255, 0);
+	--zone-3-bg-start: rgb(255, 255, 0);
+	--zone-3-text: rgb(43, 43, 37);
+
+	--zone-4: rgb(247, 147, 30);
+	--zone-4-bg: rgb(247, 147, 30);
+	--zone-4-bg-start: rgb(247, 147, 30);
+	--zone-4-text: rgba(255, 255, 255, 0.87);
+
+	--zone-5: rgb(236, 27, 33);
+	--zone-5-bg: rgb(236, 27, 33);
+	--zone-5-bg-start: rgb(236, 27, 33);
+	--zone-5-text: rgba(255, 255, 255, 0.87);
+
+	--zone-6: rgb(115, 12, 0);
+	--zone-6-bg: rgb(115, 12, 0);
+	--zone-6-bg-start: rgb(115, 12, 0);
+	--zone-6-text: rgba(255, 255, 255, 0.87);
+
+	--zone-7: rgb(102, 45, 145);
+	--zone-7-bg: rgb(102, 45, 145);
+	--zone-7-bg-start: rgb(102, 45, 145);
+	--zone-7-text: rgba(255, 255, 255, 0.87);
+
+	--text-color: rgba(255, 255, 255, 0.87);
+
+	--compliance-1-bg: #8cc63f;
+	--compliance-1-text: var(--text-color);
+
+	--compliance-2-bg: #ddd62d;
+	--compliance-2-text: var(--text-color);
+
+	--compliance-3-bg: #f7931e;
+	--compliance-3-text: var(--text-color);
+
+	--compliance-disabled-bg: #616161;
+	--compliance-disabled-text: var(--text-color);
+
+	/* --color-gray-700: #121212; */
+}
+
+.theme-default {
+    --font: 'Roboto', sans-serif;
+    --metric-value-font: 'Roboto', sans-serif;
+
+    --zone-1: rgb(41, 171, 226);
+    --zone-2: rgb(140, 198, 63);
+    --zone-3: rgb(255, 255, 0);
+    --zone-4: rgb(247, 147, 30);
+    --zone-5: rgb(236, 27, 33);
+    --zone-6: rgb(115, 12, 0);
+    --zone-7: rgb(102, 45, 145);
+}
+
+.theme-turret-road {
+    --font: 'Roboto', sans-serif;
+    --metric-value-font: 'Turret Road', cursive;
+    /* --zone-1-bg: rgb(7, 129, 181);
+
+    --zone-2-bg: rgb(127, 160, 84);
+
+    --zone-3-bg: rgb(78, 78, 31);
+    --zone-4-bg: rgb(203, 138, 62);
+    --zone-5-bg: rgb(186, 50, 55);
+    --zone-6-bg: rgb(82, 13, 5);
+    --zone-7-bg: rgb(47, 14, 71); */
+}
+
+.theme-tomorrow {
+    --font: 'Roboto', sans-serif;
+    --metric-value-font: 'Tomorrow', sans-serif;
+    /* --zone-1-bg: rgb(127, 160, 84);
+    --zone-2-bg: rgb(7, 129, 181);
+    --zone-3-bg: rgb(151, 151, 96);
+    --zone-4-bg: rgb(125, 84, 37);
+    --zone-5-bg: rgb(143, 79, 81);
+    --zone-6-bg: rgb(82, 5, 59);
+    --zone-7-bg: rgb(52, 13, 80); */
+}
+
+.theme-stick-no-bills {
+    --font: 'Roboto', sans-serif;
+    --metric-value-font: 'Stick No Bills', cursive;
+    /* --zone-1-bg: rgb(7, 129, 181);
+    --zone-2-bg: rgb(127, 160, 84);
+    --zone-3-bg: rgb(78, 78, 31);
+    --zone-4-bg: rgb(203, 138, 62);
+    --zone-5-bg: rgb(186, 50, 55);
+    --zone-6-bg: rgb(82, 13, 5);
+    --zone-7-bg: rgb(47, 14, 71); */
+}
+
+.theme-space-grotesk {
+    --font: 'Roboto', sans-serif;
+    --metric-value-font: 'Space Grotesk', sans-serif;
+    /* --zone-1-bg: rgb(41, 171, 226);
+    --zone-2-bg: rgb(140, 198, 63);
+    --zone-3-bg: rgb(255, 255, 0);
+    --zone-4-bg: rgb(247, 147, 30);
+    --zone-5-bg: rgb(236, 27, 33);
+    --zone-6-bg: rgb(115, 12, 0);
+    --zone-7-bg: rgb(102, 45, 145); */
+}
+
+.theme-ali-babas {
+    --font: 'Roboto', sans-serif;
+    --metric-value-font: 'Bebas Neue', sans-serif;
+    --zone-1-bg: rgb(255, 255, 255);
+    --zone-2-bg: rgb(0, 154, 214);
+    --zone-3-bg: rgb(0, 172, 0);
+    --zone-4-bg: rgb(250, 237, 0);
+    --zone-5-bg: rgb(255, 0, 37);
+    --zone-6-bg: rgb(255, 0, 35);
+    --zone-7-bg: rgb(255, 0, 34);
+}
+
+.theme-bubblegums {
+    --font: 'Roboto', sans-serif;
+    --metric-value-font: 'Bubblegum Sans', cursive;
+    /* --zone-1-bg: rgb(41, 171, 226);
+    --zone-2-bg: rgb(140, 198, 63);
+    --zone-3-bg: rgb(255, 255, 0);
+    --zone-4-bg: rgb(247, 147, 30);
+    --zone-5-bg: rgb(236, 27, 33);
+    --zone-6-bg: rgb(115, 12, 0);
+    --zone-7-bg: rgb(102, 45, 145); */
+}
+body {
+	@apply bg-gray-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-200;
+}
+.section-title {
+	@apply text-2xl mb-2 font-light;
+}
+
+.options-panel {
+	@apply flex flex-col gap-2 bg-blue-50 dark:bg-neutral-800 p-2 w-96 text-gray-900 dark:text-white;
+}
+
+.text-input {
+	@apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+}
+
+.select-input {
+}
+
+.range-input {
+	@apply w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-neutral-600 dark:border-gray-500;
+}
+
+input[type='range'] {
+	@apply w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-neutral-600 dark:border-gray-500;
+}
+
+input  {
+	@apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+
+}
+input[type='number'] {
+	@apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-neutral-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+
+}
+input[type='checkbox'] {
+	@apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-neutral-600 dark:border-gray-500;
+
+}
+
+select {
+	@apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-600 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+
+}
+
+section {
+	@apply p-4 bg-white dark:bg-neutral-700 rounded-lg shadow-md;
+}
+
+nav {
+	@apply flex flex-row justify-between p-4 dark:bg-neutral-900 dark:text-neutral-200
+}
+
+.epic-badge {
+    @apply bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300
+}
+
+.task-badge {
+    @apply bg-indigo-100 text-indigo-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300
+}
+
+.new-badge {
+    @apply bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300
+}
+
+.inprogress-badge {
+    @apply bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300
+}
+
+.done-badge {
+    @apply bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300
+}

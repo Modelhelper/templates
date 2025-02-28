@@ -1,0 +1,68 @@
+version: 3
+name: ts-poco
+language: ts
+type: file
+key: model
+model: entity
+
+body: |
+  import type { {{.Name | pascal | singular}} } from "$lib/models/{{.Name | kebab | singular}}";
+  
+  import {query} from "$lib/server/cloud/db";
+  
+  export async function get{{.Name | pascal | singular}}(id: number): Promise<{{.Name | pascal | singular}} | null> {
+      const rows = await query`
+          {{ template "sql-select-single" . }}          
+      `;
+
+      if (rows.recordset.length === 0) {
+          return null;
+      }
+
+      return rows.recordset.map(row => {
+          return {
+              {{ range .Columns -}}
+              {{ .Name | camel }}: row.{{ .Name | pascal }},
+              {{ end }}              
+          } as {{.Name | pascal | singular}}
+      })[0];
+  }
+
+  export async function get{{.Name | pascal | plural}}(): Promise<{{.Name | pascal | singular}}[]> {
+      const rows = await query`
+          {{ template "sql-select-all" . }}
+      `;
+
+      if (rows.recordset.length === 0) {
+          return null;
+      }
+
+      return rows.recordset.map(row => {
+          return {
+              {{ range .Columns -}}
+              {{ .Name | camel }}: row.{{ .Name | pascal }},
+              {{ end }}              
+          } as {{.Name | pascal | singular}}
+      });
+  }
+
+  {{ range .Children -}}
+  export async function get{{ .OwnerName | singular | camel }}{{.Name | pascal | plural}}(): Promise<{{.Name | pascal | singular}}[]> {
+      const rows = await query`
+          {{ template "sql-select-all-from-parent" . }}
+      `;
+
+      if (rows.recordset.length === 0) {
+          return null;
+      }
+
+      return rows.recordset.map(row => {
+          return {
+              {{ range .Columns -}}
+              {{ .Name | camel }}: row.{{ .Name | pascal }},
+              {{ end }}              
+          } as {{.Name | pascal | singular}}
+      });
+  }    
+  
+  {{ end -}}

@@ -1,0 +1,36 @@
+{
+	"name": "{ .projectName }",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"test": "npm run test:integration && npm run test:unit",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"test:integration": "playwright test",
+		"test:unit": "vitest",
+		"lint": "prettier --check .",
+		"format": "prettier --write ."
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.46.1",		
+		"@sveltejs/adapter-auto": "^3.2.4",
+		"@sveltejs/kit": "^2.5.24",
+		"@sveltejs/vite-plugin-svelte": "^3.1.1",
+		"@tailwindcss/vite": "^4.0.0-alpha.18",
+		"postgres": "^3.4.4",
+		"prettier": "^3.3.3",
+		"prettier-plugin-svelte": "^3.2.6",
+		"svelte": "^5.0.0-next.1",
+		"svelte-check": "^3.8.5",
+		"tailwindcss": "^4.0.0-alpha.18",
+		"typescript": "^5.5.4",
+		"vanilla-cookieconsent": "^3.0.1",
+		"vite": "^5.4.2",
+		"vitest": "^2.0.5"
+	},
+	"type": "module"
+	
+}

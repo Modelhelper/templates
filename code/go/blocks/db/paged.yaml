@@ -7,6 +7,7 @@ key: model
 model: entity
 body: |  
   reqId, _ := ctx.Value("request_id").(string)
+  logger := slog.With("process", "{{ .Name | camel | singular }}Repository.Paged", "request_id", reqId)
 
   conn, err := r.conn.Get(ctx)
   if err != nil {
@@ -20,7 +21,7 @@ body: |
     toDate   = utils.ToSqlNullTime(options.To)
   )
 
-  sqlQuery := `{{ template "sql-ms-select-paged" . }}`
+  sqlQuery := `{{ template "sql-select-paged" . }}`
 
   if options.Page != nil && options.PageSize != nil {
     sqlQuery = strings.Replace(
@@ -39,17 +40,17 @@ body: |
     sql.Named("pageSize", options.PageSize), // $4
   )
   if err != nil {
-    r.logger.Error("process=\"{{ .Name | singular | pascal }}Repository.GetPaged: query\" requestId=%s error=\"%S\"", reqId, err)
+    logger.Error("action", "query", "error", err)    
     return nil, err
   }
 
   var (
-    items         = make([]*models.{{ .Name | singular | pascal }}Model, 0)
+    items         = make([]*models.{{ .Name | singular | pascal }}, 0)
     totalRowCount int
   )
   for rows.Next() {
     var (
-      item models.{{ .Name | singular | pascal }}Model
+      item models.{{ .Name | singular | pascal }}
     )
 
     err = rows.Scan(
@@ -58,7 +59,7 @@ body: |
       {{ end }}
     )
     if err != nil {
-      r.logger.Error("process=\"{{ .Name | singular | pascal }}Repository.GetPaged: scan rows\" requestId=%s error=\"%S\"", reqId, err)
+      logger.Error("action", "scan rows", "error", err)      
       _ = rows.Close()
       continue
     }

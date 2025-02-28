@@ -7,7 +7,7 @@ model: entity
 body: |
   delete from {{ .Schema }}.{{ .Name }} 
   where 1 = 1
-    {{- range .PrimaryKeys }}
-      and {{ .Name }} = @{{ .Name }}
+    {{- range $index, $col := .PrimaryKeys }}
+      and {{ $col.Name }} = ${{ increment $index }}
     {{- end }}
   

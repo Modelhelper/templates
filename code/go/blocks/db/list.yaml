@@ -6,13 +6,15 @@ short: Entity body for getting a list from database. Must be inside func and exp
 key: model
 model: entity
 body: |  
+  reqId, _ := ctx.Value("request_id").(string)
+
   conn, err := r.conn.Get(ctx)
     if err != nil {
       return nil, errors.Wrap(err, "GetList.Handle: get conn")
     }
     defer conn.Close()
 
-    query := `{{ template "sql-ms-select-all" . -}}`
+    query := `{{ template "sql-select-all" . -}}`
 
     rows, err := conn.QueryContext(ctx, query)
     if err != nil {
@@ -20,10 +22,10 @@ body: |
     }
     defer rows.Close()
 
-    var items []*models.{{ .Name| singular | pascal  }}Model
+    var items []*models.{{ .Name| singular | pascal  }}
     for rows.Next() {
       var (
-        item models.{{ .Name | pascal | singular }}Model
+        item models.{{ .Name | pascal | singular }}
       )
       err = rows.Scan(
         {{ range .Columns -}}

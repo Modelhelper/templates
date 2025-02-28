@@ -1,0 +1,55 @@
+version: 3
+name: ts-svelte-page-server
+language: ts
+type: file
+fileName: "{{ .Name | kebab }}.ts"
+key: route
+model: basic
+
+body: |
+  import { getLatestArticles, type Article, getCustomerList, getReviews, getHeroImages, getCTAs, getContactDetails } from '$lib/sanity/queries';
+  import type { PageServerLoad } from './$types';
+
+  import { plannedCourses } from '$lib/server/frontcore/course';
+  import { COOKIE_AUTH_NAME } from '$lib/constants';
+  import { getUser } from '$lib/server/frontcore/user';
+
+
+  export const load: PageServerLoad = async (event) => {
+    
+    const { loadQuery } = event.locals; // {{ .Project.Name | camel }}
+
+
+    const articles = await loadQuery<Article[]>(getLatestArticles);
+    const customers = await loadQuery<any[]>(getCustomerList);
+    const reviews = await loadQuery<any[]>(getReviews);
+    const heroImages = await loadQuery<any[]>(getHeroImages);
+    const ctas = await loadQuery<any[]>(getCTAs);
+    // return data
+    return {
+      
+      cta: {
+        query: getCTAs,
+        options: { initial: ctas }
+      },
+      heroImages: {
+        query: getHeroImages,
+        options: { initial: heroImages }
+      },
+      reviews: {
+        query: getReviews,
+        options: { initial: reviews }
+      },
+      customers: {
+        query: getCustomerList,
+        options: { initial: customers }
+
+      },
+      articles: {
+        query: getLatestArticles,
+        options: { initial: articles }
+      },
+      courses: await plannedCourses(null, 8),
+      // pathname,
+    };
+  };

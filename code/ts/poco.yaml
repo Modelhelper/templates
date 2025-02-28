@@ -1,14 +1,13 @@
 version: 3
-name: ts-poco
 language: ts
 type: file
+fileName: "{{ .Name | kebab }}.ts"
 key: model
 model: entity
 
 body: |
   export interface {{ .Name | pascal | singular }} {  
-      {{ range .Columns -}} 
-      {{ .Name | camel }}{{if .IsNullable}}?{{end}} {{ .DataType | datatype }};
-      {{ end }}
-    }
+    {{ range .Columns -}} 
+    {{ .Name | camel }}{{if .IsNullable}}?{{end}}: {{ .DataType | datatype }};
+    {{ end }}    
   }

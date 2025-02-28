@@ -6,14 +6,14 @@ key: model
 model: entity
 body: |  
   // Get{{ .Name | pascal | plural }} returns a list of {{ .Name | pascal | singular }} as child of {{ .OwnerName | pascal | singular }}
-  func (r *{{ .OwnerName | singular | camel }}Repo) Get{{ .NameWithoutPrefix | pascal | plural }}(ctx context.Context, {{ .RelatedColumn.Name | camel }} {{ .RelatedColumn.DataType | datatype }}) ([]*models.{{ .Name | singular }}Model, error) {
+  func (r *{{ .OwnerName | singular | camel }}Repo) Get{{ .NameWithoutPrefix | pascal | plural }}(ctx context.Context, {{ .RelatedColumn.Name | camel }} {{ .RelatedColumn.DataType | datatype }}) ([]*models.{{ .Name | pascal | singular }}, error) {
     conn, err := r.conn.Get(ctx)
     if err != nil {
       return nil, errors.Wrap(err, "GetList.Handle: get conn")
     }
     defer conn.Close()
 
-    query := `{{ template "sql-ms-select-child-items" . }}`
+    query := `{{ template "sql-select-child-items" . }}`
 
     rows, err := conn.QueryContext(ctx, query, sql.Named("{{ .RelatedColumn.Name | pascal }}", {{ .RelatedColumn.Name | camel }}))
 

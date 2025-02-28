@@ -6,6 +6,6 @@ key: model
 model: entity
 body: |  
   
-  func (r *{{ .Name | singular | camel}}Repo) Update(ctx context.Context, {{ template "go-blocks-common-pk-args" . }}, {{ .Name | camel | singular }} *models.{{ .Name | singular }}Model) error {
+  func (r *{{ .Name | singular | camel}}Repo) Update(ctx context.Context, {{ template "go-blocks-common-pk-args" . }}, {{ .Name | camel | singular }} *models.{{ .Name | pascal | singular }}) error {
     {{ template "go-blocks-db-update" . }}
   }

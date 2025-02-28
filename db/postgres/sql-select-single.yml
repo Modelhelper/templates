@@ -1,0 +1,15 @@
+version: 3
+short: "selects a single row, based on PK, from a postgres table"
+language: sql
+type: block
+model: entity
+body: |
+  select
+    {{ range $index, $col := .Columns }}
+  {{- if $index }},{{end}}[{{ $col.Name }}] 
+  {{ end }}  
+  from {{ .Name }}
+  where 
+    {{ range $index, $col := .PrimaryKeys -}}
+      {{ $col.Name }} = ${{ increment $index }}
+    {{ end }}
