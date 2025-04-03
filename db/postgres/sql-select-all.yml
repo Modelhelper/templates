@@ -8,4 +8,4 @@ body: |
     {{ range $index, $col := .Columns }}
   {{- if $index }},{{end}}[{{ $col.Name }}] 
   {{ end }}  
-  from {{ .Name }}  
+  from {{ .Schema }}.{{ .Name }}
