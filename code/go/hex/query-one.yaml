@@ -6,4 +6,4 @@ key: query
 model: entity
 
 body: |  
-  {{ template "sql-get-pk" . -}}
+  {{ template "sql-select-single" . -}}

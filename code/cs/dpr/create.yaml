@@ -10,9 +10,7 @@ body: |
     using (var connection = _factory.Create())
     {
       var sql = @"
-  {{ template "sql-insert" . }}
-  declare @itemId int = SCOPE_IDENTITY();
-  select @itemId;
+  {{ template "sql-insert-item" . }}
 
   ";        
         try

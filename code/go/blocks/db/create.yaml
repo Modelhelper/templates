@@ -8,7 +8,7 @@ model: entity
 body: |    
   {{$model := .Name | camel | singular }}
   reqId, _ := ctx.Value("request_id").(string)
-  logger := slog.With("process", "{{ .Name | camel | singular }}Repository.Paged", "request_id", reqId)
+  logger := slog.With("process", "{{ .Name | camel | singular }}Repository.Create", "request_id", reqId)
 
 
   conn, err := r.conn.Get(ctx)

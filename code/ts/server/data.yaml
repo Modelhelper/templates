@@ -49,7 +49,7 @@ body: |
   {{ range .Children -}}
   export async function get{{ .OwnerName | singular | camel }}{{.Name | pascal | plural}}(): Promise<{{.Name | pascal | singular}}[]> {
       const rows = await query`
-          {{ template "sql-select-all-from-parent" . }}
+          {{ template "sql-select-child-items" . }}
       `;
 
       if (rows.recordset.length === 0) {

@@ -1,0 +1,23 @@
+version: 3
+short: "Update item in a MS SQL table, returns the primary key"
+language: sql
+type: block
+model: entity
+body: |
+  update {{ .Schema }}.{{ .Name }} set
+    {{- range .NonPrimaryColumns }}
+      {{ .Name }} = @{{ .Name }}{{ if not .IsLast }}, {{ end -}}
+    {{- end }}
+  where 1 = 1
+    {{- range .PrimaryKeys }}
+      and {{ .Name }} = @{{ .Name }}
+    {{- end }}
+
+  select
+    {{- range $i, $c := .PrimaryKeys }}{{ if $i }},{{ end }} {{ $c.Name }}
+    {{- end }}
+  from {{ .Schema }}.{{ .Name }}
+  where 1 = 1
+    {{- range .PrimaryKeys }}
+      and {{ .Name }} = @{{ .Name }}
+    {{- end }}

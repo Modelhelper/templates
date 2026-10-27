@@ -6,7 +6,7 @@ features:
   - go-hex-feature
   - go-hex-gin-api
 
-key: ports-controller
+key: api-controller
 fileName: "{{ .Name | snake }}_controller.go"
 
 model: entity

@@ -1,6 +1,6 @@
 version: 3
 language: go
-name: go-blocks-db-create
+name: go-blocks-db-update
 type: block
 short: Entity body for getting one and only one item from database. Must be inside func and expects a db obj
 key: model

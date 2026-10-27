@@ -12,4 +12,4 @@ fileName: "delete_{{ .Name | snake | singular }}.sql"
 
 model: entity
 body: |
-  {{ template "sql-delete-one" .}}
+  {{ template "sql-delete-item" .}}

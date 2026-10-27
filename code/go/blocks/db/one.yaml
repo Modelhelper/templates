@@ -18,7 +18,7 @@ body: |
       {{- range .PrimaryKeys }}sql.Named("{{ .Name | pascal }}", {{ .Name | camel }}), {{- end }}
     )
 
-    var item models.{{ .Name | pascal | singular}}Model
+    var item models.{{ .Name | pascal | singular}}
     err = row.Scan(
       {{ range .Columns -}}       
       &item.{{ .Name | pascal }},

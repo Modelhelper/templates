@@ -40,9 +40,7 @@ body: |
 
   {{ template "go-rest-blocks-delete" . }}
 
-  {{ template "go-rest-blocks-update" . }}
-
-  {{ template "go-rest-blocks-get-list" . }}
+  {{ template "go-rest-blocks-put" . }}
 
   {{ template "go-rest-blocks-get-paged" . }}
 

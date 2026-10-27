@@ -6,8 +6,6 @@ short: Entity body for getting a list from database. Must be inside func and exp
 key: model
 model: entity
 body: |  
-  reqId, _ := ctx.Value("request_id").(string)
-
   conn, err := r.conn.Get(ctx)
     if err != nil {
       return nil, errors.Wrap(err, "GetList.Handle: get conn")

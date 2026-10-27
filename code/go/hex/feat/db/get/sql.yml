@@ -13,4 +13,4 @@ fileName: "get_{{ .Name | snake | singular }}.sql"
 
 model: entity
 body: |
-  {{ template "sql-get-one" .}}
+  {{ template "sql-select-single" .}}

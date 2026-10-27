@@ -1,0 +1,9 @@
+version: 3
+short: "Delete item from a MS SQL table, returns the deleted id"
+language: sql
+type: block
+model: entity
+body: |
+  delete from {{ .Schema }}.{{ .Name }}
+  output deleted.id
+  where id = @id

@@ -7,7 +7,7 @@ features:
   - go-hex-update
   
 identifier: "%%MH_SNIPPET_CONTROLLER%%"
-key: ports-controller
+key: api-controller
 model: entity
 fileName: "{{ .Name | snake }}_controller.go"
 body: |

@@ -9,7 +9,7 @@ body: |
     using (var connection = _factory.Create())
     {
       var sql = @"
-  {{ template "sql-get-pk" . }}
+  {{ template "sql-select-single" . }}
   ";        
         try
         {            
@@ -23,7 +23,7 @@ body: |
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Could not insert data");
+            _logger.LogError(exception, "Could not get data");
             throw;
         }
     }

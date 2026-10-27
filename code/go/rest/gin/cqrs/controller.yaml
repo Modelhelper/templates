@@ -30,32 +30,32 @@ body: |
     app *core.Application
   }
 
-  {{ template "go-rest-swag-get" . }}
+  {{ template "go-rest-blocks-swag-get" . }}
   func (controller *{{ .Name | singular | pascal }}Controller) Get(c *gin.Context)  {
     
   }
 
-  {{ template "go-rest-swag-post" . }}
+  {{ template "go-rest-blocks-swag-post" . }}
   func (controller *{{ .Name | singular | pascal }}Controller) Create(c *gin.Context)  {
 
   }
 
-  {{ template "go-rest-swag-delete" . }}
-  func (controller *{{ .Name | singular | pascal }}Controller) Update(c *gin.Context)  {
+  {{ template "go-rest-blocks-swag-delete" . }}
+  func (controller *{{ .Name | singular | pascal }}Controller) Delete(c *gin.Context)  {
 
 
   }
 
-  {{ template "go-rest-swag-update" . }}
+  {{ template "go-rest-blocks-swag-put" . }}
   func (controller *{{ .Name | singular | pascal }}Controller) Update(c *gin.Context)  {
   }
 
-  {{ template "go-rest-swag-get-paged" . }}
+  {{ template "go-rest-blocks-swag-get" . }}
   func (controller *{{ .Name | singular | pascal }}Controller) GetPaged(c *gin.Context)  {
   }
 
   {{ range .Children -}}        
-  {{ template "go-rest-swag-get-child" . }}
+  {{ template "go-rest-blocks-swag-get-child" . }}
   func (controller *{{ .OwnerName | singular | pascal }}Controller) Get{{ .NameWithoutPrefix | pascal | plural }}(c *gin.Context)  {
   }
     

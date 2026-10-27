@@ -12,4 +12,4 @@ fileName: "update_{{ .Name | snake | singular }}.sql"
 
 model: entity
 body: |
-  {{ template "sql-update-one" .}}
+  {{ template "sql-update-item" .}}

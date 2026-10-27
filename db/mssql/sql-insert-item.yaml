@@ -1,7 +1,7 @@
 version: 3
-short: "Insert item into a specific source table"
+short: "Insert item into a MS SQL table, returns the new identity"
 language: sql
-type: block 
+type: block
 model: entity
 body: |
   insert into {{ .Schema }}.{{ .Name }} (

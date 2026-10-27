@@ -12,4 +12,4 @@ fileName: "create_{{ .Name | snake | singular }}.sql"
 
 model: entity
 body: |
-  {{ template "sql-insert" .}}
+  {{ template "sql-insert-item" .}}

@@ -20,6 +20,7 @@ body: |
     "context"
     "database/sql"
     _ "embed"
+    "log/slog"
     "strings"
 
     "github.com/pkg/errors"

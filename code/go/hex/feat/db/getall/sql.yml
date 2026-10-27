@@ -12,4 +12,4 @@ fileName: "get_{{ .Name | snake | plural }}.sql"
 
 model: entity
 body: |
-  {{ template "sql-get-paged" .}}
+  {{ template "sql-select-paged" .}}

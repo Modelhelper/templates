@@ -1,5 +1,5 @@
 version: 3
-name: go-blocks-db-list
+name: go-blocks-db-paged
 language: go
 type: block
 short: Entity body for getting a list from database. Must be inside func and expects a db obj
@@ -57,6 +57,7 @@ body: |
       {{ range .Columns -}}
       &item.{{ .Name | pascal }},
       {{ end }}
+      &totalRowCount,
     )
     if err != nil {
       logger.Error("action", "scan rows", "error", err)      
