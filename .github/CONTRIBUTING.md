@@ -82,4 +82,4 @@ Commit messages follow the [commit message convention](./COMMIT_CONVENTION.md), 
 
 ## License
 
-This repository is licensed under the [GNU General Public License v3.0](../LICENSE). By opening a pull request you agree that your contribution is licensed under the same license.
+This repository is licensed under the [MIT License](../LICENSE). By opening a pull request you agree that your contribution is licensed under the same license.
