@@ -8,7 +8,7 @@ features:
   - go-hex-gin-api
 identifier: "%%ROUTER_GROUP_SNIPPETS%%"
 
-key: ports-api
+key: api-router
 
 fileName: router.go
 model: entity

@@ -6,7 +6,7 @@ features:
   - go-hex-delete
   
 identifier: "MH_SNIPPET_CONTROLLER"
-key: ports-controller
+key: api-controller
 fileName: "{{ .Name | snake}}_controller.go"
 model: entity
 
