@@ -24,11 +24,11 @@ body: |+
 
   Nullable datatypes
   ---------------------------------------
-  bool          {{ "bool" | datatype | nullable}}
-  varchar       {{ "varchar" | datatype | nullable }}
-  bigint        {{ "bigint" | datatype | nullable }}
-  int           {{ "int" | datatype | nullable }}
-  nvarchar      {{ "nvarchar" | datatype | nullable}}
+  bool          {{ "bool" | nullable true }}
+  varchar       {{ "varchar" | nullable true }}
+  bigint        {{ "bigint" | nullable true }}
+  int           {{ "int" | nullable true }}
+  nvarchar      {{ "nvarchar" | nullable true }}
 
   nullcheck
   ---------------------------------------
