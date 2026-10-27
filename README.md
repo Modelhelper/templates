@@ -247,6 +247,8 @@ These are available in every code template, besides the built-in functions.
 | `datatype` | `{{ .DataType \| datatype }}` | the language type for a database type |
 | `nullable` | `{{ .DataType \| nullable true }}` | the language type in its nullable form (`sql.NullInt32` for `int` in Go). With `false` it is the plain type |
 | `datatypeN` | same as `nullable` | |
+| `imports` | `{{ range imports .Columns }}"{{ . }}"{{ end }}` | the sorted, unique imports that the columns' types need, from `imports` and `nullableImports` in the language definition |
+| `safe` | `{{ .Name \| camel \| safe }}` | the name, with `_` added when it is a reserved word in the language (`type` becomes `type_`) |
 
 `datatype` and `nullable` use the type mapping of the template's `language`, from the language definitions in your config (`languages.definitions`). A type that is not in the mapping is printed as it is. Run `mh language list` to see the languages and where each comes from.
 
