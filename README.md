@@ -248,7 +248,19 @@ These are available in every code template, besides the built-in functions.
 | `nullable` | `{{ .DataType \| nullable true }}` | the language type in its nullable form (`sql.NullInt32` for `int` in Go). With `false` it is the plain type |
 | `datatypeN` | same as `nullable` | |
 
-`datatype` and `nullable` use the type mapping of the template's `language`, from the language definitions in your config (`languages.definitions`). A type that is not in the mapping is printed as it is. Run `mh language list` to see the languages.
+`datatype` and `nullable` use the type mapping of the template's `language`, from the language definitions in your config (`languages.definitions`). A type that is not in the mapping is printed as it is. Run `mh language list` to see the languages and where each comes from.
+
+`mh` has definitions for `cpp`, `cs`, `go`, `sql` and `ts` built in. Set `languages.definitions` in `~/.modelhelper/config.yaml` to a folder of `.yaml` files to add a language or to replace a built-in one, no rebuild needed. A file there with `language: go` replaces the built-in Go definition. Copy a built-in one as a start, and change the `datatypes`:
+
+```yaml
+language: rust
+version: "3.0"
+short: Language definition for Rust
+datatypes:
+  int:
+    notNull: i32
+    nullable: Option<i32>
+```
 
 The `tutorial-strings` template (`code/tutorial/strings.yaml`) prints all of these:
 
@@ -493,7 +505,7 @@ type Order struct {
 }
 ```
 
-(The `decimal` is printed as it is because the Go language definition in this example does not map it.) Blocks can include other blocks. A template that names a block that does not exist fails with `template "x" not defined`.
+(The built-in Go definition maps `decimal` to `decimal`, which is not a Go type. Override it with your own language definition, see [Functions added by ModelHelper](#functions-added-by-modelhelper).) Blocks can include other blocks. A template that names a block that does not exist fails with `template "x" not defined`.
 
 ## SQL for different databases
 
